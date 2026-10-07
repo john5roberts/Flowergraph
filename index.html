@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Ideal Rolling Spirograph 5.9</title>
+<title>Spirograph Studio 1.4</title>
 <style>
   :root{--panel:#0f1012;--stroke:#2a2d34;--text:#f2f2f2}
   *{box-sizing:border-box}
@@ -11,14 +11,53 @@
   body{padding:10px}
   .app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 610px;gap:10px;align-items:start}
   .stage-shell,.control-panel{background:linear-gradient(180deg,#050505,#0a0a0a);border:1px solid #20242c;border-radius:24px;overflow:hidden}
-  .stage-shell{aspect-ratio:1/1;width:100%;max-width:calc(100vh - 20px);max-height:calc(100vh - 20px);padding:10px;align-self:start;justify-self:start}
+  .stage-shell{position:relative;aspect-ratio:1/1;width:100%;max-width:calc(100vh - 20px);max-height:calc(100vh - 20px);padding:10px;align-self:start;justify-self:start}
   .canvas-wrap{display:flex;align-items:center;justify-content:center;width:100%;height:100%;aspect-ratio:1/1}
-  canvas{display:block;width:100%;height:auto;aspect-ratio:1/1;max-width:100%;max-height:100%}
+  canvas{display:block;width:100%;height:auto;aspect-ratio:1/1;max-width:100%;max-height:100%;touch-action:none;-webkit-user-select:none;user-select:none}
 
   .control-panel{display:flex;flex-direction:column;align-self:start;min-height:0;overflow:hidden;padding:14px}
   .control-scroll{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:14px}
   .group{background:var(--panel);border:1px solid var(--stroke);border-radius:18px;padding:14px}
   .group h3{margin:0 0 10px;font-size:17px}
+
+  .overlay-stack{
+    position:absolute;right:18px;bottom:16px;z-index:8;
+    display:flex;flex-direction:column;align-items:flex-end;gap:5px;
+    pointer-events:auto;
+  }
+  .dimension-overlay{
+    display:flex;align-items:center;gap:6px;
+    appearance:none;border:0;background:transparent;padding:3px 6px;margin:0;
+    font:700 15px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    letter-spacing:.02em;cursor:pointer;user-select:none;-webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  }
+  .dimension-overlay .mode-label{color:#fff;opacity:.30;transition:opacity .15s ease}
+  .dimension-overlay .mode-label.active{opacity:.50}
+  .dimension-overlay .mode-divider{color:#fff;opacity:.20;font-weight:500}
+  .draw-overlay{
+    position:absolute;left:18px;bottom:16px;z-index:8;
+    appearance:none;border:0;background:transparent;padding:3px 6px;margin:0;
+    color:#fff;opacity:.30;
+    font:700 15px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    letter-spacing:.02em;cursor:pointer;user-select:none;-webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+    transition:opacity .15s ease;
+  }
+  .draw-overlay:active{opacity:.50}
+  .draw-overlay:disabled{opacity:.18;cursor:default}
+  body.art-fullscreen .overlay-stack{
+    position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:10003;
+  }
+  body.art-fullscreen .draw-overlay{
+    position:fixed;left:max(18px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom));z-index:10003;
+  }
+  .style-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .style-btn{appearance:none;background:#16191e;color:#fff;border:1px solid #38404c;border-radius:14px;min-height:54px;font-size:16px;font-weight:800;cursor:pointer;padding:8px 6px}
+  .style-btn.active{background:#16191e;color:#fff;border:2px solid #fff;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
+  .style-note{margin-top:9px;color:#959ba6;font-size:13px;line-height:1.3;text-align:center}
+  .stage-shell.mode-3d canvas{cursor:grab;touch-action:none}
+  .stage-shell.mode-3d.dragging canvas{cursor:grabbing}
 
   .layer-selector{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
   .layer-select-btn,.all-select-btn,.big-toggle,.size-btn,.change-btn,.draw-btn{appearance:none;background:#16191e;color:#fff;border:1px solid #38404c;cursor:pointer}
@@ -42,6 +81,40 @@
   .draw-btn:disabled{opacity:.48;cursor:default}
   .change-btn.flash{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.55),0 0 16px rgba(255,255,255,.22)}
   .change-btn:active,.draw-btn:active:not(:disabled),.layer-select-btn:active,.all-select-btn:active,.big-toggle:active,.size-btn:active,.swatch-button:active{transform:translateY(1px)}
+
+  /* Long-press immersive drawing mode. */
+  body.art-fullscreen{padding:0!important;overflow:hidden!important}
+  body.art-fullscreen .stage-shell{
+    position:fixed;inset:0;z-index:9999;width:100vw;height:100dvh;max-width:none;max-height:none;
+    aspect-ratio:auto;border:0;border-radius:0;padding:0;background:#000;display:flex;align-items:center;justify-content:center;
+  }
+  body.art-fullscreen .canvas-wrap{width:100%;height:100%;aspect-ratio:auto;background:#000}
+  body.art-fullscreen canvas{width:100vw;height:100dvh;max-width:none;max-height:none;aspect-ratio:auto;touch-action:none}
+  body.art-fullscreen .control-panel{visibility:hidden}
+  .fullscreen-close-btn,.fullscreen-zoom-btn{display:none}
+  body.art-fullscreen .fullscreen-close-btn,
+  body.art-fullscreen .fullscreen-zoom-btn{
+    display:flex;align-items:center;justify-content:center;
+    position:fixed;z-index:10002;border:0;border-radius:0;
+    background:transparent;color:#fff;opacity:.50;
+    box-shadow:none;text-shadow:none;font-weight:700;
+    touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer;
+    transition:opacity .12s ease;
+  }
+  body.art-fullscreen .fullscreen-close-btn:active,
+  body.art-fullscreen .fullscreen-zoom-btn:active{opacity:.72}
+  body.art-fullscreen .fullscreen-close-btn{
+    top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));
+    width:72px;height:72px;font-size:42px;line-height:1;
+  }
+  body.art-fullscreen .fullscreen-zoom-btn.zoom-in{
+    top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));
+    width:72px;height:72px;font-size:42px;line-height:1;
+  }
+  body.art-fullscreen .fullscreen-zoom-btn.zoom-out{
+    top:max(78px,calc(env(safe-area-inset-top) + 78px));left:max(10px,env(safe-area-inset-left));
+    width:72px;height:72px;font-size:46px;line-height:1;
+  }
 
   /* Existing desktop layout remains the default. */
   @media (max-width:1200px) and (hover:hover) and (pointer:fine){
@@ -126,41 +199,59 @@
 <div class="app">
   <section class="stage-shell" id="stageShell">
     <div class="canvas-wrap"><canvas id="canvas" width="1024" height="1024"></canvas></div>
+    <button class="draw-overlay" id="drawBtn" type="button">Draw</button>
+    <div class="overlay-stack">
+      <button class="dimension-overlay" id="dimensionToggle" type="button" aria-label="Toggle 2D and 3D view">
+        <span class="mode-label active" id="mode2Label">2D</span><span class="mode-divider">|</span><span class="mode-label" id="mode3Label">3D</span>
+      </button>
+    </div>
   </section>
 
   <aside class="control-panel" id="controlPanel">
     <div class="control-scroll">
       <div class="group">
-        <div class="layer-selector">
-          <button type="button" class="layer-select-btn active" data-layer="0"><span class="layer-dot" id="layerDot0"></span>Outer</button>
-          <button type="button" class="layer-select-btn" data-layer="1"><span class="layer-dot" id="layerDot1"></span>Layer 2</button>
-          <button type="button" class="layer-select-btn" data-layer="2"><span class="layer-dot" id="layerDot2"></span>Layer 3</button>
-          <button type="button" class="layer-select-btn" data-layer="3"><span class="layer-dot" id="layerDot3"></span>Layer 4</button>
+        <h3 id="changeHeading">Change Curve 1</h3>
+        <div class="style-grid">
+          <button type="button" class="style-btn active" id="styleSimpleBtn">Simple</button>
+          <button type="button" class="style-btn" id="styleRichBtn">Rich</button>
+          <button type="button" class="style-btn" id="styleWanderingBtn">Wandering</button>
         </div>
-        <button type="button" class="all-select-btn" id="allBtn">All Layers</button>
+        <div class="style-note" id="styleNote">Simple shows classic rolling-circle Spirograph structures with clear lobes and openings.</div>
       </div>
 
       <div class="group">
-        <h3 id="paletteHeading">Color Outer Layer</h3>
+        <div class="layer-selector">
+          <button type="button" class="layer-select-btn active" data-layer="0"><span class="layer-dot" id="layerDot0"></span>Curve 1</button>
+          <button type="button" class="layer-select-btn" data-layer="1"><span class="layer-dot" id="layerDot1"></span>Curve 2</button>
+          <button type="button" class="layer-select-btn" data-layer="2"><span class="layer-dot" id="layerDot2"></span>Curve 3</button>
+          <button type="button" class="layer-select-btn" data-layer="3"><span class="layer-dot" id="layerDot3"></span>Curve 4</button>
+        </div>
+        <button type="button" class="all-select-btn" id="allBtn">All Curves</button>
+      </div>
+
+      <div class="group">
+        <h3 id="paletteHeading">Color Curve 1</h3>
         <div class="palette-inline" id="sharedPalette"></div>
       </div>
 
       <div class="group">
         <div class="edit-grid">
-          <button type="button" class="big-toggle on" id="visibilityBtn">Outer Layer On</button>
+          <button type="button" class="big-toggle on" id="visibilityBtn">Curve 1 On</button>
           <div class="size-control">
             <button type="button" class="size-btn" id="sizeMinus">−</button>
-            <div class="size-readout" id="sizeReadout">Size Outer Layer</div>
+            <div class="size-readout" id="sizeReadout">Size Curve 1</div>
             <button type="button" class="size-btn" id="sizePlus">+</button>
           </div>
         </div>
       </div>
 
-      <button class="change-btn" id="randomBtn">Change Outer Layer</button>
-      <button class="draw-btn" id="drawBtn">Draw</button>
+      <div style="text-align:center;color:#666c75;font-size:11px;padding:2px 0 4px">Spirograph_Studio_1.4.html</div>
     </div>
   </aside>
 </div>
+<button class="fullscreen-close-btn" id="fullscreenCloseBtn" type="button" aria-label="Close full screen">×</button>
+<button class="fullscreen-zoom-btn zoom-in" id="fullscreenZoomInBtn" type="button" aria-label="Zoom in">+</button>
+<button class="fullscreen-zoom-btn zoom-out" id="fullscreenZoomOutBtn" type="button" aria-label="Zoom out">−</button>
 
 <script>
 (() => {
@@ -173,8 +264,18 @@
   const sizeMinus=document.getElementById('sizeMinus');
   const sizePlus=document.getElementById('sizePlus');
   const sizeReadout=document.getElementById('sizeReadout');
-  const randomBtn=document.getElementById('randomBtn');
+  const changeHeading=document.getElementById('changeHeading');
   const drawBtn=document.getElementById('drawBtn');
+  const fullscreenCloseBtn=document.getElementById('fullscreenCloseBtn');
+  const fullscreenZoomInBtn=document.getElementById('fullscreenZoomInBtn');
+  const fullscreenZoomOutBtn=document.getElementById('fullscreenZoomOutBtn');
+  const dimensionToggle=document.getElementById('dimensionToggle');
+  const mode2Label=document.getElementById('mode2Label');
+  const mode3Label=document.getElementById('mode3Label');
+  const styleSimpleBtn=document.getElementById('styleSimpleBtn');
+  const styleRichBtn=document.getElementById('styleRichBtn');
+  const styleWanderingBtn=document.getElementById('styleWanderingBtn');
+  const styleNote=document.getElementById('styleNote');
   const stageShell=document.getElementById('stageShell');
   const controlPanel=document.getElementById('controlPanel');
 
@@ -185,106 +286,236 @@
     {name:'Carnation Pink',hex:'#FFA6C9'},{name:'Brown',hex:'#AF593E'},{name:'Black',hex:'#000000'},{name:'White',hex:'#FFFFFF'}
   ];
 
-  const layerNames=['Outer Layer','Layer 2','Layer 3','Layer 4'];
+  const layerNames=['Curve 1','Curve 2','Curve 3','Curve 4'];
   const layers=[
-    {R:233,r:89,p:58,scale:100,color:crayon16[10],enabled:true},
-    {R:233,r:89,p:58,scale:90,color:crayon16[12],enabled:false},
-    {R:233,r:89,p:58,scale:63,color:crayon16[4],enabled:false},
-    {R:233,r:89,p:58,scale:44,color:crayon16[7],enabled:false}
+    {type:'hypo',R:233,r:89,dPct:58,rotation:0,phi:Math.PI/3,zAmp:0.30,zFreq:(233-89)/89,scale:100,color:crayon16[10],enabled:true},
+    {type:'hypo',R:197,r:83,dPct:72,rotation:Math.PI/10,phi:Math.PI/2,zAmp:0.28,zFreq:(197-83)/83,scale:90,color:crayon16[12],enabled:false},
+    {type:'hypo',R:181,r:67,dPct:44,rotation:Math.PI/8,phi:Math.PI/4,zAmp:0.26,zFreq:(181-67)/67,scale:72,color:crayon16[4],enabled:false},
+    {type:'hypo',R:149,r:64,dPct:86,rotation:Math.PI/12,phi:Math.PI/2,zAmp:0.24,zFreq:(149-64)/64,scale:58,color:crayon16[7],enabled:false}
   ];
 
-  const state={layers,activeLayer:0,allSelected:false};
+  const state={layers,activeLayer:0,allSelected:false,dimension:'2d',viewRotX:-0.48,viewRotY:0.58,viewZoom:1,immersive:false,changeStyle:'simple'};
   const curveCaches=Array(LAYER_COUNT).fill(null);
   let renderQueued=false;
   let isDrawing=false;
   let drawRaf=null;
+  let isRotating=false;
+  let dragPointerId=null;
+  let dragLastX=0;
+  let dragLastY=0;
+  const activePointers=new Map();
+  let pinchStartDistance=0;
+  let pinchStartZoom=1;
+  let touchPinchStartDistance=0;
+  let touchPinchStartZoom=1;
+  let safariGestureStartZoom=1;
+  let safariGestureActive=false;
+  let touchRotateLastX=0;
+  let touchRotateLastY=0;
+  const LONG_PRESS_MS=650;
+  const LONG_PRESS_MOVE=12;
+  let modeLongPressTimer=null;
+  let modeLongPressStart=null;
+  let suppressDimensionClick=false;
 
   function gcd(a,b){
-    a=Math.abs(Math.round(a)); b=Math.abs(Math.round(b));
-    while(b){const t=b;b=a%b;a=t}
+    a=Math.abs(Math.round(a));
+    b=Math.abs(Math.round(b));
+    while(b){const t=a%b;a=b;b=t}
     return a||1;
   }
-  function thetaMax(R,r){return Math.PI*2*(r/gcd(R,r))}
-  function spiroPoint(theta,R,r,pPct){
-    const p=(pPct/100)*r;
+  function closureTurns(layer){
+    return Math.max(1,Math.round(layer.r/gcd(layer.R,layer.r)));
+  }
+  function curveEnd(layer){return Math.PI*2*closureTurns(layer)}
+  function spirographPoint(theta,layer){
+    const R=layer.R;
+    const r=layer.r;
+    const d=(layer.dPct/100)*r;
     const k=(R-r)/r;
-    return{x:(R-r)*Math.cos(theta)+p*Math.cos(k*theta),y:(R-r)*Math.sin(theta)-p*Math.sin(k*theta)};
+    const x0=((R-r)*Math.cos(theta)+d*Math.cos(k*theta))/R;
+    const y0=((R-r)*Math.sin(theta)-d*Math.sin(k*theta))/R;
+    const rot=layer.rotation||0;
+    const cr=Math.cos(rot),sr=Math.sin(rot);
+    const x=x0*cr-y0*sr;
+    const y=x0*sr+y0*cr;
+    const z=(layer.zAmp??0.28)*Math.sin(k*theta+(layer.phi||0));
+    return{x,y,z};
   }
   function invalidateLayer(i){curveCaches[i]=null}
 
   function computeRawCurve(i){
     const layer=state.layers[i];
-    const key=`${layer.R}|${layer.r}|${layer.p}`;
+    const key=[layer.type,layer.R,layer.r,layer.dPct.toFixed(3),(layer.rotation||0).toFixed(4),(layer.phi||0).toFixed(4),(layer.zAmp??0.3).toFixed(3),(layer.zFreq||1.5).toFixed(3)].join('|');
     const cached=curveCaches[i];
     if(cached?.key===key)return cached;
 
-    const end=thetaMax(layer.R,layer.r);
-    const step=Math.max(.0045,end/28000);
+    const end=curveEnd(layer);
+    const turns=closureTurns(layer);
+    const complexity=layer.R+layer.r;
+    const pointCount=Math.min(130000,Math.max(22000,Math.round(18000+turns*850+complexity*110)));
+    const step=end/pointCount;
     const pts=[];
-    let maxRadius=1;
+    let maxRadius=.001;
 
-    for(let theta=0;theta<=end+1e-9;theta+=step){
-      const pt=spiroPoint(theta,layer.R,layer.r,layer.p);
+    for(let t=0;t<=end+1e-9;t+=step){
+      const pt=spirographPoint(t,layer);
       maxRadius=Math.max(maxRadius,Math.hypot(pt.x,pt.y));
-      pts.push(pt);
+      pts.push({...pt,t});
     }
-
-    const endPt=spiroPoint(end,layer.R,layer.r,layer.p);
-    pts.push(endPt);
+    const endPt=spirographPoint(end,layer);
+    pts.push({...endPt,t:end});
     maxRadius=Math.max(maxRadius,Math.hypot(endPt.x,endPt.y));
     return curveCaches[i]={key,pts,maxRadius};
   }
 
   function resizeCanvas(){
     const rect=canvas.getBoundingClientRect();
-    const size=Math.floor(Math.min(rect.width,rect.height)*devicePixelRatio);
-    if(size>0&&(canvas.width!==size||canvas.height!==size)){canvas.width=size;canvas.height=size}
+    const dpr=devicePixelRatio||1;
+    if(state.immersive){
+      const width=Math.max(1,Math.floor(rect.width*dpr));
+      const height=Math.max(1,Math.floor(rect.height*dpr));
+      if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height}
+      return;
+    }
+    const size=Math.max(1,Math.floor(Math.min(rect.width,rect.height)*dpr));
+    if(canvas.width!==size||canvas.height!==size){canvas.width=size;canvas.height=size}
   }
-  function guideRadius(){return Math.min(canvas.width,canvas.height)*.455}
-  function scaledPoints(i){
+  function guideRadius(){
+    if(state.immersive){
+      const shortSide=Math.min(canvas.width,canvas.height);
+      const longSide=Math.max(canvas.width,canvas.height);
+      const adaptive=Math.min(shortSide*.62,Math.sqrt(shortSide*longSide)*.54);
+      return adaptive;
+    }
+    return Math.min(canvas.width,canvas.height)*.455;
+  }
+
+  function project3DPoint(x,y,z){
+    const cy=Math.cos(state.viewRotY),sy=Math.sin(state.viewRotY);
+    const cx=Math.cos(state.viewRotX),sx=Math.sin(state.viewRotX);
+
+    const x1=x*cy+z*sy;
+    const z1=-x*sy+z*cy;
+    const y2=y*cx-z1*sx;
+    const z2=y*sx+z1*cx;
+
+    const camera=4.6;
+    const perspective=camera/(camera-z2);
+    return{x:x1*perspective,y:y2*perspective,z:z2};
+  }
+
+  function projectedPoints(i,view={centerX:canvas.width/2,centerY:canvas.height/2,radius:guideRadius()}){
     const raw=computeRawCurve(i);
     const layer=state.layers[i];
-    const scale=(guideRadius()/raw.maxRadius)*(layer.scale/100);
-    const cx=canvas.width/2,cy=canvas.height/2;
-    return raw.pts.map(pt=>({x:cx+pt.x*scale,y:cy+pt.y*scale}));
+    const cx=view.centerX,cy=view.centerY;
+
+    if(state.dimension==='2d'){
+      const scale=(view.radius/raw.maxRadius)*(layer.scale/100)*state.viewZoom;
+      return raw.pts.map(pt=>({x:cx+pt.x*scale,y:cy+pt.y*scale,z:0}));
+    }
+
+    const stride=isRotating?3:1;
+    const normalized=[];
+    let maxProjectedRadius=1;
+    for(let index=0;index<raw.pts.length;index+=stride){
+      const pt=raw.pts[index];
+      const projected=project3DPoint(pt.x,pt.y,pt.z);
+      maxProjectedRadius=Math.max(maxProjectedRadius,Math.hypot(projected.x,projected.y));
+      normalized.push(projected);
+    }
+    if((raw.pts.length-1)%stride!==0){
+      const pt=raw.pts[raw.pts.length-1];
+      const projected=project3DPoint(pt.x,pt.y,pt.z);
+      maxProjectedRadius=Math.max(maxProjectedRadius,Math.hypot(projected.x,projected.y));
+      normalized.push(projected);
+    }
+
+    const scale=(view.radius/maxProjectedRadius)*(layer.scale/100)*state.viewZoom;
+    return normalized.map(pt=>({x:cx+pt.x*scale,y:cy+pt.y*scale,z:pt.z}));
   }
   function rgba(hex,a){
     const h=hex.slice(1);
     return`rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;
   }
-  function drawGuide(){
-    const cx=canvas.width/2,cy=canvas.height/2;
-    ctx.save();
-    ctx.strokeStyle='#171a20';
-    ctx.lineWidth=Math.max(1,canvas.width*.0014);
-    ctx.beginPath();ctx.arc(cx,cy,guideRadius(),0,Math.PI*2);ctx.stroke();
-    ctx.restore();
-  }
-  function drawLayer(i){
+  function drawGuide(){ /* intentionally invisible: no drawing frame */ }
+  function drawLayer(i,view){
     const layer=state.layers[i];
-    const points=scaledPoints(i);
+    const points=projectedPoints(i,view);
     if(points.length<2)return;
     ctx.save();
     ctx.lineCap='round';ctx.lineJoin='round';
     ctx.strokeStyle=rgba(layer.color.hex,.98);
-    ctx.lineWidth=(i===0?1.15:1)*(canvas.width/1024);
+    ctx.lineWidth=(i===0?1.15:1)*(Math.min(canvas.width,canvas.height)/1024);
     ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);
     for(let j=1;j<points.length;j++)ctx.lineTo(points[j].x,points[j].y);
     ctx.stroke();ctx.restore();
+  }
+  function renderView(view){
+    for(let i=0;i<LAYER_COUNT;i++)if(state.layers[i].enabled)drawLayer(i,view);
   }
   function render(){
     renderQueued=false;
     resizeCanvas();
     ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);
-    drawGuide();
-    for(let i=0;i<LAYER_COUNT;i++)if(state.layers[i].enabled)drawLayer(i);
-    drawGuide();
+    renderView({centerX:canvas.width/2,centerY:canvas.height/2,radius:guideRadius()});
   }
   function queueRender(){if(isDrawing)return;if(!renderQueued){renderQueued=true;requestAnimationFrame(render)}}
 
   function selectedIndices(){return state.allSelected?[0,1,2,3]:[state.activeLayer]}
   function applyToSelected(fn){selectedIndices().forEach(i=>fn(state.layers[i],i))}
-  function targetLabel(){return state.allSelected?'All Layers':layerNames[state.activeLayer]}
+  function targetLabel(){return state.allSelected?'All Curves':layerNames[state.activeLayer]}
+  function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+
+  const styleDescriptions={
+    simple:'Simple uses the original inside-rolling Spirograph equation with moderate closure lengths so the structure stays readable.',
+    rich:'Rich uses larger integer gear pairs and longer closures, producing denser woven figures while preserving exact order.',
+    wandering:'Wandering strongly favors large coprime-style gear relationships, often taking 50–120 revolutions to close.'
+  };
+
+  const phaseChoices=[0,Math.PI/8,Math.PI/6,Math.PI/4,Math.PI/3,Math.PI/2,2*Math.PI/3];
+
+  function randomInt(min,max){return Math.floor(min+Math.random()*(max-min+1))}
+  function closureTurnsFor(R,r){return Math.max(1,Math.round(r/gcd(R,r)))}
+
+  function randomGearPair(minTurns,maxTurns){
+    let fallback={R:233,r:89,turns:89};
+    let bestDistance=Infinity;
+    const target=(minTurns+maxTurns)/2;
+    for(let attempt=0;attempt<500;attempt++){
+      const R=randomInt(40,320);
+      const r=randomInt(10,220);
+      if(R===r)continue;
+      const turns=closureTurnsFor(R,r);
+      const distance=turns<minTurns?minTurns-turns:(turns>maxTurns?turns-maxTurns:0);
+      if(distance===0)return{R,r,turns};
+      const targetDistance=Math.abs(turns-target);
+      if(distance<bestDistance||(distance===bestDistance&&targetDistance<Math.abs(fallback.turns-target))){
+        bestDistance=distance;fallback={R,r,turns};
+      }
+    }
+    return fallback;
+  }
+
+  function randomSpirographSpec(){
+    const style=state.changeStyle;
+    const range=style==='simple'?[5,20]:(style==='rich'?[20,50]:[50,120]);
+    const pair=randomGearPair(range[0],range[1]);
+    const dPct=randomInt(5,95);
+    const k=(pair.R-pair.r)/pair.r;
+    return{
+      type:'hypo',
+      R:pair.R,
+      r:pair.r,
+      dPct,
+      rotation:pick(phaseChoices),
+      phi:pick(phaseChoices),
+      zAmp:state.dimension==='3d'
+        ? (style==='simple'?pick([0.24,0.28,0.32]):style==='rich'?pick([0.22,0.26,0.30]):pick([0.18,0.22,0.26]))
+        : 0.28,
+      zFreq:Math.abs(k)
+    };
+  }
 
   function refreshPaletteAndSelectors(){
     const activeColor=state.allSelected?null:state.layers[state.activeLayer].color.hex;
@@ -292,6 +523,13 @@
     document.querySelectorAll('.layer-select-btn').forEach(btn=>btn.classList.toggle('active',!state.allSelected&&+btn.dataset.layer===state.activeLayer));
     allBtn.classList.toggle('active',state.allSelected);
     for(let i=0;i<LAYER_COUNT;i++)document.getElementById(`layerDot${i}`).style.background=state.layers[i].color.hex;
+  }
+
+  function syncStyleUI(){
+    styleSimpleBtn.classList.toggle('active',state.changeStyle==='simple');
+    styleRichBtn.classList.toggle('active',state.changeStyle==='rich');
+    styleWanderingBtn.classList.toggle('active',state.changeStyle==='wandering');
+    styleNote.textContent=styleDescriptions[state.changeStyle];
   }
 
   function syncUI(){
@@ -302,9 +540,281 @@
     visibilityBtn.classList.toggle('on',allOn);
     visibilityBtn.textContent=`${label} ${allOn?'On':'Off'}`;
     sizeReadout.textContent=`Size ${label}`;
-    randomBtn.textContent=`Change ${label}`;
+    changeHeading.textContent=`Change ${label}`;
     refreshPaletteAndSelectors();
+    syncStyleUI();
   }
+
+  function syncDimensionUI(){
+    const is3D=state.dimension==='3d';
+    mode2Label.classList.toggle('active',!is3D);
+    mode3Label.classList.toggle('active',is3D);
+    stageShell.classList.toggle('mode-3d',is3D);
+  }
+
+  function setDimension(value){
+    state.dimension=value;
+    if(value==='3d'){
+      state.viewRotX=-0.48;
+      state.viewRotY=0.58;
+    }
+    syncDimensionUI();
+    queueRender();
+  }
+
+  function clearModeLongPress(){
+    if(modeLongPressTimer!==null){clearTimeout(modeLongPressTimer);modeLongPressTimer=null}
+    modeLongPressStart=null;
+  }
+
+  dimensionToggle.addEventListener('pointerdown',event=>{
+    if(state.immersive)return;
+    clearModeLongPress();
+    suppressDimensionClick=false;
+    modeLongPressStart={id:event.pointerId,x:event.clientX,y:event.clientY};
+    modeLongPressTimer=setTimeout(()=>{
+      modeLongPressTimer=null;
+      if(state.immersive)return;
+      suppressDimensionClick=true;
+      setImmersive(true);
+      setTimeout(()=>{suppressDimensionClick=false},900);
+    },LONG_PRESS_MS);
+  });
+  dimensionToggle.addEventListener('pointermove',event=>{
+    if(!modeLongPressStart||event.pointerId!==modeLongPressStart.id)return;
+    if(Math.hypot(event.clientX-modeLongPressStart.x,event.clientY-modeLongPressStart.y)>LONG_PRESS_MOVE)clearModeLongPress();
+  });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(type=>dimensionToggle.addEventListener(type,clearModeLongPress));
+  dimensionToggle.addEventListener('click',()=>{
+    if(suppressDimensionClick){suppressDimensionClick=false;return}
+    setDimension(state.dimension==='2d'?'3d':'2d');
+  });
+
+
+  function setImmersive(value){
+    state.immersive=value;
+    state.viewZoom=1;
+    document.body.classList.toggle('art-fullscreen',value);
+    activePointers.clear();
+    touchPinchStartDistance=0;
+    touchPinchStartZoom=state.viewZoom;
+    safariGestureStartZoom=state.viewZoom;
+    safariGestureActive=false;
+    isRotating=false;
+    dragPointerId=null;
+    stageShell.classList.remove('dragging');
+    syncPanelHeight();
+    queueRender();
+  }
+
+  function pointerDistance(){
+    const pts=[...activePointers.values()];
+    if(pts.length<2)return 0;
+    return Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+  }
+
+  canvas.addEventListener('pointerdown',event=>{
+    if(event.pointerType==='touch')return;
+    if(isDrawing)return;
+    activePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+
+    if(activePointers.size===1){
+      if(state.dimension==='3d'){
+        isRotating=true;
+        dragPointerId=event.pointerId;
+        dragLastX=event.clientX;
+        dragLastY=event.clientY;
+        stageShell.classList.add('dragging');
+      }
+    }else{
+        isRotating=false;
+      dragPointerId=null;
+      stageShell.classList.remove('dragging');
+      if(activePointers.size===2){
+        pinchStartDistance=pointerDistance();
+        pinchStartZoom=state.viewZoom;
+      }
+    }
+
+    canvas.setPointerCapture?.(event.pointerId);
+    event.preventDefault();
+  });
+
+  canvas.addEventListener('pointermove',event=>{
+    if(event.pointerType==='touch')return;
+    if(!activePointers.has(event.pointerId))return;
+    activePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+
+    if(activePointers.size===2){
+      const dist=pointerDistance();
+      if(pinchStartDistance>0){
+        state.viewZoom=Math.max(0.45,Math.min(5,pinchStartZoom*(dist/pinchStartDistance)));
+        queueRender();
+      }
+      event.preventDefault();
+      return;
+    }
+
+    if(state.dimension==='3d'&&isRotating&&event.pointerId===dragPointerId){
+      const dx=event.clientX-dragLastX;
+      const dy=event.clientY-dragLastY;
+      dragLastX=event.clientX;
+      dragLastY=event.clientY;
+      state.viewRotY+=dx*.0105;
+      state.viewRotX=Math.max(-1.42,Math.min(1.42,state.viewRotX+dy*.0105));
+      queueRender();
+      event.preventDefault();
+    }
+  });
+
+  function endPointer(event){
+    if(event.pointerType==='touch')return;
+    activePointers.delete(event.pointerId);
+    if(event.pointerId===dragPointerId){
+      isRotating=false;
+      dragPointerId=null;
+      stageShell.classList.remove('dragging');
+    }
+
+    if(activePointers.size<2){
+      pinchStartDistance=0;
+      pinchStartZoom=state.viewZoom;
+    }
+
+    queueRender();
+  }
+  canvas.addEventListener('pointerup',endPointer);
+  canvas.addEventListener('pointercancel',endPointer);
+  canvas.addEventListener('lostpointercapture',endPointer);
+
+  stageShell.addEventListener('wheel',event=>{
+    event.preventDefault();
+    const factor=event.deltaY<0?1.10:(1/1.10);
+    adjustZoom(factor);
+  },{passive:false});
+
+  function touchDistance(touches){
+    if(touches.length<2)return 0;
+    const a=touches[0],b=touches[1];
+    return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+  }
+
+  canvas.addEventListener('touchstart',event=>{
+    if(isDrawing)return;
+    if(event.touches.length===2){
+      touchPinchStartDistance=touchDistance(event.touches);
+      touchPinchStartZoom=state.viewZoom;
+      isRotating=false;
+      stageShell.classList.remove('dragging');
+      event.preventDefault();
+      return;
+    }
+    if(event.touches.length===1&&state.dimension==='3d'){
+      touchRotateLastX=event.touches[0].clientX;
+      touchRotateLastY=event.touches[0].clientY;
+      isRotating=true;
+      stageShell.classList.add('dragging');
+      event.preventDefault();
+    }
+  },{passive:false});
+
+  canvas.addEventListener('touchmove',event=>{
+    if(isDrawing)return;
+    if(event.touches.length===2){
+      const dist=touchDistance(event.touches);
+      if(touchPinchStartDistance>0){
+        state.viewZoom=Math.max(0.45,Math.min(5,touchPinchStartZoom*(dist/touchPinchStartDistance)));
+        queueRender();
+      }
+      event.preventDefault();
+      return;
+    }
+    if(event.touches.length===1&&state.dimension==='3d'&&isRotating){
+      const t=event.touches[0];
+      const dx=t.clientX-touchRotateLastX;
+      const dy=t.clientY-touchRotateLastY;
+      touchRotateLastX=t.clientX;
+      touchRotateLastY=t.clientY;
+      state.viewRotY+=dx*.0105;
+      state.viewRotX=Math.max(-1.42,Math.min(1.42,state.viewRotX+dy*.0105));
+      queueRender();
+      event.preventDefault();
+    }
+  },{passive:false});
+
+  function endTouchGesture(event){
+    if(event.touches.length<2){
+      touchPinchStartDistance=0;
+      touchPinchStartZoom=state.viewZoom;
+    }
+    if(event.touches.length===0){
+      isRotating=false;
+      stageShell.classList.remove('dragging');
+    }else if(event.touches.length===1&&state.dimension==='3d'){
+      touchRotateLastX=event.touches[0].clientX;
+      touchRotateLastY=event.touches[0].clientY;
+      isRotating=true;
+    }
+    event.preventDefault();
+  }
+  canvas.addEventListener('touchend',endTouchGesture,{passive:false});
+  canvas.addEventListener('touchcancel',endTouchGesture,{passive:false});
+
+  // Safari / Dropbox Preview often exposes pinch as Gesture Events rather than
+  // ordinary two-touch movement. Use Safari's scale value to zoom the figure
+  // while preventing the browser/preview itself from magnifying the page.
+  stageShell.addEventListener('gesturestart',event=>{
+    if(isDrawing)return;
+    safariGestureActive=true;
+    safariGestureStartZoom=state.viewZoom;
+    touchPinchStartDistance=0;
+    isRotating=false;
+    stageShell.classList.remove('dragging');
+    event.preventDefault();
+  },{passive:false});
+
+  stageShell.addEventListener('gesturechange',event=>{
+    if(isDrawing)return;
+    if(!safariGestureActive){
+      safariGestureActive=true;
+      safariGestureStartZoom=state.viewZoom;
+    }
+    const scale=Number.isFinite(event.scale)?event.scale:1;
+    state.viewZoom=Math.max(0.45,Math.min(5,safariGestureStartZoom*scale));
+    pinchStartZoom=state.viewZoom;
+    touchPinchStartZoom=state.viewZoom;
+    queueRender();
+    event.preventDefault();
+  },{passive:false});
+
+  stageShell.addEventListener('gestureend',event=>{
+    safariGestureActive=false;
+    safariGestureStartZoom=state.viewZoom;
+    pinchStartZoom=state.viewZoom;
+    touchPinchStartZoom=state.viewZoom;
+    event.preventDefault();
+  },{passive:false});
+
+  function adjustZoom(factor){
+    state.viewZoom=Math.max(0.45,Math.min(5,state.viewZoom*factor));
+    pinchStartZoom=state.viewZoom;
+    queueRender();
+  }
+
+  fullscreenCloseBtn.addEventListener('click',()=>{ if(state.immersive) setImmersive(false); });
+  fullscreenZoomInBtn.addEventListener('click',()=>{ if(state.immersive) adjustZoom(1.12); });
+  fullscreenZoomOutBtn.addEventListener('click',()=>{ if(state.immersive) adjustZoom(1/1.12); });
+
+  function setChangeStyle(value){
+    state.changeStyle=value;
+    syncStyleUI();
+  }
+
+  ['pointerdown','pointerup'].forEach(type=>{
+    fullscreenCloseBtn.addEventListener(type,e=>e.preventDefault());
+    fullscreenZoomInBtn.addEventListener(type,e=>e.preventDefault());
+    fullscreenZoomOutBtn.addEventListener(type,e=>e.preventDefault());
+  });
 
   visibilityBtn.addEventListener('click',()=>{
     const turnOn=!selectedIndices().every(i=>state.layers[i].enabled);
@@ -319,38 +829,49 @@
   sizeMinus.addEventListener('click',()=>nudgeSize(-5));
   sizePlus.addEventListener('click',()=>nudgeSize(5));
 
-  randomBtn.addEventListener('click',()=>{
-    randomBtn.classList.remove('flash');
-    void randomBtn.offsetWidth;
-    randomBtn.classList.add('flash');
-    setTimeout(()=>randomBtn.classList.remove('flash'),220);
-
+  function changeSelectedCurves(){
     selectedIndices().forEach(i=>{
       const layer=state.layers[i];
-      layer.R=Math.round(40+Math.random()*280);
-      layer.r=Math.round(10+Math.random()*210);
-      layer.p=Math.round(5+Math.random()*90);
+      const spec=randomSpirographSpec();
+      layer.type=spec.type;
+      layer.R=spec.R;
+      layer.r=spec.r;
+      layer.dPct=spec.dPct;
+      layer.rotation=spec.rotation;
+      layer.phi=spec.phi;
+      layer.zAmp=spec.zAmp;
+      layer.zFreq=spec.zFreq;
       invalidateLayer(i);
     });
     syncUI();queueRender();
-  });
+  }
+
+  function selectStyleAndChange(value){
+    setChangeStyle(value);
+    changeSelectedCurves();
+  }
+  styleSimpleBtn.addEventListener('click',()=>selectStyleAndChange('simple'));
+  styleRichBtn.addEventListener('click',()=>selectStyleAndChange('rich'));
+  styleWanderingBtn.addEventListener('click',()=>selectStyleAndChange('wandering'));
 
   function drawSnapshot(){
     if(isDrawing)return;
     resizeCanvas();
 
-    const snapshot=[];
+    const view={centerX:canvas.width/2,centerY:canvas.height/2,radius:guideRadius()};
+    const layersSnapshot=[];
     for(let i=0;i<LAYER_COUNT;i++){
       const layer=state.layers[i];
       if(!layer.enabled)continue;
-      const points=scaledPoints(i);
-      snapshot.push({
+      const points=projectedPoints(i,view);
+      layersSnapshot.push({
         points,
         color:layer.color.hex,
-        lineWidth:(i===0?1.15:1)*(canvas.width/1024),
+        lineWidth:(i===0?1.15:1)*(Math.min(canvas.width,canvas.height)/1024),
         lastIndex:0
       });
     }
+    const snapshot={view,layers:layersSnapshot};
 
     isDrawing=true;
     renderQueued=false;
@@ -365,23 +886,23 @@
     function frame(now){
       const t=Math.min(1,(now-start)/duration);
 
-      for(const layer of snapshot){
+      for(const layer of snapshot.layers){
         const pts=layer.points;
         if(pts.length<2)continue;
         const target=Math.max(1,Math.floor((pts.length-1)*t));
-        if(target<=layer.lastIndex)continue;
-
-        ctx.save();
-        ctx.lineCap='round';
-        ctx.lineJoin='round';
-        ctx.strokeStyle=rgba(layer.color,.98);
-        ctx.lineWidth=layer.lineWidth;
-        ctx.beginPath();
-        ctx.moveTo(pts[layer.lastIndex].x,pts[layer.lastIndex].y);
-        for(let j=layer.lastIndex+1;j<=target;j++)ctx.lineTo(pts[j].x,pts[j].y);
-        ctx.stroke();
-        ctx.restore();
-        layer.lastIndex=target;
+        if(target>layer.lastIndex){
+          ctx.save();
+          ctx.lineCap='round';
+          ctx.lineJoin='round';
+          ctx.strokeStyle=rgba(layer.color,.98);
+          ctx.lineWidth=layer.lineWidth;
+          ctx.beginPath();
+          ctx.moveTo(pts[layer.lastIndex].x,pts[layer.lastIndex].y);
+          for(let j=layer.lastIndex+1;j<=target;j++)ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.stroke();
+          ctx.restore();
+          layer.lastIndex=target;
+        }
       }
 
       if(t<1){
@@ -429,6 +950,11 @@
   }
 
   function syncPanelHeight(){
+    if(state.immersive){
+      controlPanel.style.removeProperty('height');
+      controlPanel.style.removeProperty('max-height');
+      return;
+    }
     if(isTouchPortrait()){
       controlPanel.style.removeProperty('height');
       controlPanel.style.removeProperty('max-height');
@@ -447,6 +973,7 @@
   buildPalette();
   syncPanelHeight();
   syncUI();
+  syncDimensionUI();
   queueRender();
 })();
 </script>
