@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Ideal Rolling Spirograph 5.8</title>
+<title>Ideal Rolling Spirograph 5.9</title>
 <style>
   :root{--panel:#0f1012;--stroke:#2a2d34;--text:#f2f2f2}
   *{box-sizing:border-box}
@@ -43,11 +43,82 @@
   .change-btn.flash{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.55),0 0 16px rgba(255,255,255,.22)}
   .change-btn:active,.draw-btn:active:not(:disabled),.layer-select-btn:active,.all-select-btn:active,.big-toggle:active,.size-btn:active,.swatch-button:active{transform:translateY(1px)}
 
-  @media (max-width:1200px){
+  /* Existing desktop layout remains the default. */
+  @media (max-width:1200px) and (hover:hover) and (pointer:fine){
     body{padding:0;overflow:auto}
     .app{height:auto;min-height:100vh;grid-template-columns:1fr}
     .stage-shell{width:100%;max-width:none;max-height:none;min-height:55vh}
     .control-panel{height:auto!important;max-height:none!important}
+  }
+
+  /* iPad/iPhone landscape: drawing and controls side by side. */
+  @media (hover:none) and (pointer:coarse) and (orientation:landscape){
+    html,body{height:100%;overflow:hidden}
+    body{padding:8px}
+    .app{
+      height:calc(100dvh - 16px);
+      min-height:0;
+      grid-template-columns:minmax(0,1fr) clamp(300px,42vw,560px);
+      gap:8px;
+      align-items:start;
+    }
+    .stage-shell{
+      width:auto;
+      height:100%;
+      max-width:calc(100dvh - 16px);
+      max-height:calc(100dvh - 16px);
+      justify-self:start;
+      align-self:start;
+    }
+    .control-panel{
+      min-height:0;
+      align-self:stretch;
+    }
+    .control-scroll{
+      height:100%;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+  }
+
+  /* iPad/iPhone portrait: drawing on top, controls below, controls scroll. */
+  @media (hover:none) and (pointer:coarse) and (orientation:portrait){
+    html,body{height:100%;overflow:hidden}
+    body{padding:0}
+    .app{
+      height:100dvh;
+      min-height:0;
+      grid-template-columns:1fr;
+      grid-template-rows:auto minmax(0,1fr);
+      gap:8px;
+      align-items:stretch;
+    }
+    .stage-shell{
+      width:100%;
+      max-width:none;
+      max-height:none;
+      min-height:0;
+      aspect-ratio:1/1;
+      padding:8px;
+      justify-self:stretch;
+      align-self:start;
+      border-radius:0 0 20px 20px;
+    }
+    .control-panel{
+      height:auto!important;
+      max-height:none!important;
+      min-height:0;
+      align-self:stretch;
+      padding:10px;
+      border-radius:20px 20px 0 0;
+    }
+    .control-scroll{
+      height:100%;
+      min-height:0;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:max(12px,env(safe-area-inset-bottom));
+    }
   }
 </style>
 </head>
@@ -353,9 +424,21 @@
     });
   }
 
+  function isTouchPortrait(){
+    return matchMedia('(hover:none) and (pointer:coarse) and (orientation:portrait)').matches;
+  }
+
   function syncPanelHeight(){
+    if(isTouchPortrait()){
+      controlPanel.style.removeProperty('height');
+      controlPanel.style.removeProperty('max-height');
+      return;
+    }
     const h=Math.round(stageShell.getBoundingClientRect().height);
-    if(h>0){controlPanel.style.height=`${h}px`;controlPanel.style.maxHeight=`${h}px`}
+    if(h>0){
+      controlPanel.style.height=`${h}px`;
+      controlPanel.style.maxHeight=`${h}px`;
+    }
   }
 
   new ResizeObserver(()=>{syncPanelHeight();queueRender()}).observe(stageShell);
