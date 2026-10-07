@@ -1,298 +1,370 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Ideal Rolling Spirograph 3.10</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ideal Rolling Spirograph 5.8</title>
 <style>
-  :root{color-scheme:dark;--bg:#000;--panel:#101010;--line:#2a2a2a;--text:#f6f6f6;--muted:#9c9c9c}
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  body{touch-action:manipulation}
-  .app{width:100vw;height:100vh;display:grid;grid-template-columns:4fr 1fr;background:#000}
-  .stage-pane{position:relative;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;padding:14px 10px 24px 14px;background:#000}
-  .canvas-shell{position:relative;width:min(77vw,94vh);aspect-ratio:1/1;max-height:94vh;border:1px solid #202020;border-radius:24px;overflow:hidden;background:#000}
-  canvas{display:block;width:100%;height:100%;background:#000}
-  .progress{position:absolute;left:22px;right:22px;bottom:18px;height:5px;border-radius:99px;background:#1d1d1d;overflow:hidden}
-  .progress>div{height:100%;width:0;background:#fff;transition:width .08s linear}
-  .stage-status{position:absolute;left:24px;top:18px;max-width:60%;padding:9px 13px;border-radius:12px;background:rgba(0,0,0,.60);backdrop-filter:blur(8px);font-size:14px;color:#bcbcbc;pointer-events:none}
-  .control-pane{height:100vh;border-left:1px solid #272727;background:linear-gradient(180deg,#151515,#0b0b0b);padding:22px 18px 16px;display:flex;flex-direction:column;gap:18px;overflow:hidden}
-  .brand{font-size:20px;font-weight:800;letter-spacing:-.02em}
-  .step-count{font-size:12px;color:#777;text-transform:uppercase;letter-spacing:.10em}
-  .prompt{font-size:27px;line-height:1.05;font-weight:800;letter-spacing:-.03em;margin-top:2px}
-  .help{font-size:14px;line-height:1.35;color:#aaa;margin-top:-8px}
-  .options{display:grid;grid-template-columns:1fr;gap:12px;min-height:0;overflow:auto;padding:2px}
-  .option{appearance:none;border:2px solid #373737;border-radius:16px;background:#1a1a1a;color:#eee;min-height:62px;padding:10px 12px;font-size:22px;font-weight:750;cursor:pointer}
-  .option:active{transform:scale(.985)}
-  .option.selected{border-color:#fff;background:#fff;color:#000}
-  .option.swatch{position:relative;min-height:64px;background:#191919;color:transparent;overflow:hidden}
-  .option.swatch::after{content:"";position:absolute;inset:7px;border-radius:11px;background:var(--swatch);border:1px solid rgba(255,255,255,.22)}
-  .option.swatch.selected{background:#111;border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.18) inset}
-  .action-area{margin-top:auto;display:grid;gap:10px}
-  .primary,.secondary{appearance:none;border-radius:16px;min-height:62px;font-size:21px;font-weight:850;padding:10px 14px;cursor:pointer}
-  .primary{border:0;background:#fff;color:#000}
-  .primary:disabled{opacity:.35;cursor:default}
-  .secondary{border:1px solid #4a4a4a;background:#1a1a1a;color:#fff}
-  .footer-note{font-size:11px;color:#606060;text-align:center;padding-top:2px}
-  @media (orientation:portrait){
-    .app{grid-template-columns:1fr;grid-template-rows:3fr 2fr;overflow:auto}
-    .stage-pane{padding:8px}.canvas-shell{width:min(96vw,58vh)}
-    .control-pane{height:auto;border-left:0;border-top:1px solid #272727}.options{grid-template-columns:repeat(2,minmax(0,1fr))}
+  :root{--panel:#0f1012;--stroke:#2a2d34;--text:#f2f2f2}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
+  body{padding:10px}
+  .app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 610px;gap:10px;align-items:start}
+  .stage-shell,.control-panel{background:linear-gradient(180deg,#050505,#0a0a0a);border:1px solid #20242c;border-radius:24px;overflow:hidden}
+  .stage-shell{aspect-ratio:1/1;width:100%;max-width:calc(100vh - 20px);max-height:calc(100vh - 20px);padding:10px;align-self:start;justify-self:start}
+  .canvas-wrap{display:flex;align-items:center;justify-content:center;width:100%;height:100%;aspect-ratio:1/1}
+  canvas{display:block;width:100%;height:auto;aspect-ratio:1/1;max-width:100%;max-height:100%}
+
+  .control-panel{display:flex;flex-direction:column;align-self:start;min-height:0;overflow:hidden;padding:14px}
+  .control-scroll{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:14px}
+  .group{background:var(--panel);border:1px solid var(--stroke);border-radius:18px;padding:14px}
+  .group h3{margin:0 0 10px;font-size:17px}
+
+  .layer-selector{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .layer-select-btn,.all-select-btn,.big-toggle,.size-btn,.change-btn,.draw-btn{appearance:none;background:#16191e;color:#fff;border:1px solid #38404c;cursor:pointer}
+  .layer-select-btn{border-radius:14px;min-height:70px;padding:10px;font-size:15px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:8px}
+  .layer-select-btn.active,.all-select-btn.active{background:#fff;color:#000;border-color:#fff}
+  .layer-dot{width:13px;height:13px;border-radius:50%;border:1px solid rgba(255,255,255,.5);flex:0 0 auto}
+  .all-select-btn{border-radius:14px;width:100%;margin-top:10px;min-height:52px;font-size:16px;font-weight:850}
+
+  .palette-inline{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin-top:6px}
+  .swatch-button{width:100%;aspect-ratio:1/1;border-radius:11px;border:2px solid rgba(255,255,255,.18);background:#222;cursor:pointer;padding:0}
+  .swatch-button.selected{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.24) inset}
+
+  .edit-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;align-items:stretch}
+  .big-toggle{border-radius:15px;min-height:74px;font-size:17px;font-weight:850;padding:10px;transition:border-color .16s,box-shadow .16s}
+  .big-toggle.on{border:2px solid #fff;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
+  .size-control{display:grid;grid-template-columns:70px 1fr 70px;gap:9px;align-items:stretch}
+  .size-btn{border-radius:15px;min-height:74px;font-size:38px;font-weight:400;line-height:1}
+  .size-readout{display:flex;align-items:center;justify-content:center;text-align:center;font-size:17px;font-weight:850;border:1px solid #2f3440;border-radius:15px;background:#121419;padding:8px;line-height:1.15}
+
+  .change-btn,.draw-btn{border-radius:16px;width:100%;min-height:66px;font-size:21px;font-weight:900;margin-top:2px;transition:border-color .14s,box-shadow .14s,opacity .14s}
+  .draw-btn:disabled{opacity:.48;cursor:default}
+  .change-btn.flash{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.55),0 0 16px rgba(255,255,255,.22)}
+  .change-btn:active,.draw-btn:active:not(:disabled),.layer-select-btn:active,.all-select-btn:active,.big-toggle:active,.size-btn:active,.swatch-button:active{transform:translateY(1px)}
+
+  @media (max-width:1200px){
+    body{padding:0;overflow:auto}
+    .app{height:auto;min-height:100vh;grid-template-columns:1fr}
+    .stage-shell{width:100%;max-width:none;max-height:none;min-height:55vh}
+    .control-panel{height:auto!important;max-height:none!important}
   }
 </style>
 </head>
 <body>
-<main class="app">
-  <section class="stage-pane">
-    <div class="canvas-shell">
-      <canvas id="canvas" width="900" height="900"></canvas>
-      <div class="stage-status" id="stageStatus">Choose a petal count to begin.</div>
-      <div class="progress"><div id="progressBar"></div></div>
-    </div>
+<div class="app">
+  <section class="stage-shell" id="stageShell">
+    <div class="canvas-wrap"><canvas id="canvas" width="1024" height="1024"></canvas></div>
   </section>
 
-  <aside class="control-pane">
-    <div class="brand">Spirograph Flower</div>
-    <div class="step-count" id="stepCount">Step 1</div>
-    <div class="prompt" id="prompt"></div>
-    <div class="help" id="help"></div>
-    <div class="options" id="options"></div>
-    <div class="action-area" id="actionArea"></div>
-    <div class="footer-note">Spirograph_Ideal_Rolling_3.10.html</div>
+  <aside class="control-panel" id="controlPanel">
+    <div class="control-scroll">
+      <div class="group">
+        <div class="layer-selector">
+          <button type="button" class="layer-select-btn active" data-layer="0"><span class="layer-dot" id="layerDot0"></span>Outer</button>
+          <button type="button" class="layer-select-btn" data-layer="1"><span class="layer-dot" id="layerDot1"></span>Layer 2</button>
+          <button type="button" class="layer-select-btn" data-layer="2"><span class="layer-dot" id="layerDot2"></span>Layer 3</button>
+          <button type="button" class="layer-select-btn" data-layer="3"><span class="layer-dot" id="layerDot3"></span>Layer 4</button>
+        </div>
+        <button type="button" class="all-select-btn" id="allBtn">All Layers</button>
+      </div>
+
+      <div class="group">
+        <h3 id="paletteHeading">Color Outer Layer</h3>
+        <div class="palette-inline" id="sharedPalette"></div>
+      </div>
+
+      <div class="group">
+        <div class="edit-grid">
+          <button type="button" class="big-toggle on" id="visibilityBtn">Outer Layer On</button>
+          <div class="size-control">
+            <button type="button" class="size-btn" id="sizeMinus">−</button>
+            <div class="size-readout" id="sizeReadout">Size Outer Layer</div>
+            <button type="button" class="size-btn" id="sizePlus">+</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="change-btn" id="randomBtn">Change Outer Layer</button>
+      <button class="draw-btn" id="drawBtn">Draw</button>
+    </div>
   </aside>
-</main>
+</div>
 
 <script>
 (() => {
-  const petalPresets=[
-    {count:10,R:200,r:60,holeRatio:.82},
-    {count:14,R:168,r:60,holeRatio:.82},
-    {count:18,R:216,r:60,holeRatio:.83},
-    {count:22,R:220,r:70,holeRatio:.84},
-    {count:25,R:250,r:60,holeRatio:.84}
-  ];
-  const petalColors=[
-    {label:'Purple',hex:'#9b6bd3'},
-    {label:'Yellow',hex:'#f0c73b'},
-    {label:'Pink',hex:'#d56d88'},
-    {label:'Blue',hex:'#5b79d1'},
-    {label:'Orange',hex:'#d97a2b'}
-  ];
-  const centerColors=[
-    {label:'Yellow',hex:'#f3d34a'},
-    {label:'Gold',hex:'#d99a2b'},
-    {label:'Brown',hex:'#8a5a2b'},
-    {label:'Green',hex:'#79863f'},
-    {label:'Burgundy',hex:'#6c2b24'}
-  ];
-  const centerSizes=[
-    {key:'small',label:'Small'},
-    {key:'medium',label:'Medium'},
-    {key:'large',label:'Large'}
-  ];
-  const petalShapes=[
-    {key:'star',label:'Star-like petals',holeFactor:1},
-    {key:'daisy',label:'Daisy-like petals',holeFactor:0.52}
-  ];
-  const durationMs=20000;
-  const minPetalAreaPx=260, minPetalAreaFraction=.14;
-
-  let step='petals';
-  let selectedPreset=petalPresets[2];
-  let selectedShape=petalShapes[0];
-  let R=selectedPreset.R,r=selectedPreset.r,holeRatio=selectedPreset.holeRatio;
-  let outerColor=null, innerColor=null;
-  let centerColor=centerColors[0], centerSize='medium';
-  let frontLayerEnabled=false, innerLayerDrawn=false, centerReady=false;
-  let currentPoints=[],currentPoints2=[],primaryRegions=null,secondaryRegions=null;
-  let animating=false,rafId=null;
-  
+  const LAYER_COUNT=4;
   const canvas=document.getElementById('canvas');
-  const ctx=canvas.getContext('2d',{alpha:false});
-  const promptEl=document.getElementById('prompt');
-  const helpEl=document.getElementById('help');
-  const optionsEl=document.getElementById('options');
-  const actionArea=document.getElementById('actionArea');
-  const stepCount=document.getElementById('stepCount');
-  const stageStatus=document.getElementById('stageStatus');
-  const progressBar=document.getElementById('progressBar');
+  const ctx=canvas.getContext('2d');
+  const paletteHeading=document.getElementById('paletteHeading');
+  const allBtn=document.getElementById('allBtn');
+  const visibilityBtn=document.getElementById('visibilityBtn');
+  const sizeMinus=document.getElementById('sizeMinus');
+  const sizePlus=document.getElementById('sizePlus');
+  const sizeReadout=document.getElementById('sizeReadout');
+  const randomBtn=document.getElementById('randomBtn');
+  const drawBtn=document.getElementById('drawBtn');
+  const stageShell=document.getElementById('stageShell');
+  const controlPanel=document.getElementById('controlPanel');
 
-  function gcd(a,b){a=Math.abs(Math.round(a));b=Math.abs(Math.round(b));while(b){const t=b;b=a%b;a=t}return a||1}
-  function reducedRatio(a,b){const g=gcd(a,b);return[a/g,b/g]}
-  function thetaMax(a,b){const[,q]=reducedRatio(a,b);return Math.PI*2*q}
-  function spiroPoint(theta,a,b,h){const d=h*b,k=(a-b)/b;return{x:(a-b)*Math.cos(theta)+d*Math.cos(k*theta),y:(a-b)*Math.sin(theta)-d*Math.sin(k*theta)}}
-  function targetGuideRadius(){return Math.min(canvas.width,canvas.height)*.46}
-  function rawCurveMaxRadius(a,b,h){const end=thetaMax(a,b);let max=1;for(let th=0;th<=end;th+=.0045){const p=spiroPoint(th,a,b,h);max=Math.max(max,Math.hypot(p.x,p.y))}return max}
-  function visualScale(a=R,b=r,h=holeRatio,factor=1){return targetGuideRadius()/rawCurveMaxRadius(a,b,h)*factor}
-  function clearCanvas(){ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height)}
-  function drawFrameGuide(){ctx.save();ctx.strokeStyle='#1b1b1b';ctx.lineWidth=1;ctx.beginPath();ctx.arc(canvas.width/2,canvas.height/2,targetGuideRadius(),0,Math.PI*2);ctx.stroke();ctx.restore()}
-  function renderWhiteCurve(points,target=ctx,color='#fff',width=.9){if(!points.length)return;target.save();target.strokeStyle=color;target.lineWidth=width;target.lineCap='round';target.lineJoin='round';target.beginPath();target.moveTo(points[0].x,points[0].y);for(let i=1;i<points.length;i++)target.lineTo(points[i].x,points[i].y);target.stroke();target.restore()}
+  const crayon16=[
+    {name:'Red',hex:'#ED0A3F'},{name:'Red-Orange',hex:'#FF5349'},{name:'Orange',hex:'#FF8833'},{name:'Yellow-Orange',hex:'#FFAE42'},
+    {name:'Yellow',hex:'#FBE870'},{name:'Yellow-Green',hex:'#C5E17A'},{name:'Green',hex:'#01A368'},{name:'Blue-Green',hex:'#0095B7'},
+    {name:'Blue',hex:'#0066FF'},{name:'Blue-Violet',hex:'#6456B7'},{name:'Violet',hex:'#8359A3'},{name:'Red-Violet',hex:'#BB3385'},
+    {name:'Carnation Pink',hex:'#FFA6C9'},{name:'Brown',hex:'#AF593E'},{name:'Black',hex:'#000000'},{name:'White',hex:'#FFFFFF'}
+  ];
 
-  function buildRegions(points){
-    const off=document.createElement('canvas');off.width=canvas.width;off.height=canvas.height;
-    const octx=off.getContext('2d',{alpha:false});octx.fillStyle='#000';octx.fillRect(0,0,off.width,off.height);renderWhiteCurve(points,octx);
-    const im=octx.getImageData(0,0,off.width,off.height),{width,height,data}=im,total=width*height;
-    const barrier=new Uint8Array(total),labels=new Int32Array(total);labels.fill(-1);
-    for(let i=0,p=0;i<total;i++,p+=4)barrier[i]=(data[p]+data[p+1]+data[p+2])>24?1:0;
-    const queue=new Int32Array(total),regions=[];
-    for(let idx=0;idx<total;idx++){
-      if(barrier[idx]||labels[idx]!==-1)continue;
-      const id=regions.length;let head=0,tail=0;queue[tail++]=idx;labels[idx]=id;let count=0,sumX=0,sumY=0,touchesEdge=false;
-      while(head<tail){const cur=queue[head++],x=cur%width,y=(cur/width)|0;count++;sumX+=x;sumY+=y;if(x===0||y===0||x===width-1||y===height-1)touchesEdge=true;
-        if(x>0){const n=cur-1;if(!barrier[n]&&labels[n]===-1){labels[n]=id;queue[tail++]=n}}
-        if(x<width-1){const n=cur+1;if(!barrier[n]&&labels[n]===-1){labels[n]=id;queue[tail++]=n}}
-        if(y>0){const n=cur-width;if(!barrier[n]&&labels[n]===-1){labels[n]=id;queue[tail++]=n}}
-        if(y<height-1){const n=cur+width;if(!barrier[n]&&labels[n]===-1){labels[n]=id;queue[tail++]=n}}
+  const layerNames=['Outer Layer','Layer 2','Layer 3','Layer 4'];
+  const layers=[
+    {R:233,r:89,p:58,scale:100,color:crayon16[10],enabled:true},
+    {R:233,r:89,p:58,scale:90,color:crayon16[12],enabled:false},
+    {R:233,r:89,p:58,scale:63,color:crayon16[4],enabled:false},
+    {R:233,r:89,p:58,scale:44,color:crayon16[7],enabled:false}
+  ];
+
+  const state={layers,activeLayer:0,allSelected:false};
+  const curveCaches=Array(LAYER_COUNT).fill(null);
+  let renderQueued=false;
+  let isDrawing=false;
+  let drawRaf=null;
+
+  function gcd(a,b){
+    a=Math.abs(Math.round(a)); b=Math.abs(Math.round(b));
+    while(b){const t=b;b=a%b;a=t}
+    return a||1;
+  }
+  function thetaMax(R,r){return Math.PI*2*(r/gcd(R,r))}
+  function spiroPoint(theta,R,r,pPct){
+    const p=(pPct/100)*r;
+    const k=(R-r)/r;
+    return{x:(R-r)*Math.cos(theta)+p*Math.cos(k*theta),y:(R-r)*Math.sin(theta)-p*Math.sin(k*theta)};
+  }
+  function invalidateLayer(i){curveCaches[i]=null}
+
+  function computeRawCurve(i){
+    const layer=state.layers[i];
+    const key=`${layer.R}|${layer.r}|${layer.p}`;
+    const cached=curveCaches[i];
+    if(cached?.key===key)return cached;
+
+    const end=thetaMax(layer.R,layer.r);
+    const step=Math.max(.0045,end/28000);
+    const pts=[];
+    let maxRadius=1;
+
+    for(let theta=0;theta<=end+1e-9;theta+=step){
+      const pt=spiroPoint(theta,layer.R,layer.r,layer.p);
+      maxRadius=Math.max(maxRadius,Math.hypot(pt.x,pt.y));
+      pts.push(pt);
+    }
+
+    const endPt=spiroPoint(end,layer.R,layer.r,layer.p);
+    pts.push(endPt);
+    maxRadius=Math.max(maxRadius,Math.hypot(endPt.x,endPt.y));
+    return curveCaches[i]={key,pts,maxRadius};
+  }
+
+  function resizeCanvas(){
+    const rect=canvas.getBoundingClientRect();
+    const size=Math.floor(Math.min(rect.width,rect.height)*devicePixelRatio);
+    if(size>0&&(canvas.width!==size||canvas.height!==size)){canvas.width=size;canvas.height=size}
+  }
+  function guideRadius(){return Math.min(canvas.width,canvas.height)*.455}
+  function scaledPoints(i){
+    const raw=computeRawCurve(i);
+    const layer=state.layers[i];
+    const scale=(guideRadius()/raw.maxRadius)*(layer.scale/100);
+    const cx=canvas.width/2,cy=canvas.height/2;
+    return raw.pts.map(pt=>({x:cx+pt.x*scale,y:cy+pt.y*scale}));
+  }
+  function rgba(hex,a){
+    const h=hex.slice(1);
+    return`rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;
+  }
+  function drawGuide(){
+    const cx=canvas.width/2,cy=canvas.height/2;
+    ctx.save();
+    ctx.strokeStyle='#171a20';
+    ctx.lineWidth=Math.max(1,canvas.width*.0014);
+    ctx.beginPath();ctx.arc(cx,cy,guideRadius(),0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+  }
+  function drawLayer(i){
+    const layer=state.layers[i];
+    const points=scaledPoints(i);
+    if(points.length<2)return;
+    ctx.save();
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.strokeStyle=rgba(layer.color.hex,.98);
+    ctx.lineWidth=(i===0?1.15:1)*(canvas.width/1024);
+    ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);
+    for(let j=1;j<points.length;j++)ctx.lineTo(points[j].x,points[j].y);
+    ctx.stroke();ctx.restore();
+  }
+  function render(){
+    renderQueued=false;
+    resizeCanvas();
+    ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);
+    drawGuide();
+    for(let i=0;i<LAYER_COUNT;i++)if(state.layers[i].enabled)drawLayer(i);
+    drawGuide();
+  }
+  function queueRender(){if(isDrawing)return;if(!renderQueued){renderQueued=true;requestAnimationFrame(render)}}
+
+  function selectedIndices(){return state.allSelected?[0,1,2,3]:[state.activeLayer]}
+  function applyToSelected(fn){selectedIndices().forEach(i=>fn(state.layers[i],i))}
+  function targetLabel(){return state.allSelected?'All Layers':layerNames[state.activeLayer]}
+
+  function refreshPaletteAndSelectors(){
+    const activeColor=state.allSelected?null:state.layers[state.activeLayer].color.hex;
+    [...document.getElementById('sharedPalette').children].forEach((btn,i)=>btn.classList.toggle('selected',activeColor===crayon16[i].hex));
+    document.querySelectorAll('.layer-select-btn').forEach(btn=>btn.classList.toggle('active',!state.allSelected&&+btn.dataset.layer===state.activeLayer));
+    allBtn.classList.toggle('active',state.allSelected);
+    for(let i=0;i<LAYER_COUNT;i++)document.getElementById(`layerDot${i}`).style.background=state.layers[i].color.hex;
+  }
+
+  function syncUI(){
+    const indices=selectedIndices();
+    const label=targetLabel();
+    const allOn=indices.every(i=>state.layers[i].enabled);
+    paletteHeading.textContent=`Color ${label}`;
+    visibilityBtn.classList.toggle('on',allOn);
+    visibilityBtn.textContent=`${label} ${allOn?'On':'Off'}`;
+    sizeReadout.textContent=`Size ${label}`;
+    randomBtn.textContent=`Change ${label}`;
+    refreshPaletteAndSelectors();
+  }
+
+  visibilityBtn.addEventListener('click',()=>{
+    const turnOn=!selectedIndices().every(i=>state.layers[i].enabled);
+    applyToSelected(layer=>layer.enabled=turnOn);
+    syncUI();queueRender();
+  });
+
+  function nudgeSize(delta){
+    applyToSelected(layer=>layer.scale=Math.max(10,Math.min(100,layer.scale+delta)));
+    syncUI();queueRender();
+  }
+  sizeMinus.addEventListener('click',()=>nudgeSize(-5));
+  sizePlus.addEventListener('click',()=>nudgeSize(5));
+
+  randomBtn.addEventListener('click',()=>{
+    randomBtn.classList.remove('flash');
+    void randomBtn.offsetWidth;
+    randomBtn.classList.add('flash');
+    setTimeout(()=>randomBtn.classList.remove('flash'),220);
+
+    selectedIndices().forEach(i=>{
+      const layer=state.layers[i];
+      layer.R=Math.round(40+Math.random()*280);
+      layer.r=Math.round(10+Math.random()*210);
+      layer.p=Math.round(5+Math.random()*90);
+      invalidateLayer(i);
+    });
+    syncUI();queueRender();
+  });
+
+  function drawSnapshot(){
+    if(isDrawing)return;
+    resizeCanvas();
+
+    const snapshot=[];
+    for(let i=0;i<LAYER_COUNT;i++){
+      const layer=state.layers[i];
+      if(!layer.enabled)continue;
+      const points=scaledPoints(i);
+      snapshot.push({
+        points,
+        color:layer.color.hex,
+        lineWidth:(i===0?1.15:1)*(canvas.width/1024),
+        lastIndex:0
+      });
+    }
+
+    isDrawing=true;
+    renderQueued=false;
+    drawBtn.disabled=true;
+    drawBtn.textContent='Drawing…';
+    ctx.fillStyle='#000';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    const duration=20000;
+    const start=performance.now();
+
+    function frame(now){
+      const t=Math.min(1,(now-start)/duration);
+
+      for(const layer of snapshot){
+        const pts=layer.points;
+        if(pts.length<2)continue;
+        const target=Math.max(1,Math.floor((pts.length-1)*t));
+        if(target<=layer.lastIndex)continue;
+
+        ctx.save();
+        ctx.lineCap='round';
+        ctx.lineJoin='round';
+        ctx.strokeStyle=rgba(layer.color,.98);
+        ctx.lineWidth=layer.lineWidth;
+        ctx.beginPath();
+        ctx.moveTo(pts[layer.lastIndex].x,pts[layer.lastIndex].y);
+        for(let j=layer.lastIndex+1;j<=target;j++)ctx.lineTo(pts[j].x,pts[j].y);
+        ctx.stroke();
+        ctx.restore();
+        layer.lastIndex=target;
       }
-      regions.push({id,count,sumX,sumY,touchesEdge,avgRadius:0,normRadius:0});
+
+      if(t<1){
+        drawRaf=requestAnimationFrame(frame);
+      }else{
+        isDrawing=false;
+        drawRaf=null;
+        drawBtn.disabled=false;
+        drawBtn.textContent='Draw';
+        render();
+      }
     }
-    const cx=width/2,cy=height/2,enclosed=regions.filter(x=>!x.touchesEdge&&x.count>12);
-    const radii=enclosed.map(reg=>{const mx=reg.sumX/reg.count,my=reg.sumY/reg.count;reg.avgRadius=Math.hypot(mx-cx,my-cy);return reg.avgRadius});
-    const minR=radii.length?Math.min(...radii):0,maxR=radii.length?Math.max(...radii):1;
-    enclosed.forEach(reg=>reg.normRadius=maxR===minR?1:(reg.avgRadius-minR)/(maxR-minR));
-    let centerRegionId=null;
-    if(enclosed.length){const enclosedSet=new Set(enclosed.map(x=>x.id));const ci=((height/2)|0)*width+((width/2)|0);const cl=labels[ci];centerRegionId=enclosedSet.has(cl)?cl:enclosed.reduce((a,b)=>a.avgRadius<=b.avgRadius?a:b).id}
-    const petals=enclosed.filter(reg=>reg.id!==centerRegionId).map(reg=>{const mx=reg.sumX/reg.count,my=reg.sumY/reg.count;return{id:reg.id,count:reg.count,avgRadius:reg.avgRadius,angle:(Math.atan2(my-cy,mx-cx)+Math.PI*2)%(Math.PI*2),mx,my}});
-    const largestPetalArea=petals.length?Math.max(...petals.map(x=>x.count)):0;
-    const tinyAreaThreshold=Math.max(minPetalAreaPx,largestPetalArea*minPetalAreaFraction);
-    const tinyPetals=petals.filter(x=>x.count<tinyAreaThreshold);
-    const innerCircleRadius=tinyPetals.length?Math.max(...tinyPetals.map(x=>x.avgRadius))+2:0;
-    const maxPetalRadius=petals.length?Math.max(...petals.map(x=>x.avgRadius)):0,maxPetalArea=petals.length?Math.max(...petals.map(x=>x.count)):0;
-    const outerPetals=petals.filter(x=>x.avgRadius>=maxPetalRadius*.82&&x.count>=maxPetalArea*.5).sort((a,b)=>a.angle-b.angle);
-    if(outerPetals.length){for(let i=0;i<outerPetals.length;i++){const prev=outerPetals[(i-1+outerPetals.length)%outerPetals.length],cur=outerPetals[i],next=outerPetals[(i+1)%outerPetals.length];cur.startAngle=midAngle(prev.angle,cur.angle);cur.endAngle=midAngle(cur.angle,next.angle)}}
-    const enclosedIds=new Set(enclosed.map(x=>x.id)),occupied=new Uint8Array(total);for(let i=0;i<total;i++)if(barrier[i]||enclosedIds.has(labels[i]))occupied[i]=1;
-    return{labels,barrier,regions,enclosedIds,centerRegionId,innerCircleRadius,tinyAreaThreshold,outerPetals,occupied};
-  }
-  function normalizeAngle(a){const tau=Math.PI*2;return((a%tau)+tau)%tau}
-  function midAngle(a,b){let d=normalizeAngle(b-a);if(d>Math.PI)d-=Math.PI*2;return normalizeAngle(a+d/2)}
-  function angleInSector(angle,start,end){angle=normalizeAngle(angle);start=normalizeAngle(start);end=normalizeAngle(end);return start<=end?(angle>=start&&angle<end):(angle>=start||angle<end)}
-  function hexToRgb(hex){const c=hex.replace('#','');return{r:parseInt(c.slice(0,2),16),g:parseInt(c.slice(2,4),16),b:parseInt(c.slice(4,6),16)}}
-  function shade(hex,f){const b=hexToRgb(hex);return{r:Math.round(b.r*f),g:Math.round(b.g*f),b:Math.round(b.b*f)}}
 
-  function renderFanComposition(regionData,colorObj){
-    const image=ctx.createImageData(canvas.width,canvas.height),out=image.data,base=hexToRgb(colorObj.hex),dark=shade(colorObj.hex,.78);
-    const outer=(regionData.outerPetals||[]).map((p,i)=>({...p,layer:i%2===0?'front':'back',maxDist:0}));
-    const cx=canvas.width/2,cy=canvas.height/2,total=regionData.labels.length,w=canvas.width,h=canvas.height,owner=new Int16Array(total);owner.fill(-1);
-    const coreRadius=Math.max(10,(regionData.innerCircleRadius||0)*.35);
-    function sectorIndex(angle){for(let i=0;i<outer.length;i++)if(angleInSector(angle,outer[i].startAngle,outer[i].endAngle))return i;return-1}
-    for(let i=0;i<total;i++){if(!regionData.occupied[i])continue;const x=i%w,y=(i/w)|0,dist=Math.hypot(x-cx,y-cy);if(dist<coreRadius)continue;const si=sectorIndex(Math.atan2(y-cy,x-cx));if(si<0)continue;owner[i]=si;if(dist>outer[si].maxDist)outer[si].maxDist=dist;const p=i*4;out[p]=base.r;out[p+1]=base.g;out[p+2]=base.b;out[p+3]=255}
-    const front=new Uint8Array(total),back=new Uint8Array(total);
-    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x,si=owner[i];if(si<0)continue;let boundary=false;for(let yy=-1;yy<=1&&!boundary;yy++)for(let xx=-1;xx<=1;xx++){if(xx===0&&yy===0)continue;const ni=(y+yy)*w+(x+xx);if(owner[ni]!==si){boundary=true;break}}if(!boundary)continue;const petal=outer[si],dist=Math.hypot(x-cx,y-cy);if(petal.layer==='front')front[i]=1;else{const start=coreRadius+.42*Math.max(0,petal.maxDist-coreRadius);if(dist>=start)back[i]=1}}
-    for(let i=0;i<total;i++){if(!(back[i]||front[i]))continue;const p=i*4;out[p]=dark.r;out[p+1]=dark.g;out[p+2]=dark.b;out[p+3]=255}
-    return image;
+    drawRaf=requestAnimationFrame(frame);
   }
 
-  function renderCenterBulge(colorObj){
-    const image=ctx.createImageData(canvas.width,canvas.height),out=image.data,base=hexToRgb(colorObj.hex),cx=canvas.width/2,cy=canvas.height/2;
-    const sizeMap={small:.16,medium:.22,large:.28},radius=targetGuideRadius()*(sizeMap[centerSize]||sizeMap.medium);
-    for(let y=Math.max(0,Math.floor(cy-radius));y<=Math.min(canvas.height-1,Math.ceil(cy+radius));y++)for(let x=Math.max(0,Math.floor(cx-radius));x<=Math.min(canvas.width-1,Math.ceil(cx+radius));x++){const d=Math.hypot(x-cx,y-cy);if(d>radius)continue;const t=Math.min(1,d/radius),factor=1-.72*Math.pow(t,1.35),p=(y*canvas.width+x)*4;out[p]=Math.round(base.r*factor);out[p+1]=Math.round(base.g*factor);out[p+2]=Math.round(base.b*factor);out[p+3]=255}
-    return image;
-  }
-  function compositeImageData(imageData){const layer=document.createElement('canvas');layer.width=canvas.width;layer.height=canvas.height;layer.getContext('2d').putImageData(imageData,0,0);ctx.drawImage(layer,0,0)}
+  drawBtn.addEventListener('click',drawSnapshot);
 
-  function renderAll(){
-    clearCanvas();
-    if(currentPoints.length){outerColor&&primaryRegions?compositeImageData(renderFanComposition(primaryRegions,outerColor)):renderWhiteCurve(currentPoints,ctx,'#fff');
-      if(frontLayerEnabled&&innerLayerDrawn&&currentPoints2.length){innerColor&&secondaryRegions?compositeImageData(renderFanComposition(secondaryRegions,innerColor)):renderWhiteCurve(currentPoints2,ctx,'#fff')}
-      if(centerReady)compositeImageData(renderCenterBulge(centerColor));
-    }
-    drawFrameGuide();
-  }
+  function buildPalette(){
+    const container=document.getElementById('sharedPalette');
+    crayon16.forEach(color=>{
+      const btn=document.createElement('button');
+      btn.type='button';btn.className='swatch-button';btn.title=color.name;btn.style.background=color.hex;
+      if(color.hex==='#FFFFFF')btn.style.borderColor='rgba(0,0,0,.28)';
+      btn.addEventListener('click',()=>{applyToSelected(layer=>layer.color=color);syncUI();queueRender()});
+      container.appendChild(btn);
+    });
 
-  function animateLayer(scaleFactor,isInner,onDone){
-    if(animating)return;animating=true;progressBar.style.width='0%';stageStatus.textContent=isInner?'Drawing inner layer…':'Drawing outer layer…';
-    if(isInner){clearCanvas();outerColor&&primaryRegions?compositeImageData(renderFanComposition(primaryRegions,outerColor)):renderWhiteCurve(currentPoints,ctx,'#fff');drawFrameGuide()}else{clearCanvas();drawFrameGuide()}
-    const a=R,b=r,h=holeRatio,scale=visualScale(a,b,h,scaleFactor),cx=canvas.width/2,cy=canvas.height/2,end=thetaMax(a,b),start=performance.now();let prev=spiroPoint(0,a,b,h);const pts=[{x:cx+prev.x*scale,y:cy+prev.y*scale}];
-    ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=isInner?1.05:1.15;ctx.lineCap='round';ctx.lineJoin='round';
-    function frame(now){const elapsed=now-start,t=Math.min(1,elapsed/durationMs),eased=t*t*(3-2*t),target=end*eased,current=frame.lastTheta||0,maxStep=.018,steps=Math.max(1,Math.ceil((target-current)/maxStep)),step=(target-current)/steps;ctx.beginPath();ctx.moveTo(cx+prev.x*scale,cy+prev.y*scale);for(let i=1;i<=steps;i++){const th=current+step*i,p=spiroPoint(th,a,b,h),sx=cx+p.x*scale,sy=cy+p.y*scale;ctx.lineTo(sx,sy);pts.push({x:sx,y:sy});prev=p}ctx.stroke();frame.lastTheta=target;progressBar.style.width=(t*100)+'%';stageStatus.textContent=t<1?`${isInner?'Inner':'Outer'} layer: ${(20-elapsed/1000).toFixed(1)} s`:`${isInner?'Inner':'Outer'} layer complete.`;if(t<1)rafId=requestAnimationFrame(frame);else{ctx.restore();animating=false;onDone(pts)}}
-    frame.lastTheta=0;rafId=requestAnimationFrame(frame);
-  }
+    document.querySelectorAll('.layer-select-btn').forEach(btn=>btn.addEventListener('click',()=>{
+      state.allSelected=false;
+      state.activeLayer=+btn.dataset.layer;
+      state.layers[state.activeLayer].enabled=true;
+      syncUI();queueRender();
+    }));
 
-  function addButton(label,onClick,{selected=false,swatch=null}={}){const b=document.createElement('button');b.className='option'+(swatch?' swatch':'')+(selected?' selected':'');b.textContent=swatch?'':label;if(swatch){b.style.setProperty('--swatch',swatch);b.setAttribute('aria-label',label)}b.addEventListener('click',onClick);optionsEl.appendChild(b);return b}
-  function actionButton(label,onClick,{secondary=false,disabled=false}={}){const b=document.createElement('button');b.className=secondary?'secondary':'primary';b.textContent=label;b.disabled=disabled;b.addEventListener('click',onClick);actionArea.appendChild(b);return b}
-  function clearPanel(){optionsEl.innerHTML='';actionArea.innerHTML=''}
-  function setPrompt(n,title,help=''){stepCount.textContent=`Step ${n}`;promptEl.textContent=title;helpEl.textContent=help;clearPanel()}
-
-  function applyGeometry(){
-    R=selectedPreset.R;
-    r=selectedPreset.r;
-    holeRatio=Math.max(0.28, Math.min(0.92, selectedPreset.holeRatio * selectedShape.holeFactor));
+    allBtn.addEventListener('click',()=>{
+      state.allSelected=true;
+      state.layers.forEach(layer=>layer.enabled=true);
+      syncUI();queueRender();
+    });
   }
 
-  function showStep(name){
-    step=name;
-    if(name==='petals'){
-      setPrompt(1,'How many petals?','Choose the overall flower structure.');
-      let chosen=selectedPreset;
-      petalPresets.forEach(p=>{
-        const btn=addButton(String(p.count),()=>{chosen=p;[...optionsEl.children].forEach(x=>x.classList.remove('selected'));btn.classList.add('selected')},{selected:p===chosen});
-      });
-      actionButton('Save',()=>{selectedPreset=chosen;showStep('shape')},{disabled:!chosen});
-    } else if(name==='shape'){
-      setPrompt(2,'What petal shape?','Star-like petals are sharper. Daisy-like petals are broader and more rounded at the tips.');
-      let chosen=selectedShape;
-      petalShapes.forEach(shape=>{
-        const btn=addButton(shape.label,()=>{chosen=shape;[...optionsEl.children].forEach(x=>x.classList.remove('selected'));btn.classList.add('selected')},{selected:shape===chosen});
-      });
-      actionButton('Draw',()=>{
-        selectedShape=chosen;
-        applyGeometry();
-        outerColor=null; innerColor=null; frontLayerEnabled=false; innerLayerDrawn=false; centerReady=false; centerSize='medium'; centerColor=centerColors[0];
-        currentPoints=[]; currentPoints2=[]; primaryRegions=null; secondaryRegions=null; progressBar.style.width='0%';
-        animateLayer(1,false,pts=>{currentPoints=pts; primaryRegions=buildRegions(pts); renderAll(); showStep('outerColor')});
-      });
-      actionButton('Back',()=>showStep('petals'),{secondary:true});
-    } else if(name==='outerColor'){
-      setPrompt(3,'Choose outer color','Tap colors to preview. Save when you are happy.');
-      let picked=outerColor; let save;
-      petalColors.forEach(c=>{
-        const btn=addButton(c.label,()=>{picked=c; outerColor=c; [...optionsEl.children].forEach(x=>x.classList.remove('selected')); btn.classList.add('selected'); save.disabled=false; renderAll()},{selected:picked===c,swatch:c.hex});
-      });
-      save=actionButton('Save',()=>showStep('innerChoice'),{disabled:!picked});
-    } else if(name==='innerChoice'){
-      setPrompt(4,'Add an inner layer?','The inner layer is the same flower at 70% scale and draws for 20 seconds.');
-      actionButton('Add inner layer',()=>{frontLayerEnabled=true; animateLayer(.7,true,pts=>{currentPoints2=pts; secondaryRegions=buildRegions(pts); innerLayerDrawn=true; renderAll(); showStep('innerColor')})});
-      actionButton('Skip inner layer',()=>{frontLayerEnabled=false; innerLayerDrawn=false; showStep('centerSize')},{secondary:true});
-    } else if(name==='innerColor'){
-      setPrompt(5,'Choose inner color','Tap colors to preview. Save when you are happy.');
-      let picked=innerColor; let save;
-      petalColors.forEach(c=>{
-        const btn=addButton(c.label,()=>{picked=c; innerColor=c; [...optionsEl.children].forEach(x=>x.classList.remove('selected')); btn.classList.add('selected'); save.disabled=false; renderAll()},{selected:picked===c,swatch:c.hex});
-      });
-      save=actionButton('Save',()=>showStep('centerSize'),{disabled:!picked});
-    } else if(name==='centerSize'){
-      setPrompt(frontLayerEnabled?6:5,'Choose center size','These are three fixed sizes. Medium is selected by default.');
-      centerReady=true; centerColor=centerColor||centerColors[0];
-      let picked=centerSize||'medium';
-      centerSizes.forEach(s=>{
-        const btn=addButton(s.label,()=>{picked=s.key; centerSize=s.key; [...optionsEl.children].forEach(x=>x.classList.remove('selected')); btn.classList.add('selected'); renderAll()},{selected:picked===s.key});
-      });
-      renderAll();
-      actionButton('Save',()=>showStep('centerColor'));
-    } else if(name==='centerColor'){
-      setPrompt(frontLayerEnabled?7:6,'Choose center color','Tap colors to preview. Save when you are happy.');
-      let picked=centerColor; let save;
-      centerColors.forEach(c=>{
-        const btn=addButton(c.label,()=>{picked=c; centerColor=c; [...optionsEl.children].forEach(x=>x.classList.remove('selected')); btn.classList.add('selected'); save.disabled=false; renderAll()},{selected:picked===c,swatch:c.hex});
-      });
-      save=actionButton('Save',()=>showStep('done'),{disabled:!picked});
-    } else if(name==='done'){
-      setPrompt('✓','Flower complete','Your choices are saved in the current drawing.');
-      stageStatus.textContent='Complete.';
-      actionButton('Start over',()=>{
-        selectedPreset=petalPresets[2];
-        selectedShape=petalShapes[0];
-        applyGeometry();
-        outerColor=null; innerColor=null; frontLayerEnabled=false; innerLayerDrawn=false; centerReady=false; centerSize='medium'; centerColor=centerColors[0];
-        currentPoints=[]; currentPoints2=[]; primaryRegions=null; secondaryRegions=null;
-        clearCanvas(); drawFrameGuide(); progressBar.style.width='0%'; stageStatus.textContent='Choose a petal count to begin.';
-        showStep('petals');
-      });
-    }
+  function syncPanelHeight(){
+    const h=Math.round(stageShell.getBoundingClientRect().height);
+    if(h>0){controlPanel.style.height=`${h}px`;controlPanel.style.maxHeight=`${h}px`}
   }
 
-  applyGeometry();
-  clearCanvas();drawFrameGuide();showStep('petals');
+  new ResizeObserver(()=>{syncPanelHeight();queueRender()}).observe(stageShell);
+  window.addEventListener('resize',()=>{syncPanelHeight();queueRender()});
+
+  buildPalette();
+  syncPanelHeight();
+  syncUI();
+  queueRender();
 })();
 </script>
 </body>
