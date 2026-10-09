@@ -1,981 +1,889 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Spirograph Studio 1.4</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flowergraph Studio 1.02</title>
 <style>
-  :root{--panel:#0f1012;--stroke:#2a2d34;--text:#f2f2f2}
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:#000;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
-  body{padding:10px}
-  .app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 610px;gap:10px;align-items:start}
-  .stage-shell,.control-panel{background:linear-gradient(180deg,#050505,#0a0a0a);border:1px solid #20242c;border-radius:24px;overflow:hidden}
-  .stage-shell{position:relative;aspect-ratio:1/1;width:100%;max-width:calc(100vh - 20px);max-height:calc(100vh - 20px);padding:10px;align-self:start;justify-self:start}
-  .canvas-wrap{display:flex;align-items:center;justify-content:center;width:100%;height:100%;aspect-ratio:1/1}
-  canvas{display:block;width:100%;height:auto;aspect-ratio:1/1;max-width:100%;max-height:100%;touch-action:none;-webkit-user-select:none;user-select:none}
-
-  .control-panel{display:flex;flex-direction:column;align-self:start;min-height:0;overflow:hidden;padding:14px}
-  .control-scroll{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:14px}
-  .group{background:var(--panel);border:1px solid var(--stroke);border-radius:18px;padding:14px}
-  .group h3{margin:0 0 10px;font-size:17px}
-
-  .overlay-stack{
-    position:absolute;right:18px;bottom:16px;z-index:8;
-    display:flex;flex-direction:column;align-items:flex-end;gap:5px;
-    pointer-events:auto;
-  }
-  .dimension-overlay{
-    display:flex;align-items:center;gap:6px;
-    appearance:none;border:0;background:transparent;padding:3px 6px;margin:0;
-    font:700 15px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    letter-spacing:.02em;cursor:pointer;user-select:none;-webkit-user-select:none;
-    -webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  }
-  .dimension-overlay .mode-label{color:#fff;opacity:.30;transition:opacity .15s ease}
-  .dimension-overlay .mode-label.active{opacity:.50}
-  .dimension-overlay .mode-divider{color:#fff;opacity:.20;font-weight:500}
-  .draw-overlay{
-    position:absolute;left:18px;bottom:16px;z-index:8;
-    appearance:none;border:0;background:transparent;padding:3px 6px;margin:0;
-    color:#fff;opacity:.30;
-    font:700 15px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    letter-spacing:.02em;cursor:pointer;user-select:none;-webkit-user-select:none;
-    -webkit-tap-highlight-color:transparent;touch-action:manipulation;
-    transition:opacity .15s ease;
-  }
-  .draw-overlay:active{opacity:.50}
-  .draw-overlay:disabled{opacity:.18;cursor:default}
-  body.art-fullscreen .overlay-stack{
-    position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:10003;
-  }
-  body.art-fullscreen .draw-overlay{
-    position:fixed;left:max(18px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom));z-index:10003;
-  }
-  .style-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  .style-btn{appearance:none;background:#16191e;color:#fff;border:1px solid #38404c;border-radius:14px;min-height:54px;font-size:16px;font-weight:800;cursor:pointer;padding:8px 6px}
-  .style-btn.active{background:#16191e;color:#fff;border:2px solid #fff;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
-  .style-note{margin-top:9px;color:#959ba6;font-size:13px;line-height:1.3;text-align:center}
-  .stage-shell.mode-3d canvas{cursor:grab;touch-action:none}
-  .stage-shell.mode-3d.dragging canvas{cursor:grabbing}
-
-  .layer-selector{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  .layer-select-btn,.all-select-btn,.big-toggle,.size-btn,.change-btn,.draw-btn{appearance:none;background:#16191e;color:#fff;border:1px solid #38404c;cursor:pointer}
-  .layer-select-btn{border-radius:14px;min-height:70px;padding:10px;font-size:15px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:8px}
-  .layer-select-btn.active,.all-select-btn.active{background:#fff;color:#000;border-color:#fff}
-  .layer-dot{width:13px;height:13px;border-radius:50%;border:1px solid rgba(255,255,255,.5);flex:0 0 auto}
-  .all-select-btn{border-radius:14px;width:100%;margin-top:10px;min-height:52px;font-size:16px;font-weight:850}
-
-  .palette-inline{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin-top:6px}
-  .swatch-button{width:100%;aspect-ratio:1/1;border-radius:11px;border:2px solid rgba(255,255,255,.18);background:#222;cursor:pointer;padding:0}
-  .swatch-button.selected{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.24) inset}
-
-  .edit-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;align-items:stretch}
-  .big-toggle{border-radius:15px;min-height:74px;font-size:17px;font-weight:850;padding:10px;transition:border-color .16s,box-shadow .16s}
-  .big-toggle.on{border:2px solid #fff;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
-  .size-control{display:grid;grid-template-columns:70px 1fr 70px;gap:9px;align-items:stretch}
-  .size-btn{border-radius:15px;min-height:74px;font-size:38px;font-weight:400;line-height:1}
-  .size-readout{display:flex;align-items:center;justify-content:center;text-align:center;font-size:17px;font-weight:850;border:1px solid #2f3440;border-radius:15px;background:#121419;padding:8px;line-height:1.15}
-
-  .change-btn,.draw-btn{border-radius:16px;width:100%;min-height:66px;font-size:21px;font-weight:900;margin-top:2px;transition:border-color .14s,box-shadow .14s,opacity .14s}
-  .draw-btn:disabled{opacity:.48;cursor:default}
-  .change-btn.flash{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.55),0 0 16px rgba(255,255,255,.22)}
-  .change-btn:active,.draw-btn:active:not(:disabled),.layer-select-btn:active,.all-select-btn:active,.big-toggle:active,.size-btn:active,.swatch-button:active{transform:translateY(1px)}
-
-  /* Long-press immersive drawing mode. */
-  body.art-fullscreen{padding:0!important;overflow:hidden!important}
-  body.art-fullscreen .stage-shell{
-    position:fixed;inset:0;z-index:9999;width:100vw;height:100dvh;max-width:none;max-height:none;
-    aspect-ratio:auto;border:0;border-radius:0;padding:0;background:#000;display:flex;align-items:center;justify-content:center;
-  }
-  body.art-fullscreen .canvas-wrap{width:100%;height:100%;aspect-ratio:auto;background:#000}
-  body.art-fullscreen canvas{width:100vw;height:100dvh;max-width:none;max-height:none;aspect-ratio:auto;touch-action:none}
-  body.art-fullscreen .control-panel{visibility:hidden}
-  .fullscreen-close-btn,.fullscreen-zoom-btn{display:none}
-  body.art-fullscreen .fullscreen-close-btn,
-  body.art-fullscreen .fullscreen-zoom-btn{
-    display:flex;align-items:center;justify-content:center;
-    position:fixed;z-index:10002;border:0;border-radius:0;
-    background:transparent;color:#fff;opacity:.50;
-    box-shadow:none;text-shadow:none;font-weight:700;
-    touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer;
-    transition:opacity .12s ease;
-  }
-  body.art-fullscreen .fullscreen-close-btn:active,
-  body.art-fullscreen .fullscreen-zoom-btn:active{opacity:.72}
-  body.art-fullscreen .fullscreen-close-btn{
-    top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));
-    width:72px;height:72px;font-size:42px;line-height:1;
-  }
-  body.art-fullscreen .fullscreen-zoom-btn.zoom-in{
-    top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));
-    width:72px;height:72px;font-size:42px;line-height:1;
-  }
-  body.art-fullscreen .fullscreen-zoom-btn.zoom-out{
-    top:max(78px,calc(env(safe-area-inset-top) + 78px));left:max(10px,env(safe-area-inset-left));
-    width:72px;height:72px;font-size:46px;line-height:1;
-  }
-
-  /* Existing desktop layout remains the default. */
-  @media (max-width:1200px) and (hover:hover) and (pointer:fine){
-    body{padding:0;overflow:auto}
-    .app{height:auto;min-height:100vh;grid-template-columns:1fr}
-    .stage-shell{width:100%;max-width:none;max-height:none;min-height:55vh}
-    .control-panel{height:auto!important;max-height:none!important}
-  }
-
-  /* iPad/iPhone landscape: drawing and controls side by side. */
-  @media (hover:none) and (pointer:coarse) and (orientation:landscape){
-    html,body{height:100%;overflow:hidden}
-    body{padding:8px}
-    .app{
-      height:calc(100dvh - 16px);
-      min-height:0;
-      grid-template-columns:minmax(0,1fr) clamp(300px,42vw,560px);
-      gap:8px;
-      align-items:start;
-    }
-    .stage-shell{
-      width:auto;
-      height:100%;
-      max-width:calc(100dvh - 16px);
-      max-height:calc(100dvh - 16px);
-      justify-self:start;
-      align-self:start;
-    }
-    .control-panel{
-      min-height:0;
-      align-self:stretch;
-    }
-    .control-scroll{
-      height:100%;
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-    }
-  }
-
-  /* iPad/iPhone portrait: drawing on top, controls below, controls scroll. */
-  @media (hover:none) and (pointer:coarse) and (orientation:portrait){
-    html,body{height:100%;overflow:hidden}
-    body{padding:0}
-    .app{
-      height:100dvh;
-      min-height:0;
-      grid-template-columns:1fr;
-      grid-template-rows:auto minmax(0,1fr);
-      gap:8px;
-      align-items:stretch;
-    }
-    .stage-shell{
-      width:100%;
-      max-width:none;
-      max-height:none;
-      min-height:0;
-      aspect-ratio:1/1;
-      padding:8px;
-      justify-self:stretch;
-      align-self:start;
-      border-radius:0 0 20px 20px;
-    }
-    .control-panel{
-      height:auto!important;
-      max-height:none!important;
-      min-height:0;
-      align-self:stretch;
-      padding:10px;
-      border-radius:20px 20px 0 0;
-    }
-    .control-scroll{
-      height:100%;
-      min-height:0;
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-      padding-bottom:max(12px,env(safe-area-inset-bottom));
-    }
-  }
-</style>
-</head>
-<body>
-<div class="app">
-  <section class="stage-shell" id="stageShell">
-    <div class="canvas-wrap"><canvas id="canvas" width="1024" height="1024"></canvas></div>
-    <button class="draw-overlay" id="drawBtn" type="button">Draw</button>
-    <div class="overlay-stack">
-      <button class="dimension-overlay" id="dimensionToggle" type="button" aria-label="Toggle 2D and 3D view">
-        <span class="mode-label active" id="mode2Label">2D</span><span class="mode-divider">|</span><span class="mode-label" id="mode3Label">3D</span>
-      </button>
-    </div>
-  </section>
-
-  <aside class="control-panel" id="controlPanel">
-    <div class="control-scroll">
-      <div class="group">
-        <h3 id="changeHeading">Change Curve 1</h3>
-        <div class="style-grid">
-          <button type="button" class="style-btn active" id="styleSimpleBtn">Simple</button>
-          <button type="button" class="style-btn" id="styleRichBtn">Rich</button>
-          <button type="button" class="style-btn" id="styleWanderingBtn">Wandering</button>
-        </div>
-        <div class="style-note" id="styleNote">Simple shows classic rolling-circle Spirograph structures with clear lobes and openings.</div>
-      </div>
-
-      <div class="group">
-        <div class="layer-selector">
-          <button type="button" class="layer-select-btn active" data-layer="0"><span class="layer-dot" id="layerDot0"></span>Curve 1</button>
-          <button type="button" class="layer-select-btn" data-layer="1"><span class="layer-dot" id="layerDot1"></span>Curve 2</button>
-          <button type="button" class="layer-select-btn" data-layer="2"><span class="layer-dot" id="layerDot2"></span>Curve 3</button>
-          <button type="button" class="layer-select-btn" data-layer="3"><span class="layer-dot" id="layerDot3"></span>Curve 4</button>
-        </div>
-        <button type="button" class="all-select-btn" id="allBtn">All Curves</button>
-      </div>
-
-      <div class="group">
-        <h3 id="paletteHeading">Color Curve 1</h3>
-        <div class="palette-inline" id="sharedPalette"></div>
-      </div>
-
-      <div class="group">
-        <div class="edit-grid">
-          <button type="button" class="big-toggle on" id="visibilityBtn">Curve 1 On</button>
-          <div class="size-control">
-            <button type="button" class="size-btn" id="sizeMinus">−</button>
-            <div class="size-readout" id="sizeReadout">Size Curve 1</div>
-            <button type="button" class="size-btn" id="sizePlus">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div style="text-align:center;color:#666c75;font-size:11px;padding:2px 0 4px">Spirograph_Studio_1.4.html</div>
-    </div>
-  </aside>
-</div>
-<button class="fullscreen-close-btn" id="fullscreenCloseBtn" type="button" aria-label="Close full screen">×</button>
-<button class="fullscreen-zoom-btn zoom-in" id="fullscreenZoomInBtn" type="button" aria-label="Zoom in">+</button>
-<button class="fullscreen-zoom-btn zoom-out" id="fullscreenZoomOutBtn" type="button" aria-label="Zoom out">−</button>
-
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#050505;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}body{padding:10px;overflow:hidden}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}.app{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,470px);gap:10px;height:100%}.stage,.panel{border:1px solid #292b32;border-radius:22px;background:#080808;min-width:0;overflow:hidden}.stage{position:relative;align-self:start;aspect-ratio:1/1;width:100%;max-height:calc(100vh - 20px)}canvas{width:100%;height:100%;display:block;touch-action:none}.panel{display:flex;flex-direction:column;padding:12px;gap:10px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex-shrink:0}.tab,.btn,.flower-option,.saved-option{background:#1b1d22;border:1px solid #414651;border-radius:12px;color:white;padding:11px 8px;font-weight:700;min-height:45px}.tab.active,.btn.active,.flower-option.active,.saved-option.active{border:2px solid white;background:#30333b}.panel-scroll{overflow:auto;min-height:0;overscroll-behavior:contain;padding-right:2px;padding-bottom:28px}.section{border:1px solid #2a2e37;background:#111215;border-radius:16px;padding:12px;margin-bottom:10px}.section h3{font-size:16px;margin:0 0 10px}.flower-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.flower-option{min-height:51px}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1;min-width:0}.row .btn{min-width:0}.styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.wide{width:100%;margin-top:9px}.primary{background:#30333b;border:1px solid #747b86;font-size:18px;min-height:55px}.hint{color:#aeb2bc;font-size:13px;line-height:1.45;margin:8px 0 0}.muted{color:#949ba7;font-size:13px}.range{width:100%;accent-color:#cab1dd;touch-action:pan-x}.mini{font-size:13px;min-height:39px}.control-label{font-size:13px;color:#b8beca;display:flex;justify-content:space-between;margin:10px 0 2px}.palette{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}.swatch{aspect-ratio:1;border-radius:9px;border:2px solid #777}.swatch.active{border:3px solid white}.colors-row{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.colors-row .btn{display:flex;align-items:center;justify-content:center;gap:7px}.dot{width:15px;height:15px;border-radius:50%;display:inline-block;border:1px solid #eee}.overlay{position:absolute;bottom:12px;left:14px;z-index:5;opacity:.45;color:#eee;background:none;border:none;font-weight:700}.camera{position:absolute;bottom:12px;right:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:4px}.camera button{color:#eee;opacity:.45;background:none;border:none;font-weight:700}.camera button.active{opacity:.75}.filename{color:#777;text-align:center;font-size:11px;margin-top:12px}.empty{color:#aeb2bb;text-align:center;padding:38px 14px;border:1px dashed #4a4d56;border-radius:15px;line-height:1.55}.saved-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.saved-option{padding:7px;display:flex;gap:8px;align-items:center;text-align:left}.preview{width:58px;height:58px;background:#000;border-radius:8px;flex-shrink:0}.status{color:#c4b5db;min-height:20px;font-size:13px;margin-top:6px}.toast{position:absolute;top:15px;left:50%;transform:translateX(-50%);background:#282831;border:1px solid #656670;border-radius:12px;padding:9px 14px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:12}.toast.visible{opacity:1}.layer-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.arrange-badge{position:absolute;top:12px;left:14px;background:#18191fcc;border:1px solid #555a64;border-radius:10px;padding:7px 10px;color:#cfd2d9;font-size:13px;z-index:4;pointer-events:none}.fullscreenClose,.fullscreenZoom{display:none}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal.open{display:flex}.modal-body{width:min(450px,100%);padding:17px;background:#15171c;border:1px solid #505664;border-radius:18px}.modal h3{margin-top:0}.modbuttons{display:flex;gap:10px;margin-top:18px}.modbuttons>*{flex:1}.control-off{display:none!important}.stage.placing{cursor:crosshair}.stage.moving{cursor:grab}.stage.dragging{cursor:grabbing}.hidden{display:none!important}.panel [disabled]{opacity:.33;cursor:default}
+body.fullscreen{padding:0;overflow:hidden}body.fullscreen .stage{position:fixed;inset:0;width:100vw;height:100dvh;max-height:none;z-index:30;border:0;border-radius:0;aspect-ratio:auto}body.fullscreen .fullscreenClose,body.fullscreen .fullscreenZoom{display:flex;position:fixed;z-index:40;background:none;color:#eee;opacity:.65;border:0;font-size:42px;width:65px;height:65px;align-items:center;justify-content:center}body.fullscreen .fullscreenClose{top:10px;right:10px}body.fullscreen .fullscreenZoom.in{top:10px;left:10px}body.fullscreen .fullscreenZoom.out{top:76px;left:10px}
+@media(max-width:1000px) and (hover:hover){body{overflow:auto;padding:0}.app{display:block;height:auto}.stage{max-height:none}.panel{border-radius:20px;height:auto}.panel-scroll{overflow:visible}}
+@media(max-width:700px){body{padding:0}.app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:5px;height:100dvh}.stage{max-height:none;aspect-ratio:1/1;border-radius:0 0 17px 17px}.panel{border-radius:17px 17px 0 0}.tab{font-size:15px}.panel-scroll{overflow:auto}}
+</style></head><body><div class="app"><section class="stage" id="stage"><canvas id="art"></canvas><div class="arrange-badge hidden" id="arrangeBadge"></div><div class="toast" id="toast"></div><button class="overlay" id="draw">Draw</button><div class="camera"><button id="rotate">Rotate</button><button id="dimension">2D | 3D</button></div></section><aside class="panel"><div class="tabs"><button class="tab active" data-tab="create">Create</button><button class="tab" data-tab="library">Library</button><button class="tab" data-tab="arrange">Arrange</button></div><div class="panel-scroll" id="controls"></div><div class="filename">Flowergraph_Studio_1.02.html</div></aside></div><button class="fullscreenClose" id="fullClose">×</button><button class="fullscreenZoom in" id="fullPlus">+</button><button class="fullscreenZoom out" id="fullMinus">−</button><div class="modal" id="modal"><div class="modal-body"><h3 id="modalTitle"></h3><div class="muted" id="modalBody"></div><div class="modbuttons"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalConfirm">Replace</button></div></div></div><input class="hidden" id="importFile" type="file" accept=".json,application/json">
 <script>
-(() => {
-  const LAYER_COUNT=4;
-  const canvas=document.getElementById('canvas');
-  const ctx=canvas.getContext('2d');
-  const paletteHeading=document.getElementById('paletteHeading');
-  const allBtn=document.getElementById('allBtn');
-  const visibilityBtn=document.getElementById('visibilityBtn');
-  const sizeMinus=document.getElementById('sizeMinus');
-  const sizePlus=document.getElementById('sizePlus');
-  const sizeReadout=document.getElementById('sizeReadout');
-  const changeHeading=document.getElementById('changeHeading');
-  const drawBtn=document.getElementById('drawBtn');
-  const fullscreenCloseBtn=document.getElementById('fullscreenCloseBtn');
-  const fullscreenZoomInBtn=document.getElementById('fullscreenZoomInBtn');
-  const fullscreenZoomOutBtn=document.getElementById('fullscreenZoomOutBtn');
-  const dimensionToggle=document.getElementById('dimensionToggle');
-  const mode2Label=document.getElementById('mode2Label');
-  const mode3Label=document.getElementById('mode3Label');
-  const styleSimpleBtn=document.getElementById('styleSimpleBtn');
-  const styleRichBtn=document.getElementById('styleRichBtn');
-  const styleWanderingBtn=document.getElementById('styleWanderingBtn');
-  const styleNote=document.getElementById('styleNote');
-  const stageShell=document.getElementById('stageShell');
-  const controlPanel=document.getElementById('controlPanel');
+const GENERATORS={};
+GENERATORS["dahlia"] = (recipe) => {
+ const state={seed:recipe.seed,style:recipe.style,geometry:[],recipe:null, colors:{},mode:'2d'};
+ const TAU=Math.PI*2, GOLD=Math.PI*(3-Math.sqrt(5));
 
-  const crayon16=[
-    {name:'Red',hex:'#ED0A3F'},{name:'Red-Orange',hex:'#FF5349'},{name:'Orange',hex:'#FF8833'},{name:'Yellow-Orange',hex:'#FFAE42'},
-    {name:'Yellow',hex:'#FBE870'},{name:'Yellow-Green',hex:'#C5E17A'},{name:'Green',hex:'#01A368'},{name:'Blue-Green',hex:'#0095B7'},
-    {name:'Blue',hex:'#0066FF'},{name:'Blue-Violet',hex:'#6456B7'},{name:'Violet',hex:'#8359A3'},{name:'Red-Violet',hex:'#BB3385'},
-    {name:'Carnation Pink',hex:'#FFA6C9'},{name:'Brown',hex:'#AF593E'},{name:'Black',hex:'#000000'},{name:'White',hex:'#FFFFFF'}
-  ];
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const hash=(i,k=0)=>{let x=Math.sin(i*127.1+k*311.7+state.seed*7.71)*43758.5453;return x-Math.floor(x)};
 
-  const layerNames=['Curve 1','Curve 2','Curve 3','Curve 4'];
-  const layers=[
-    {type:'hypo',R:233,r:89,dPct:58,rotation:0,phi:Math.PI/3,zAmp:0.30,zFreq:(233-89)/89,scale:100,color:crayon16[10],enabled:true},
-    {type:'hypo',R:197,r:83,dPct:72,rotation:Math.PI/10,phi:Math.PI/2,zAmp:0.28,zFreq:(197-83)/83,scale:90,color:crayon16[12],enabled:false},
-    {type:'hypo',R:181,r:67,dPct:44,rotation:Math.PI/8,phi:Math.PI/4,zAmp:0.26,zFreq:(181-67)/67,scale:72,color:crayon16[4],enabled:false},
-    {type:'hypo',R:149,r:64,dPct:86,rotation:Math.PI/12,phi:Math.PI/2,zAmp:0.24,zFreq:(149-64)/64,scale:58,color:crayon16[7],enabled:false}
-  ];
-
-  const state={layers,activeLayer:0,allSelected:false,dimension:'2d',viewRotX:-0.48,viewRotY:0.58,viewZoom:1,immersive:false,changeStyle:'simple'};
-  const curveCaches=Array(LAYER_COUNT).fill(null);
-  let renderQueued=false;
-  let isDrawing=false;
-  let drawRaf=null;
-  let isRotating=false;
-  let dragPointerId=null;
-  let dragLastX=0;
-  let dragLastY=0;
-  const activePointers=new Map();
-  let pinchStartDistance=0;
-  let pinchStartZoom=1;
-  let touchPinchStartDistance=0;
-  let touchPinchStartZoom=1;
-  let safariGestureStartZoom=1;
-  let safariGestureActive=false;
-  let touchRotateLastX=0;
-  let touchRotateLastY=0;
-  const LONG_PRESS_MS=650;
-  const LONG_PRESS_MOVE=12;
-  let modeLongPressTimer=null;
-  let modeLongPressStart=null;
-  let suppressDimensionClick=false;
-
-  function gcd(a,b){
-    a=Math.abs(Math.round(a));
-    b=Math.abs(Math.round(b));
-    while(b){const t=a%b;a=b;b=t}
-    return a||1;
+function lerp(a,b,t){return a+(b-a)*t;}
+function flowerRecipe(){
+  const r=k=>hash(-1000,k);
+  const count=Math.round(lerp(165,275,r(1))/5)*5;
+  const layers=Math.max(7,Math.min(15,Math.round(lerp(8,14.5,r(2)))));
+  const curlPct=lerp(36,68,r(3));
+  const fullnessPct=lerp(82,124,r(4));
+  const irregularPct=lerp(10,34,r(5));
+  const lengthScale=lerp(.82,1.18,r(6));
+  const widthScale=lerp(.82,1.18,r(7));
+  const spreadScale=lerp(.92,1.10,r(8));
+  const centerLift=lerp(.88,1.18,r(9));
+  return {count,layers,curlPct,fullnessPct,irregularPct,lengthScale,widthScale,spreadScale,centerLift};
+}
+function buildPetals(){
+  state.recipe=flowerRecipe();
+  const petals=[];
+  const {count:N,layers:L,curlPct,fullnessPct,irregularPct,lengthScale,widthScale,spreadScale,centerLift}=state.recipe;
+  for(let i=0;i<N;i++){
+    const t=(i+.5)/N;
+    const ring=Math.min(L-1,Math.floor(t*L));
+    const f=(ring+.5)/L;
+    const angle=i*GOLD;
+    const j=(hash(i,1)-.5)*irregularPct/100;
+    const rad=(.045+Math.pow(f,.84)*.66)*spreadScale;
+    const height=.32*(1-f)*(1-f)*centerLift;
+    const length=(.12+.52*Math.pow(f,.83))*lengthScale*(fullnessPct/100)*(1+j*.8);
+    const width=(.047+.13*Math.pow(f,.75))*widthScale*(1+j);
+    const lift=(.24*(1-f)-.12*f)*(0.92+.18*centerLift);
+    const curl=(curlPct/100)*(.10+.17*f);
+    const twist=(hash(i,2)-.5)*irregularPct/100*.6;
+    petals.push({ring,ringFrac:f,angle:angle+j,rad,height,length,width,lift,curl,twist,i,layers:L});
   }
-  function closureTurns(layer){
-    return Math.max(1,Math.round(layer.r/gcd(layer.R,layer.r)));
+  return petals;
+}
+function surf(p,u,w){
+  const a=p.angle, radial=[Math.cos(a),Math.sin(a)], side=[-Math.sin(a),Math.cos(a)];
+  const span=p.width*Math.pow(Math.sin(Math.PI*clamp(u,0,1)),.70)*(1-.3*u);
+  const reach=p.rad+p.length*u;
+  const twist=w*span+p.twist*u;
+  const x=radial[0]*reach+side[0]*twist;
+  const y=radial[1]*reach+side[1]*twist;
+  const z=p.height+p.lift*u+p.curl*u*u+(.055+.065*((state.recipe?.curlPct||52)/100))*w*w*Math.sin(Math.PI*u)-p.curl*.55*Math.pow(u,4);
+  return {x,y,z};
+}
+function pushLine(lines,points,width,alpha){ if(points.length>1) lines.push({points,width,alpha,color:'#df679a'}); }
+function lineAtW(p,w,samples=22){ const pts=[]; for(let j=0;j<=samples;j++) pts.push(surf(p,j/samples,w)); return pts; }
+function lineAtU(p,u,samples=12){ const pts=[]; for(let j=0;j<=samples;j++) pts.push(surf(p,u,-1+2*j/samples)); return pts; }
+function styleFillForPetal(style,p){
+  const outer=p.ringFrac;
+  if(style==='simple'){
+    const ws = outer>.72 ? [-.42,0,.42] : outer>.48 ? [0] : [];
+    const us = outer>.72 ? [.32,.58,.82] : outer>.48 ? [.48] : [];
+    return {ws,us,longAlpha:.16,crossAlpha:.12};
   }
-  function curveEnd(layer){return Math.PI*2*closureTurns(layer)}
-  function spirographPoint(theta,layer){
-    const R=layer.R;
-    const r=layer.r;
-    const d=(layer.dPct/100)*r;
-    const k=(R-r)/r;
-    const x0=((R-r)*Math.cos(theta)+d*Math.cos(k*theta))/R;
-    const y0=((R-r)*Math.sin(theta)-d*Math.sin(k*theta))/R;
-    const rot=layer.rotation||0;
-    const cr=Math.cos(rot),sr=Math.sin(rot);
-    const x=x0*cr-y0*sr;
-    const y=x0*sr+y0*cr;
-    const z=(layer.zAmp??0.28)*Math.sin(k*theta+(layer.phi||0));
-    return{x,y,z};
+  if(style==='rich'){
+    const ws = outer>.82 ? [-.70,-.42,-.16,0,.16,.42,.70] : outer>.60 ? [-.46,-.12,.12,.46] : outer>.36 ? [-.18,.18] : [];
+    const us = outer>.82 ? [.18,.30,.42,.54,.66,.78,.90] : outer>.60 ? [.28,.46,.64,.82] : outer>.36 ? [.52,.74] : [];
+    return {ws,us,longAlpha:.23,crossAlpha:.17};
   }
-  function invalidateLayer(i){curveCaches[i]=null}
+  const ws = outer>.84 ? [-.78,-.56,-.34,-.12,.12,.34,.56,.78] : outer>.64 ? [-.54,-.30,-.08,.08,.30,.54] : outer>.42 ? [-.28,0,.28] : [];
+  const us = outer>.84 ? [.16,.26,.36,.46,.56,.66,.76,.86,.94] : outer>.64 ? [.24,.38,.52,.66,.80,.92] : outer>.42 ? [.44,.62,.80] : [];
+  return {ws,us,longAlpha:.25,crossAlpha:.19};
+}
+function build(){
+  const petals=buildPetals(), lines=[];
+  for(const p of petals){
+    // Structural lines common to all styles.
+    pushLine(lines,lineAtW(p,-1),1.00,.34);
+    pushLine(lines,lineAtW(p,1),1.00,.34);
+    pushLine(lines,lineAtW(p,0),.74,.16);
+    pushLine(lines,lineAtU(p,.97,10),.52,.18);
+    // Interior color-in lines only.
+    const fill=styleFillForPetal(state.style,p);
+    for(const w of fill.ws) pushLine(lines,lineAtW(p,w),.62,fill.longAlpha);
+    for(const u of fill.us) pushLine(lines,lineAtU(p,u,10),.50,fill.crossAlpha);
+  }
+  state.geometry=lines;
+}
 
-  function computeRawCurve(i){
-    const layer=state.layers[i];
-    const key=[layer.type,layer.R,layer.r,layer.dPct.toFixed(3),(layer.rotation||0).toFixed(4),(layer.phi||0).toFixed(4),(layer.zAmp??0.3).toFixed(3),(layer.zFreq||1.5).toFixed(3)].join('|');
-    const cached=curveCaches[i];
-    if(cached?.key===key)return cached;
+ build();
+ return state.geometry;
+};
+GENERATORS["iris"] = (recipe) => {
+ const state={seed:recipe.seed,style:recipe.style,geometry:[],recipe:null, colors:{},mode:'2d'};
+ const TAU=Math.PI*2, GOLDEN=Math.PI*(3-Math.sqrt(5));
 
-    const end=curveEnd(layer);
-    const turns=closureTurns(layer);
-    const complexity=layer.R+layer.r;
-    const pointCount=Math.min(130000,Math.max(22000,Math.round(18000+turns*850+complexity*110)));
-    const step=end/pointCount;
-    const pts=[];
-    let maxRadius=.001;
-
-    for(let t=0;t<=end+1e-9;t+=step){
-      const pt=spirographPoint(t,layer);
-      maxRadius=Math.max(maxRadius,Math.hypot(pt.x,pt.y));
-      pts.push({...pt,t});
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const add=(a,b)=>({x:a.x+b.x,y:a.y+b.y,z:a.z+b.z});
+const mul=(a,k)=>({x:a.x*k,y:a.y*k,z:a.z*k});
+const norm=v=>{const m=Math.hypot(v.x,v.y,v.z)||1;return mul(v,1/m)};
+function rng(seed){let s=seed>>>0;return ()=>{s=(Math.imul(1664525,s)+1013904223)>>>0;return s/4294967296}}
+function build(){
+ const r=rng(state.seed),rand=(a,b)=>a+(b-a)*r(),style=state.style;
+ const rich=style==='rich',wild=style==='wandering',simple=style==='simple';
+ const lines=[];function line(points,color,width=1,alpha=1){if(points.length>1)lines.push({points,color,width,alpha})}
+ const petalColors=['#ae85dc','#b697e6','#ccacec','#8f69c2','#a57cd0','#bd98df'];
+ const lime='#d8b550',beard='#e5aa43',green='#6ea46e';
+ const head={x:0,y:-.55,z:0};
+ // Stem bends gently as it approaches the flower.
+ const stemPts=[];for(let j=0;j<=38;j++){const t=j/38;stemPts.push({x:.08*Math.sin(2.8*t+.2)*t,y:1.75-2.30*t,z:.065*Math.sin(3*t+.6)*t})}line(stemPts,green,2.3,.90);
+ function blade(base,az,length,width,bend){
+   function point(t,v){const w=width*Math.sin(Math.PI*Math.pow(t,.86))*(.92+.08*t);
+     const lean=bend*t*t;return{x:base.x+Math.cos(az)*lean + -Math.sin(az)*v*w,y:base.y-length*t+.14*Math.sin(Math.PI*t),z:base.z+Math.sin(az)*lean+Math.cos(az)*v*w};}
+   for(const v of [-1,-.42,0,.42,1]){const pts=[];for(let i=0;i<=42;i++)pts.push(point(i/42,v));line(pts,green,v===0?1.1:.75,v===0?.85:.43)}
+   for(let i=1;i<8;i++){const pts=[];for(let j=0;j<=10;j++)pts.push(point(i/8,-1+2*j/10));line(pts,green,.50,.23)}
+ }
+ // Sword-shaped foliage originates well below the blossom.
+ for(let i=0;i<(simple?2:3);i++){
+  const a=i*2.55+rand(-.18,.18),base={x:rand(-.06,.06),y:1.55+rand(-.10,.08),z:rand(-.06,.06)};
+  // Leaf points up from its lower attachment, bends away from stem.
+  function lp(t,v){const rad=.2*t+.42*t*t; const w=.13*Math.sin(Math.PI*Math.pow(t,.76));return{x:base.x+rad*Math.cos(a)-v*w*Math.sin(a),y:base.y-1.72*t+rad*.17,z:base.z+rad*Math.sin(a)+v*w*Math.cos(a)}}
+  for(const v of [-1,0,1]){let pts=[];for(let j=0;j<=45;j++)pts.push(lp(j/45,v));line(pts,green,v===0?1.12:.84,v===0?.74:.54)}
+ }
+ // Three upright standards and three downward-arching falls.
+ function petal(az,isFall,idx){
+  const length=(isFall?1.13:.98)*rand(.91,1.10),maxWidth=(isFall?.34:.30)*rand(.90,1.11);
+  const twist=rand(-.17,.17)*(wild?2.6:rich?1.4:.60);
+  const phase=rand(0,6.283),flutter=wild?.105:rich?.055:.019;
+  const roll=isFall?rand(.11,.22):rand(.09,.17);
+  const color=petalColors[(idx+(isFall?3:0))%petalColors.length];
+  function pos(u,v){
+   const angle=az+twist*u*u;
+   const outward=isFall?.13+1.02*Math.pow(u,1.22):.12+.33*u*u;
+   const rise=isFall?(-.24*u+.72*u*u):(-1.00*u+.14*u*u);
+   const widen=Math.pow(Math.sin(Math.PI*u),.76)*(1-.11*u);
+   const w=maxWidth*widen;
+   const edgeRuffle=flutter*Math.pow(u,2)*Math.pow(Math.abs(v),2.4)*Math.sin(9*Math.PI*u+phase+v*1.7);
+   const cup=roll*(v*v)*Math.sin(Math.PI*u);
+   const tipBend=.10*Math.pow(u,3);
+   return {x:head.x+Math.cos(angle)*(outward*length+cup+edgeRuffle)+(-Math.sin(angle))*v*w,
+       y:head.y+rise*length+tipBend+(isFall?.055:-.045)*(v*v)*Math.sin(Math.PI*u)+edgeRuffle*.38,
+       z:head.z+Math.sin(angle)*(outward*length+cup+edgeRuffle)+Math.cos(angle)*v*w};
+  }
+  // Keep the ORIGINAL SIX PETALS and their surfaces unchanged.
+  // Fill is created by sampling more curves ON each original petal, not by adding petals.
+  const steps=64;
+  const contourCount=simple?7:rich?48:108;
+  for(let k=0;k<contourCount;k++){
+   const v=contourCount===1?0:-1+2*k/(contourCount-1);
+   const pts=[];for(let j=0;j<=steps;j++)pts.push(pos(j/steps,v));
+   const edge=Math.abs(v)>.995,mid=Math.abs(v)<.008;
+   line(pts,color,edge?1.45:mid?1.15:(simple?.67:rich?.86:.98),
+      edge?.96:mid?.76:(simple?.46:rich?.52:.60));
+  }
+  // Close cross-hatching adds apparent color mass, without altering the petal silhouette.
+  const crossN=simple?8:rich?30:68;
+  for(let j=1;j<=crossN;j++){
+   const u=j/(crossN+1),pts=[];
+   for(let k=0;k<=32;k++)pts.push(pos(u,-1+2*k/32));
+   line(pts,color,simple?.66:rich?.73:.80,simple?.19:rich?.36:.50);
+  }
+  // A second oblique fiber pass only in richer modes gives a gently woven fill.
+  if(!simple){
+   const diagonalN=rich?16:42;
+   for(let j=0;j<diagonalN;j++){
+    const u0=(j+.5)/diagonalN;
+    for(const side of [-1,1]){
+     const pts=[];
+     for(let k=0;k<=14;k++){
+      const q=k/14;
+      const u=clamp(u0+(q-.5)*(rich?.10:.14),.015,.985);
+      const v=side*(-.96+1.92*q);
+      pts.push(pos(u,v));
+     }
+     line(pts,color,rich?.60:.70,rich?.23:.35);
     }
-    const endPt=spirographPoint(end,layer);
-    pts.push({...endPt,t:end});
-    maxRadius=Math.max(maxRadius,Math.hypot(endPt.x,endPt.y));
-    return curveCaches[i]={key,pts,maxRadius};
+   }
   }
+  // Gold beards near the lower petal throat: short fine hairs.
+  if(isFall){for(let k=0;k<(simple?12:rich?22:32);k++){
+   const u=rand(.13,.33),v=rand(-.19,.19),root=pos(u,v),angle=rand(0,TAU),height=rand(.025,.074);
+   line([root,{x:root.x+Math.sin(angle)*height*.28,y:root.y-height,z:root.z+Math.cos(angle)*height*.30}],beard,.74,.82);
+  }}
+ }
+ // Draw far standards first, then prominent descending falls.
+ for(let i=0;i<3;i++)petal(i*TAU/3+.15,false,i);
+ for(let i=0;i<3;i++)petal(i*TAU/3+TAU/6+.15,true,i);
+ for(let i=0;i<9;i++){const a=i*TAU/9,pts=[];for(let k=0;k<=16;k++){
+  const u=k/16,rad=.045+.015*u;pts.push({x:head.x+Math.cos(a)*rad*u,y:head.y-.12*u,z:head.z+Math.sin(a)*rad*u});
+ }line(pts,lime,.82,.72)}
+ state.geometry=lines;
+}
 
-  function resizeCanvas(){
-    const rect=canvas.getBoundingClientRect();
-    const dpr=devicePixelRatio||1;
-    if(state.immersive){
-      const width=Math.max(1,Math.floor(rect.width*dpr));
-      const height=Math.max(1,Math.floor(rect.height*dpr));
-      if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height}
-      return;
-    }
-    const size=Math.max(1,Math.floor(Math.min(rect.width,rect.height)*dpr));
-    if(canvas.width!==size||canvas.height!==size){canvas.width=size;canvas.height=size}
+ build();
+ return state.geometry;
+};
+GENERATORS["lace"] = (recipe) => {
+ const state={seed:recipe.seed,style:recipe.style,geometry:[],recipe:null, colors:{},mode:'2d'};
+ const TAU=Math.PI*2, GOLDEN=Math.PI*(3-Math.sqrt(5));
+
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const add=(a,b)=>({x:a.x+b.x,y:a.y+b.y,z:a.z+b.z});
+const mul=(a,k)=>({x:a.x*k,y:a.y*k,z:a.z*k});
+const norm=v=>{const m=Math.hypot(v.x,v.y,v.z)||1;return mul(v,1/m)};
+function rng(seed){let s=seed>>>0;return ()=>{s=(Math.imul(1664525,s)+1013904223)>>>0;return s/4294967296}}
+function build(){
+ const r=rng(state.seed),rand=(a,b)=>a+(b-a)*r(),style=state.style;
+ const rich=style==='rich',wild=style==='wandering';
+ const count=style==='simple'?15:rich?24:30,sec=style==='simple'?5:rich?7:9;
+ const lines=[];function line(points,color,width=1,alpha=1){lines.push({points,color,width,alpha})}
+ const green='#73a976', pale='#ecebd0', cream='#d4c99b', stem='#71966c';
+ const length=2.45;
+ const stemAt=t=>({x:0.10*Math.sin(t*3+0.3)*t+.05*t,y:1.70-length*t,z:.045*Math.sin(4*t+.5)*t});
+ const stemPts=[];for(let j=0;j<=36;j++)stemPts.push(stemAt(j/36));line(stemPts,stem,2.0,.9);
+ const crown=stemAt(1), major=[];
+ // The umbel's structural rays form a flattened dome: longer rays around the outside.
+ for(let i=0;i<count;i++){
+  const a=i*GOLDEN+rand(-.10,.10),radial=norm({x:Math.cos(a),y:0,z:Math.sin(a)});
+  const radius=rand(.82,1.06)*(wild?rand(.79,1.12):1),height=rand(.23,.40);
+  const end=add(crown,{x:radial.x*radius,y:-height+rand(-.06,.06),z:radial.z*radius});
+  const middle=add(crown,{x:radial.x*radius*.47,y:-height*.55-.12,z:radial.z*radius*.47});
+  line([crown,middle,end],green,1.2,.80);major.push({center:end,radial,a});
+ }
+ // The central zone is filled using smaller umbels to avoid an artificial hollow ring.
+ for(let i=0;i<Math.floor(count*.47);i++){
+  const a=i*GOLDEN+1.7,rad=rand(.25,.68),end=add(crown,{x:Math.cos(a)*rad,y:-rand(.34,.48),z:Math.sin(a)*rad});
+  line([crown,add(crown,{x:Math.cos(a)*rad*.45,y:-.20,z:Math.sin(a)*rad*.45}),end],green,.95,.7);
+  major.push({center:end,radial:{x:Math.cos(a),y:0,z:Math.sin(a)},a});
+ }
+ function blossom(c,size,twist){
+  // A flower is five tiny pointed petals oriented approximately toward the viewer.
+  const centerSize=size*.22;
+  for(let p=0;p<5;p++){
+   const a=p*TAU/5+twist;
+   const edge1={x:Math.cos(a-.33),z:Math.sin(a-.33)},edge2={x:Math.cos(a+.33),z:Math.sin(a+.33)};
+   const tip={x:c.x+Math.cos(a)*size,y:c.y-rand(.001,.014),z:c.z+Math.sin(a)*size};
+   line([{x:c.x+edge1.x*centerSize,y:c.y,z:c.z+edge1.z*centerSize},tip,{x:c.x+edge2.x*centerSize,y:c.y,z:c.z+edge2.z*centerSize}],pale,.8,.86);
   }
-  function guideRadius(){
-    if(state.immersive){
-      const shortSide=Math.min(canvas.width,canvas.height);
-      const longSide=Math.max(canvas.width,canvas.height);
-      const adaptive=Math.min(shortSide*.62,Math.sqrt(shortSide*longSide)*.54);
-      return adaptive;
-    }
-    return Math.min(canvas.width,canvas.height)*.455;
+  line([c,{x:c.x+.002,y:c.y-.006,z:c.z+.002}],cream,1.7,.8);
+ }
+ for(let k=0;k<major.length;k++){
+  const part=major[k],a0=part.a; const spokes=sec+(wild?Math.floor(rand(-2,3)):0);
+  for(let q=0;q<spokes;q++){
+   const aa=a0+(q-spokes/2)*TAU/spokes+rand(-.12,.12);
+   const rad=rand(.105,.21)*(wild?rand(.7,1.4):1);
+   const tip=add(part.center,{x:Math.cos(aa)*rad,y:-rand(.035,.09),z:Math.sin(aa)*rad});
+   const mid=add(part.center,{x:Math.cos(aa)*rad*.42,y:-.02,z:Math.sin(aa)*rad*.42});
+   line([part.center,mid,tip],green,.64,.62);
+   blossom(tip,rand(.025,.040),aa);
+   if(r()>(rich?.45:wild?.35:.80)){
+    const tiny=add(tip,{x:Math.cos(aa+.55)*.039,y:-.014,z:Math.sin(aa+.55)*.039});
+    line([tip,tiny],green,.5,.5);blossom(tiny,.023,aa+.3);
+   }
   }
+ }
+ state.geometry=lines;
+}
 
-  function project3DPoint(x,y,z){
-    const cy=Math.cos(state.viewRotY),sy=Math.sin(state.viewRotY);
-    const cx=Math.cos(state.viewRotX),sx=Math.sin(state.viewRotX);
+ build();
+ return state.geometry;
+};
+GENERATORS["passion"] = (recipe) => {
+ const state={seed:recipe.seed,style:recipe.style,geometry:[],recipe:null, colors:{},mode:'2d'};
+ const TAU=Math.PI*2;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const add=(a,b)=>({x:a.x+b.x,y:a.y+b.y,z:a.z+b.z});
+const sub=(a,b)=>({x:a.x-b.x,y:a.y-b.y,z:a.z-b.z});
+const mul=(a,k)=>({x:a.x*k,y:a.y*k,z:a.z*k});
+const dot=(a,b)=>a.x*b.x+a.y*b.y+a.z*b.z;
+const cross=(a,b)=>({x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x});
+const len=v=>Math.hypot(v.x,v.y,v.z);
+const norm=v=>{const m=len(v)||1;return {x:v.x/m,y:v.y/m,z:v.z/m};};
+function lerp(a,b,t){return a+(b-a)*t;}
+function mix(a,b,t){return add(mul(a,1-t),mul(b,t));}
+function rotateAroundAxis(v,axis,angle){axis=norm(axis);const c=Math.cos(angle),s=Math.sin(angle);return add(add(mul(v,c),mul(cross(axis,v),s)),mul(axis,dot(axis,v)*(1-c)));}
+function rng(seed){let s=seed>>>0; return ()=>{s=(Math.imul(1664525,s)+1013904223)>>>0; return s/4294967296;};}
+function makeColor(hex,name){return {hex,name};}
+const crayon16=[
+  makeColor('#F7F7F2','White'),makeColor('#F2E6D8','Cream'),makeColor('#D5CABD','Stone'),makeColor('#7A5C3E','Brown'),
+  makeColor('#C54B4B','Red'),makeColor('#E6873C','Orange'),makeColor('#F0C84B','Yellow'),makeColor('#8BAA47','Olive'),
+  makeColor('#4F8B57','Green'),makeColor('#4D8EA8','Teal'),makeColor('#4B68C5','Blue'),makeColor('#7B62C7','Indigo'),
+  makeColor('#A06BC7','Violet'),makeColor('#D36CAB','Pink'),makeColor('#C0A4E6','Lavender'),makeColor('#B7B7B7','Gray')
+];
 
-    const x1=x*cy+z*sy;
-    const z1=-x*sy+z*cy;
-    const y2=y*cx-z1*sx;
-    const z2=y*sx+z1*cx;
 
-    const camera=4.6;
-    const perspective=camera/(camera-z2);
-    return{x:x1*perspective,y:y2*perspective,z:z2};
-  }
 
-  function projectedPoints(i,view={centerX:canvas.width/2,centerY:canvas.height/2,radius:guideRadius()}){
-    const raw=computeRawCurve(i);
-    const layer=state.layers[i];
-    const cx=view.centerX,cy=view.centerY;
+function localLabelForPart(part){return part[0].toUpperCase()+part.slice(1);}
+function localColorFor(part){return state.colors[part].hex;}
 
-    if(state.dimension==='2d'){
-      const scale=(view.radius/raw.maxRadius)*(layer.scale/100)*state.viewZoom;
-      return raw.pts.map(pt=>({x:cx+pt.x*scale,y:cy+pt.y*scale,z:0}));
-    }
-
-    const stride=isRotating?3:1;
-    const normalized=[];
-    let maxProjectedRadius=1;
-    for(let index=0;index<raw.pts.length;index+=stride){
-      const pt=raw.pts[index];
-      const projected=project3DPoint(pt.x,pt.y,pt.z);
-      maxProjectedRadius=Math.max(maxProjectedRadius,Math.hypot(projected.x,projected.y));
-      normalized.push(projected);
-    }
-    if((raw.pts.length-1)%stride!==0){
-      const pt=raw.pts[raw.pts.length-1];
-      const projected=project3DPoint(pt.x,pt.y,pt.z);
-      maxProjectedRadius=Math.max(maxProjectedRadius,Math.hypot(projected.x,projected.y));
-      normalized.push(projected);
-    }
-
-    const scale=(view.radius/maxProjectedRadius)*(layer.scale/100)*state.viewZoom;
-    return normalized.map(pt=>({x:cx+pt.x*scale,y:cy+pt.y*scale,z:pt.z}));
-  }
-  function rgba(hex,a){
-    const h=hex.slice(1);
-    return`rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;
-  }
-  function drawGuide(){ /* intentionally invisible: no drawing frame */ }
-  function drawLayer(i,view){
-    const layer=state.layers[i];
-    const points=projectedPoints(i,view);
-    if(points.length<2)return;
-    ctx.save();
-    ctx.lineCap='round';ctx.lineJoin='round';
-    ctx.strokeStyle=rgba(layer.color.hex,.98);
-    ctx.lineWidth=(i===0?1.15:1)*(Math.min(canvas.width,canvas.height)/1024);
-    ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);
-    for(let j=1;j<points.length;j++)ctx.lineTo(points[j].x,points[j].y);
-    ctx.stroke();ctx.restore();
-  }
-  function renderView(view){
-    for(let i=0;i<LAYER_COUNT;i++)if(state.layers[i].enabled)drawLayer(i,view);
-  }
-  function render(){
-    renderQueued=false;
-    resizeCanvas();
-    ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);
-    renderView({centerX:canvas.width/2,centerY:canvas.height/2,radius:guideRadius()});
-  }
-  function queueRender(){if(isDrawing)return;if(!renderQueued){renderQueued=true;requestAnimationFrame(render)}}
-
-  function selectedIndices(){return state.allSelected?[0,1,2,3]:[state.activeLayer]}
-  function applyToSelected(fn){selectedIndices().forEach(i=>fn(state.layers[i],i))}
-  function targetLabel(){return state.allSelected?'All Curves':layerNames[state.activeLayer]}
-  function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
-
-  const styleDescriptions={
-    simple:'Simple uses the original inside-rolling Spirograph equation with moderate closure lengths so the structure stays readable.',
-    rich:'Rich uses larger integer gear pairs and longer closures, producing denser woven figures while preserving exact order.',
-    wandering:'Wandering strongly favors large coprime-style gear relationships, often taking 50–120 revolutions to close.'
+function recipeForStyle(style){
+  const r=rng(state.seed), rand=(a,b)=>a+(b-a)*r();
+  const simple=style==='simple', rich=style==='rich', wandering=style==='wandering';
+  return {
+    petalLen:rand(.62,.76), petalWidth:rand(.17,.25), petalLift:rand(.02,.10), petalCurl:rand(.02,.10), petalRuffle:simple?rand(.01,.03):rich?rand(.02,.05):rand(.04,.08),
+    sepalLen:rand(.68,.84), sepalWidth:rand(.15,.22), sepalCurl:rand(.04,.12),
+    coronaLayers:simple?2:(wandering?5:4), coronaCount:simple?Math.round(rand(70,96)):rich?Math.round(rand(138,172)):Math.round(rand(188,235)),
+    coronaRadius:rand(.19,.23), coronaLength:simple?rand(.17,.22):rich?rand(.20,.28):rand(.22,.32), coronaSweep:wandering?rand(.06,.17):rand(.03,.11), coronaTilt:simple?rand(.02,.08):rich?rand(.05,.12):rand(.08,.18),
+    centerHeight:rand(.16,.26), androgynophore:rand(.22,.34), stamenSpread:rand(.11,.17), styleSpread:rand(.08,.13),
+    jitter:simple?rand(.01,.03):rich?rand(.03,.06):rand(.05,.10),
+    petalContours:simple?5:(rich?12:17), sepalContours:simple?4:(rich?9:12),
+    coronaAlpha:simple?.40:rich?.53:.62,
+    centerLean:rand(-.12,.12)
   };
+}
 
-  const phaseChoices=[0,Math.PI/8,Math.PI/6,Math.PI/4,Math.PI/3,Math.PI/2,2*Math.PI/3];
+function build(){
+  state.recipe=recipeForStyle(state.style);
+  const rec=state.recipe, lines=[];
+  const head={x:0,y:-.10,z:0};
+  const push=(component,width,alpha,points)=>{if(points.length>1) lines.push({component,width,alpha,points});};
 
-  function randomInt(min,max){return Math.floor(min+Math.random()*(max-min+1))}
-  function closureTurnsFor(R,r){return Math.max(1,Math.round(r/gcd(R,r)))}
+  // stem
+  const stemBase={x:0,y:1.35,z:-.02};
+  const stemTop=head;
+  const stemPts=[];
+  for(let i=0;i<=36;i++){
+    const t=i/36;
+    stemPts.push({x:.04*Math.sin(2.2*t+.5)*t,y:lerp(stemBase.y,stemTop.y,t),z:-.03+.06*Math.sin(1.4*t+.4)*t});
+  }
+  push('stem',1.6,.82,stemPts);
+  for(const side of [-1,1]){
+    const base={x:.03*side,y:.86+Math.abs(side)*.10,z:0};
+    const az=side<0?-1.2:-2.0;
+    for(const v of [-1,0,1]){
+      const pts=[];
+      for(let i=0;i<=32;i++){
+        const t=i/32, w=.10*Math.sin(Math.PI*Math.pow(t,.82));
+        const rad=.14*t+.38*t*t;
+        pts.push({x:base.x+rad*Math.cos(az)-v*w*Math.sin(az),y:base.y-.95*t+rad*.15,z:base.z+rad*Math.sin(az)+v*w*Math.cos(az)});
+      }
+      push('stem',v===0?1.05:.74,v===0?.62:.34,pts);
+    }
+  }
 
-  function randomGearPair(minTurns,maxTurns){
-    let fallback={R:233,r:89,turns:89};
-    let bestDistance=Infinity;
-    const target=(minTurns+maxTurns)/2;
-    for(let attempt=0;attempt<500;attempt++){
-      const R=randomInt(40,320);
-      const r=randomInt(10,220);
-      if(R===r)continue;
-      const turns=closureTurnsFor(R,r);
-      const distance=turns<minTurns?minTurns-turns:(turns>maxTurns?turns-maxTurns:0);
-      if(distance===0)return{R,r,turns};
-      const targetDistance=Math.abs(turns-target);
-      if(distance<bestDistance||(distance===bestDistance&&targetDistance<Math.abs(fallback.turns-target))){
-        bestDistance=distance;fallback={R,r,turns};
+  function radialBasis(angle){
+    const D={x:Math.cos(angle),y:Math.sin(angle),z:0};
+    const S={x:-Math.sin(angle),y:Math.cos(angle),z:0};
+    return {D,S};
+  }
+  function petalPos(angle,isSepal,u,v){
+    const {D,S}=radialBasis(angle);
+    const L=(isSepal?rec.sepalLen:rec.petalLen)*(1+.03*Math.sin(angle*3.2));
+    const W=(isSepal?rec.sepalWidth:rec.petalWidth);
+    const baseR=isSepal?.10:.08;
+    const span=W*Math.pow(Math.sin(Math.PI*u),.72)*(1-.12*u);
+    const reach=baseR+L*u;
+    const ruffle=(isSepal?rec.petalRuffle*.7:rec.petalRuffle)*Math.pow(u,2.1)*Math.pow(Math.abs(v),1.9)*Math.sin(8*Math.PI*u+angle*1.7+v*1.4);
+    const cup=(isSepal?rec.sepalCurl:rec.petalCurl)*(v*v)*Math.sin(Math.PI*u);
+    const lift=(isSepal?.01:rec.petalLift)*Math.sin(Math.PI*u)*(1-.15*u);
+    const z=(isSepal?.02:.03)+lift+cup+ruffle*1.3-(isSepal?.06:.03)*u;
+    return add(head,add(mul(D,reach+ruffle),add(mul(S,v*span),{x:0,y:0,z:z})));
+  }
+  function addPetalSet(isSepal){
+    const contourVs = state.style==='simple'
+      ? (isSepal?[-1,-.55,0,.55,1]:[-1,-.7,-.35,0,.35,.7,1])
+      : state.style==='rich'
+        ? (isSepal?[-1,-.82,-.58,-.30,0,.30,.58,.82,1]:[-1,-.88,-.72,-.54,-.36,-.18,0,.18,.36,.54,.72,.88,1])
+        : (isSepal?[-1,-.90,-.74,-.58,-.42,-.26,-.12,0,.12,.26,.42,.58,.74,.90,1]:[-1,-.92,-.82,-.72,-.60,-.48,-.36,-.24,-.12,0,.12,.24,.36,.48,.60,.72,.82,.92,1]);
+    const contourCount=isSepal?rec.sepalContours:rec.petalContours;
+    const crossCount=state.style==='simple'?3:state.style==='rich'?8:13;
+    const offset=isSepal?TAU/10:0;
+    for(let i=0;i<5;i++){
+      const a=i*TAU/5+offset + (Math.sin(i*2.17+state.seed*.0002)*rec.jitter);
+      for(const v of contourVs){
+        const pts=[]; for(let j=0;j<=42;j++) pts.push(petalPos(a,isSepal,j/42,v));
+        push('petals',Math.abs(v)<.01?1.15:.74,Math.abs(v)<.01?.58:.34,pts);
+      }
+      for(let c=1;c<=contourCount;c++){
+        const u=c/(contourCount+1), pts=[];
+        for(let j=0;j<=18;j++) pts.push(petalPos(a,isSepal,u,-1+2*j/18));
+        push('petals',.52,isSepal?.16:.18,pts);
+      }
+      for(let c=1;c<=crossCount;c++){
+        const u=.12 + c/(crossCount+1)*.80, pts=[];
+        for(let j=0;j<=14;j++) pts.push(petalPos(a,isSepal,u,-.8+.16*j));
+        push('petals',.46,isSepal?.12:.14,pts);
       }
     }
-    return fallback;
+  }
+  addPetalSet(true);  // sepals
+  addPetalSet(false); // petals
+
+  // corona filaments
+  for(let layer=0;layer<rec.coronaLayers;layer++){
+    const layerFrac=rec.coronaLayers===1?0:layer/(rec.coronaLayers-1);
+    const count=Math.round(rec.coronaCount*(1-.18*layerFrac));
+    const baseR=rec.coronaRadius + layerFrac*.018;
+    const lenBase=rec.coronaLength*(1-.10*layerFrac);
+    for(let i=0;i<count;i++){
+      const ang=i*TAU/count + (layerFrac-.5)*.08 + Math.sin(i*3.1+layer*1.9)*rec.jitter*1.6;
+      const {D,S}=radialBasis(ang);
+      const sideJ=(Math.sin(i*1.73+layer)*.5)*rec.coronaSweep;
+      const tipLen=lenBase*(.88+.24*Math.sin(i*2.41+layer));
+      const pts=[];
+      for(let j=0;j<=14;j++){
+        const t=j/14;
+        const bend=rec.coronaTilt*Math.sin(Math.PI*t);
+        const curl=sideJ*t*(1-.2*t);
+        const p=add(head,add(mul(D,baseR+tipLen*t),add(mul(S,curl),{x:0,y:0,z:bend + .02*Math.sin(ang*2+6*t)})));
+        pts.push(p);
+      }
+      push('corona',.56,rec.coronaAlpha,pts);
+    }
   }
 
-  function randomSpirographSpec(){
-    const style=state.changeStyle;
-    const range=style==='simple'?[5,20]:(style==='rich'?[20,50]:[50,120]);
-    const pair=randomGearPair(range[0],range[1]);
-    const dPct=randomInt(5,95);
-    const k=(pair.R-pair.r)/pair.r;
-    return{
-      type:'hypo',
-      R:pair.R,
-      r:pair.r,
-      dPct,
-      rotation:pick(phaseChoices),
-      phi:pick(phaseChoices),
-      zAmp:state.dimension==='3d'
-        ? (style==='simple'?pick([0.24,0.28,0.32]):style==='rich'?pick([0.22,0.26,0.30]):pick([0.18,0.22,0.26]))
-        : 0.28,
-      zFreq:Math.abs(k)
+  // central disk / ovary ring
+  for(let ring=0;ring<2;ring++){
+    const rad=.045+ring*.018, pts=[];
+    for(let i=0;i<=42;i++){
+      const a=i/42*TAU; pts.push(add(head,{x:Math.cos(a)*rad,y:Math.sin(a)*rad,z:.06+ring*.02}));
+    }
+    push('center',.72,.42,pts);
+  }
+
+  // androgynophore column leaning slightly
+  const leanDir={x:Math.sin(rec.centerLean),y:Math.cos(rec.centerLean),z:0};
+  const colBase=add(head,{x:0,y:0,z:.04}), colTop=add(head,{x:leanDir.x*.03,y:leanDir.y*.03,z:rec.androgynophore});
+  for(const side of [-1,0,1]){
+    const pts=[];
+    for(let i=0;i<=20;i++){
+      const t=i/20;
+      pts.push(add(mix(colBase,colTop,t),{x:side*.008*Math.sin(Math.PI*t),y:0,z:0}));
+    }
+    push('center',side===0?1.22:.72,side===0?.86:.44,pts);
+  }
+
+  // stamens (5)
+  const stamenHub=colTop;
+  for(let i=0;i<5;i++){
+    const a=i*TAU/5 + .2;
+    const D={x:Math.cos(a),y:Math.sin(a),z:0};
+    const start=add(stamenHub,{x:0,y:0,z:-.01});
+    const mid=add(start,{x:D.x*rec.stamenSpread*.45,y:D.y*rec.stamenSpread*.45,z:.025});
+    const end=add(start,{x:D.x*rec.stamenSpread,y:D.y*rec.stamenSpread,z:.012});
+    push('center',.92,.72,[start,mid,end]);
+    const S={x:-Math.sin(a),y:Math.cos(a),z:0};
+    const antherA=add(end,mul(S,.028)), antherB=add(end,mul(S,-.028));
+    push('center',1.15,.78,[antherA,antherB]);
+  }
+
+  // 3 styles
+  for(let i=0;i<3;i++){
+    const a=i*TAU/3 + .6;
+    const D={x:Math.cos(a),y:Math.sin(a),z:0};
+    const start=add(colTop,{x:0,y:0,z:.016});
+    const mid=add(start,{x:D.x*rec.styleSpread*.35,y:D.y*rec.styleSpread*.35,z:.08});
+    const end=add(start,{x:D.x*rec.styleSpread*.68,y:D.y*rec.styleSpread*.68,z:.11});
+    push('center',.98,.76,[start,mid,end]);
+    const S={x:-Math.sin(a),y:Math.cos(a),z:0};
+    push('center',.78,.72,[add(end,mul(S,.017)),end,add(end,mul(S,-.017))]);
+  }
+
+  state.geometry=lines;
+}
+
+
+ build();
+ return state.geometry;
+};
+GENERATORS["foxglove"] = (recipe) => {
+ const state={seed:recipe.seed,style:recipe.style,geometry:[],recipe:null, colors:{},mode:'2d'};
+ const TAU=Math.PI*2;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const add=(a,b)=>({x:a.x+b.x,y:a.y+b.y,z:a.z+b.z});
+const mul=(a,k)=>({x:a.x*k,y:a.y*k,z:a.z*k});
+const dot=(a,b)=>a.x*b.x+a.y*b.y+a.z*b.z;
+const cross=(a,b)=>({x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x});
+const len=v=>Math.hypot(v.x,v.y,v.z);
+const norm=v=>{const m=len(v)||1;return {x:v.x/m,y:v.y/m,z:v.z/m};};
+function mix(a,b,t){return add(mul(a,1-t),mul(b,t));}
+function rng(seed){let s=seed>>>0; return ()=>{s=(Math.imul(1664525,s)+1013904223)>>>0; return s/4294967296;};}
+function makeColor(hex,name){return {hex,name};}
+const crayon16=[makeColor('#F7F7F2','White'),makeColor('#F2E6D8','Cream'),makeColor('#D5CABD','Stone'),makeColor('#7A5C3E','Brown'),makeColor('#C54B4B','Red'),makeColor('#E6873C','Orange'),makeColor('#F0C84B','Yellow'),makeColor('#8BAA47','Olive'),makeColor('#4F8B57','Green'),makeColor('#4D8EA8','Teal'),makeColor('#4B68C5','Blue'),makeColor('#7B62C7','Indigo'),makeColor('#A06BC7','Violet'),makeColor('#D36CAB','Pink'),makeColor('#C0A4E6','Lavender'),makeColor('#B7B7B7','Gray')];
+
+function localLabelForPart(part){return part==='petals'?'Blossoms':part[0].toUpperCase()+part.slice(1);} function localColorFor(part){return state.colors[part].hex;}
+function recipeForStyle(style){
+  const r=rng(state.seed), rand=(a,b)=>a+(b-a)*r();
+  const simple=style==='simple', rich=style==='rich', wandering=style==='wandering';
+  return {
+    bloomCount:Math.round(rand(11,15)), budCount:Math.round(rand(3,6)), spikeLean:rand(-.22,.22), spikeCurve:rand(.05,.18), spikeHeight:rand(1.55,2.0),
+    tubeLength:rand(.20,.30), tubeRadius:rand(.055,.085), flare:rand(1.65,2.45), lipCurl:rand(.02,.07), droop:rand(.10,.28),
+    sizeFalloff:rand(.72,.86), twistJitter:rand(.05,.16), azimuthShift:rand(.45,.78),
+    contourLong:simple?7:rich?11:16, contourRing:simple?3:rich?5:7, crossCount:simple?2:rich?4:6,
+    spotCount:simple?5:rich?8:11, spotRows:simple?2:3, spotAlpha:simple?.34:rich?.44:.49,
+    leafCount:Math.round(rand(4,7)), budTaper:rand(.35,.54)
+  };
+}
+function hexToRgb(hex){const s=hex.replace('#',''); return {r:parseInt(s.slice(0,2),16),g:parseInt(s.slice(2,4),16),b:parseInt(s.slice(4,6),16)};}
+function build(){
+  state.recipe=recipeForStyle(state.style); const rec=state.recipe, lines=[];
+  const push=(component,width,alpha,points)=>{if(points.length>1) lines.push({component,width,alpha,points});};
+  function stemPoint(t){
+    return {x:rec.spikeLean*t + rec.spikeCurve*Math.sin(1.7*t+.4)*t*(1-t*.2), y:1.35-rec.spikeHeight*t, z:.10*Math.sin(1.1*t+.2)*t*.6};
+  }
+  const stemPts=[]; for(let i=0;i<=54;i++) stemPts.push(stemPoint(i/54)); push('stem',1.7,.84,stemPts);
+  for(let i=0;i<rec.leafCount;i++){
+    const t=.10 + i/Math.max(1,rec.leafCount-1)*.34, base=stemPoint(t), az=-2.1 + i*.52 + (i%2?.35:-.25), length=.62*(1-.07*i), width=.09;
+    for(const side of [-1,0,1]){
+      const pts=[]; for(let j=0;j<=30;j++){
+        const u=j/30, rad=.11*u + length*u*u*.72, w=width*Math.sin(Math.PI*Math.pow(u,.84));
+        pts.push({x:base.x + Math.cos(az)*rad - side*Math.sin(az)*w, y:base.y + .18*u - length*u, z:base.z + Math.sin(az)*rad + side*Math.cos(az)*w});
+      }
+      push('stem',side===0?1.02:.68,side===0?.54:.28,pts);
+    }
+  }
+  function basisForAxis(axis){
+    const A=norm(axis); const tmp=Math.abs(dot(A,{x:0,y:1,z:0}))>.92?{x:1,y:0,z:0}:{x:0,y:1,z:0}; const B=norm(cross(tmp,A)); const C=norm(cross(A,B)); return {A,B,C};
+  }
+  // A true flared bell: the u coordinate travels from a narrow throat to a
+  // complete, five-lobed mouth.  B and C span a single plane normal to A.
+  function bellFrame(axis){
+    const A=norm(axis);
+    const helper=Math.abs(A.y)<.9?{x:0,y:1,z:0}:{x:0,y:0,z:1};
+    const B=norm(cross(helper,A));
+    const C=norm(cross(A,B));
+    return {A,B,C};
+  }
+  function bellPoint(base,frame,t,theta,size,isBud=false){
+    const {A,B,C}=frame;
+    const length=rec.tubeLength*size*(isBud?.63:1);
+    const r0=rec.tubeRadius*size*(isBud?.63:1);
+    const mouthFlare=isBud?1.32:rec.flare;
+    const widening=Math.pow(t,1.65);
+    const lobe=1 + (isBud?.035:.075)*Math.pow(t,4)*Math.cos(5*theta);
+    const radius=r0*(.63+(mouthFlare-.63)*widening)*lobe;
+    // Droop is in the world vertical direction, not along the upward stalk.
+    const droop=(isBud?.018:.060)*size*t*t;
+    const rimTurn=(isBud?.008:rec.lipCurl)*size*Math.pow(t,7)*Math.cos(5*theta);
+    const center=add(base,add(mul(A,length*t+rimTurn),{x:0,y:droop,z:0}));
+    return add(center,add(mul(B,Math.cos(theta)*radius),mul(C,Math.sin(theta)*radius)));
+  }
+  function addBell(base,axis,pedAxis,sizeMul,colorPart='petals',isBud=false){
+    const frame=bellFrame(axis);
+    const longCount=isBud?7:rec.contourLong;
+    const ringCount=isBud?2:rec.contourRing;
+    const steps=24;
+    // Continuous longitudinal surface curves, all meeting the mouth rim.
+    for(let i=0;i<longCount;i++){
+      const angle=i*TAU/longCount;
+      const pts=[];
+      for(let j=0;j<=steps;j++) pts.push(bellPoint(base,frame,j/steps,angle,sizeMul,isBud));
+      push(colorPart,.91,isBud?.57:.62,pts);
+    }
+    // Complete closed circumferential rings (no dangling semicircles).
+    for(let i=1;i<=ringCount;i++){
+      const u=i/(ringCount+1),pts=[];
+      for(let j=0;j<=48;j++)pts.push(bellPoint(base,frame,u,j/48*TAU,sizeMul,isBud));
+      push(colorPart,.56,isBud?.23:.31,pts);
+    }
+    // The flared, five-lobed opening is the flower's defining contour.
+    const rim=[];
+    for(let j=0;j<=80;j++) rim.push(bellPoint(base,frame,1,j/80*TAU,sizeMul,isBud));
+    push(colorPart,1.65,isBud?.74:.92,rim);
+    if(isBud) return;
+    // Small, separated pigment spots set along the inner-facing half of the
+    // throat. Each mark hugs the tube's parametric surface (rather than a
+    // free-floating ellipse oriented in the wrong plane).
+    for(let row=0;row<rec.spotRows;row++){
+      const t=.66+row*.105;
+      for(let k=0;k<rec.spotCount;k++){
+        const theta=TAU*(.08+.43*(k+.5)/rec.spotCount) + .10*(row%2);
+        const du=.016*sizeMul, da=.037;
+        const pts=[];
+        for(let m=0;m<=12;m++){
+          const q=m/12*TAU;
+          pts.push(bellPoint(base,frame,clamp(t+du*Math.sin(q),.03,.96),theta+da*Math.cos(q),sizeMul));
+        }
+        push('spots',.67,rec.spotAlpha,pts);
+      }
+    }
+  }
+  // bells along upper spike
+  const bloomStart=.28, bloomEnd=.90;
+  for(let i=0;i<rec.bloomCount;i++){
+    const t=bloomStart + (i/(Math.max(1,rec.bloomCount-1)))*(bloomEnd-bloomStart), base=stemPoint(t);
+    const localScale=(1 - (i/Math.max(1,rec.bloomCount-1))*(1-rec.sizeFalloff));
+    const az = (i%2===0 ? .22 : Math.PI-.22) + .22*Math.floor(i/2) + Math.sin(i*1.77+state.seed*.001)*rec.twistJitter;
+    const outward={x:Math.cos(az),y:.16 + .04*Math.sin(i),z:Math.sin(az)*.78};
+    const pedAxis=norm({x:.18*Math.cos(az),y:1,z:.18*Math.sin(az)});
+    const axis=norm({x:outward.x*.91,y:.27 + .06*(i/rec.bloomCount),z:outward.z*.68});
+    const pedPts=[]; for(let j=0;j<=10;j++) pedPts.push(mix(base,add(base,mul(axis,.08*localScale)),j/10)); push('stem',.70,.48,pedPts);
+    addBell(add(base,mul(axis,.04*localScale)),axis,pedAxis,localScale,'petals',false);
+  }
+  // top buds
+  for(let i=0;i<rec.budCount;i++){
+    const t=.86 + i/(Math.max(1,rec.budCount))* .12, base=stemPoint(Math.min(.99,t));
+    const size=.62*(1 - i*.08);
+    const az = -1.2 + i*.48 + Math.sin(i*2.8)*rec.twistJitter;
+    const axis=norm({x:.26*Math.cos(az),y:-.24,z:.26*Math.sin(az)});
+    const pedAxis=norm({x:.10*Math.cos(az),y:1,z:.10*Math.sin(az)});
+    const pedPts=[]; for(let j=0;j<=8;j++) pedPts.push(mix(base,add(base,mul(axis,.05*size)),j/8)); push('stem',.58,.40,pedPts);
+    addBell(add(base,mul(axis,.03*size)),axis,pedAxis,size*rec.budTaper,'buds',true);
+  }
+  state.geometry=lines;
+}
+
+ build();
+ return state.geometry;
+};
+GENERATORS["allium"] = (recipe) => {
+ const state={seed:recipe.seed,style:recipe.style,geometry:[],recipe:null, colors:{},mode:'2d'};
+ const TAU=Math.PI*2, GOLD=Math.PI*(3-Math.sqrt(5));
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const add=(a,b)=>({x:a.x+b.x,y:a.y+b.y,z:a.z+b.z});
+const mul=(a,k)=>({x:a.x*k,y:a.y*k,z:a.z*k});
+const dot=(a,b)=>a.x*b.x+a.y*b.y+a.z*b.z;
+const cross=(a,b)=>({x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x});
+const len=v=>Math.hypot(v.x,v.y,v.z);
+const norm=v=>{const m=len(v)||1;return {x:v.x/m,y:v.y/m,z:v.z/m};};
+function mix(a,b,t){return add(mul(a,1-t),mul(b,t));}
+function rng(seed){let s=seed>>>0; return ()=>{s=(Math.imul(1664525,s)+1013904223)>>>0; return s/4294967296;};}
+function makeColor(hex,name){return {hex,name};}
+const crayon16=[makeColor('#F7F7F2','White'),makeColor('#F2E6D8','Cream'),makeColor('#D5CABD','Stone'),makeColor('#7A5C3E','Brown'),makeColor('#C54B4B','Red'),makeColor('#E6873C','Orange'),makeColor('#F0C84B','Yellow'),makeColor('#8BAA47','Olive'),makeColor('#4F8B57','Green'),makeColor('#4D8EA8','Teal'),makeColor('#4B68C5','Blue'),makeColor('#7B62C7','Indigo'),makeColor('#A06BC7','Violet'),makeColor('#D36CAB','Pink'),makeColor('#C0A4E6','Lavender'),makeColor('#B7B7B7','Gray')];
+
+function localLabelForPart(part){return part[0].toUpperCase()+part.slice(1);} function localColorFor(part){return state.colors[part].hex;}
+function hexToRgb(hex){const s=hex.replace('#',''); return {r:parseInt(s.slice(0,2),16),g:parseInt(s.slice(2,4),16),b:parseInt(s.slice(4,6),16)};}
+function basisForAxis(axis){const A=norm(axis);const tmp=Math.abs(dot(A,{x:0,y:1,z:0}))>.92?{x:1,y:0,z:0}:{x:0,y:1,z:0};const B=norm(cross(tmp,A));const C=norm(cross(A,B));return {A,B,C};}
+function recipeForStyle(style){
+  const r=rng(state.seed), rand=(a,b)=>a+(b-a)*r();
+  const simple=style==='simple', rich=style==='rich';
+  return {
+    headRadius:rand(.34,.48), stalkCount:Math.round(rand(54,92)), stalkLen:rand(.10,.24), floretSize:rand(.045,.075),
+    stemHeight:rand(1.55,2.05), stemLean:rand(-.16,.16), stemCurve:rand(.04,.14), leafCount:Math.round(rand(3,5)),
+    jitter:rand(.02,.08), occupancy:rand(.90,.99),
+    petalLong:simple?3:rich?5:7, petalCross:simple?2:rich?4:6, petalSides:simple?[-1,0,1]:rich?[-1,-.5,0,.5,1]:[-1,-.7,-.35,0,.35,.7,1],
+    centerLines:simple?5:rich?7:9, stalkAlpha:simple?.34:rich?.42:.48, floretAlpha:simple?.44:rich?.52:.60, coreAlpha:simple?.30:rich?.42:.52
+  };
+}
+function build(){
+  state.recipe=recipeForStyle(state.style); const rec=state.recipe, lines=[]; const push=(component,width,alpha,points)=>{if(points.length>1) lines.push({component,width,alpha,points});};
+  const head={x:0,y:-.12,z:0};
+  const base={x:0,y:1.38,z:0};
+  function stemPoint(t){
+    // Anchor both ends exactly: all random lean/curve terms taper to zero at t=0 and t=1.
+    // In 1.0 the sideways offsets remained nonzero at t=1, detaching the stem from the head.
+    const envelope=4*t*(1-t);
+    const center=mix(base,head,t);
+    return {
+      x:center.x + rec.stemLean*.34*envelope + rec.stemCurve*.55*Math.sin(1.8*t+.4)*envelope,
+      y:center.y,
+      z:center.z + .035*Math.sin(1.1*t+.2)*envelope
     };
   }
-
-  function refreshPaletteAndSelectors(){
-    const activeColor=state.allSelected?null:state.layers[state.activeLayer].color.hex;
-    [...document.getElementById('sharedPalette').children].forEach((btn,i)=>btn.classList.toggle('selected',activeColor===crayon16[i].hex));
-    document.querySelectorAll('.layer-select-btn').forEach(btn=>btn.classList.toggle('active',!state.allSelected&&+btn.dataset.layer===state.activeLayer));
-    allBtn.classList.toggle('active',state.allSelected);
-    for(let i=0;i<LAYER_COUNT;i++)document.getElementById(`layerDot${i}`).style.background=state.layers[i].color.hex;
+  const stemPts=[]; for(let i=0;i<=44;i++) stemPts.push(stemPoint(i/44)); push('stem',1.75,.84,stemPts);
+  for(let i=0;i<rec.leafCount;i++){
+    const t=.14 + i/(Math.max(1,rec.leafCount-1))*0.34, p=stemPoint(t), az=-2.0 + i*0.72, length=.50*(1-.08*i), width=.075;
+    for(const side of [-1,0,1]){const pts=[]; for(let j=0;j<=28;j++){const u=j/28, rad=.09*u + length*u*u*.72, w=width*Math.sin(Math.PI*Math.pow(u,.84)); pts.push({x:p.x + Math.cos(az)*rad - side*Math.sin(az)*w, y:p.y + .12*u - length*u, z:p.z + Math.sin(az)*rad + side*Math.cos(az)*w});} push('stem',side===0?1.0:.62,side===0?.48:.24,pts);}
   }
-
-  function syncStyleUI(){
-    styleSimpleBtn.classList.toggle('active',state.changeStyle==='simple');
-    styleRichBtn.classList.toggle('active',state.changeStyle==='rich');
-    styleWanderingBtn.classList.toggle('active',state.changeStyle==='wandering');
-    styleNote.textContent=styleDescriptions[state.changeStyle];
+  // core hints
+  for(let i=0;i<rec.centerLines;i++){
+    const a=i/rec.centerLines*TAU; const pts=[]; for(let t=0;t<=16;t++){const u=t/16; pts.push(add(head,{x:Math.cos(a)*rec.headRadius*.18*u,y:Math.sin(a)*rec.headRadius*.18*u,z:0}));} push('center',.58,rec.coreAlpha,pts);
   }
-
-  function syncUI(){
-    const indices=selectedIndices();
-    const label=targetLabel();
-    const allOn=indices.every(i=>state.layers[i].enabled);
-    paletteHeading.textContent=`Color ${label}`;
-    visibilityBtn.classList.toggle('on',allOn);
-    visibilityBtn.textContent=`${label} ${allOn?'On':'Off'}`;
-    sizeReadout.textContent=`Size ${label}`;
-    changeHeading.textContent=`Change ${label}`;
-    refreshPaletteAndSelectors();
-    syncStyleUI();
-  }
-
-  function syncDimensionUI(){
-    const is3D=state.dimension==='3d';
-    mode2Label.classList.toggle('active',!is3D);
-    mode3Label.classList.toggle('active',is3D);
-    stageShell.classList.toggle('mode-3d',is3D);
-  }
-
-  function setDimension(value){
-    state.dimension=value;
-    if(value==='3d'){
-      state.viewRotX=-0.48;
-      state.viewRotY=0.58;
+  // stalks + florets
+  for(let i=0,drawn=0;i<rec.stalkCount;i++){
+    const u=(i+.5)/rec.stalkCount; const y=1-2*u; const rr=Math.sqrt(Math.max(0,1-y*y)); const a=i*GOLD;
+    if(((Math.sin((i+1)*12.9898+state.seed*.001)*43758.5453)%1+1)%1 > rec.occupancy) continue;
+    const dir=norm({x:rr*Math.cos(a),y, z:rr*Math.sin(a)});
+    const start=add(head,mul(dir,rec.headRadius*.10));
+    const end=add(head,mul(dir,rec.headRadius + rec.stalkLen*(.82+.36*Math.sin(i*2.1+state.seed*.0003))));
+    const bendVec=mul(norm({x:dir.x*.25,y:0,z:dir.z*.25}),rec.jitter*.12);
+    const stalkPts=[]; for(let j=0;j<=16;j++){const t=j/16; stalkPts.push(add(mix(start,end,t),mul(bendVec,Math.sin(Math.PI*t))));} push('stalks',.72,rec.stalkAlpha,stalkPts);
+    // floret
+    const axis=dir; const {A,B,C}=basisForAxis(axis); const floretCenter=end; const size=rec.floretSize*(.85+.35*Math.sin(i*1.73+state.seed*.0009));
+    const petalCount=6;
+    function floretPos(theta,u,v){
+      const petDir=add(mul(B,Math.cos(theta)),mul(C,Math.sin(theta)));
+      const petSide=add(mul(B,-Math.sin(theta)),mul(C,Math.cos(theta)));
+      const lenP=size*(.45 + .95*u);
+      const widthP=size*.34*Math.sin(Math.PI*u)*(1-.16*u);
+      const cup=size*.10*Math.sin(Math.PI*u)*(1-.18*u);
+      return add(floretCenter,add(mul(petDir,lenP),add(mul(petSide,v*widthP),mul(A,cup))));
     }
-    syncDimensionUI();
-    queueRender();
+    for(let p=0;p<petalCount;p++){
+      const theta=p*TAU/petalCount + rec.jitter*Math.sin(i+p*1.9);
+      for(const side of rec.petalSides){const pts=[]; for(let j=0;j<=18;j++) pts.push(floretPos(theta,j/18,side)); push('florets',Math.abs(side)<.01?.62:.42,rec.floretAlpha*(Math.abs(side)<.01?1:.82),pts);}
+      for(let c=1;c<=rec.petalCross;c++){const uu=c/(rec.petalCross+1), pts=[]; for(let j=0;j<=12;j++) pts.push(floretPos(theta,uu,-1+2*j/12)); push('florets',.34,rec.floretAlpha*.55,pts);}
+    }
+    // central stamens/style hints
+    for(let s=0;s<3;s++){const ang=s*TAU/3 + .15; const tip=add(floretCenter,add(mul(A,size*.78),add(mul(B,Math.cos(ang)*size*.10),mul(C,Math.sin(ang)*size*.10)))); push('center',.42,.62,[floretCenter,tip]);}
+    drawn++;
   }
+  state.geometry=lines;
+}
 
-  function clearModeLongPress(){
-    if(modeLongPressTimer!==null){clearTimeout(modeLongPressTimer);modeLongPressTimer=null}
-    modeLongPressStart=null;
+ build();
+ return state.geometry;
+};
+const TYPES=[['dandelion','Dandelion'],['dahlia','Dahlia'],['lace',"Queen Anne's Lace"],['iris','Iris'],['passion','Passionflower'],['foxglove','Foxglove'],['allium','Allium']];
+const LABEL=Object.fromEntries(TYPES);
+const COLORS=['#F7F7F2','#F2E6D8','#D5CABD','#7A5C3E','#C54B4B','#E6873C','#F0C84B','#8BAA47','#4F8B57','#4D8EA8','#4B68C5','#7B62C7','#A06BC7','#D36CAB','#C0A4E6','#B7B7B7'];
+const DEFAULT={dandelion:'#efe8d3',dahlia:'#df679a',lace:'#ecebd0',iris:'#af90dc',passion:'#bf9cec',foxglove:'#d36cab',allium:'#c0a4e6'};
+const DATA_FILE='Flowergraph_Data.json';
+const STORAGE_KEY='flowergraph-studio-v2-json-cache';
+const $=id=>document.getElementById(id),canvas=$('art'),ctx=canvas.getContext('2d'),stage=$('stage'),controls=$('controls');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const uid=()=>((typeof crypto!=='undefined'&&crypto.randomUUID)?crypto.randomUUID():`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,12)}`);
+const escapeHtml=s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const G=(type,style='rich',seed=(Math.random()*4294967295)>>>0)=>({type,style,seed,stemWidth:50,colors:{flower:DEFAULT[type],stem:'#679b65',detail:type==='foxglove'?'#f2e6d8':'#e1ba64'}});
+const emptyData=()=>({format:'flowergraph-studio',version:2,library:[],arrangement:[]});
+const cleanRecipe=r=>{
+ if(!r||typeof r!=='object'||!LABEL[r.type])throw Error('Invalid flower type');
+ const validColor=v=>typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v);
+ const base=G(r.type,['simple','rich','wandering'].includes(r.style)?r.style:'rich',Number.isFinite(r.seed)?r.seed>>>0:12345);
+ base.stemWidth=clamp(Number.isFinite(r.stemWidth)?r.stemWidth:50,10,100);
+ for(const k of ['flower','stem','detail'])if(validColor(r.colors?.[k]))base.colors[k]=r.colors[k];
+ return base;
+};
+function normalizeData(obj){
+ if(!obj||typeof obj!=='object'||!Array.isArray(obj.arrangement))throw Error('Not a Flowergraph data file');
+ const lib=[];
+ // Accept both version 2 libraries and earlier version 1 exports.
+ if(Array.isArray(obj.library)){
+  if(obj.library.length>500)throw Error('Library too large');
+  const ids=new Set();
+  for(const raw of obj.library){
+   if(!raw||typeof raw!=='object')continue;
+   const recipe=cleanRecipe(raw.recipe);
+   let id=typeof raw.id==='string'&&raw.id.length<120?raw.id:uid();if(ids.has(id))id=uid();ids.add(id);
+   const name=String(raw.name||LABEL[recipe.type]).slice(0,100);
+   lib.push({id,name,recipe,createdAt:raw.createdAt||new Date().toISOString()});
   }
-
-  dimensionToggle.addEventListener('pointerdown',event=>{
-    if(state.immersive)return;
-    clearModeLongPress();
-    suppressDimensionClick=false;
-    modeLongPressStart={id:event.pointerId,x:event.clientX,y:event.clientY};
-    modeLongPressTimer=setTimeout(()=>{
-      modeLongPressTimer=null;
-      if(state.immersive)return;
-      suppressDimensionClick=true;
-      setImmersive(true);
-      setTimeout(()=>{suppressDimensionClick=false},900);
-    },LONG_PRESS_MS);
-  });
-  dimensionToggle.addEventListener('pointermove',event=>{
-    if(!modeLongPressStart||event.pointerId!==modeLongPressStart.id)return;
-    if(Math.hypot(event.clientX-modeLongPressStart.x,event.clientY-modeLongPressStart.y)>LONG_PRESS_MOVE)clearModeLongPress();
-  });
-  ['pointerup','pointercancel','lostpointercapture'].forEach(type=>dimensionToggle.addEventListener(type,clearModeLongPress));
-  dimensionToggle.addEventListener('click',()=>{
-    if(suppressDimensionClick){suppressDimensionClick=false;return}
-    setDimension(state.dimension==='2d'?'3d':'2d');
-  });
-
-
-  function setImmersive(value){
-    state.immersive=value;
-    state.viewZoom=1;
-    document.body.classList.toggle('art-fullscreen',value);
-    activePointers.clear();
-    touchPinchStartDistance=0;
-    touchPinchStartZoom=state.viewZoom;
-    safariGestureStartZoom=state.viewZoom;
-    safariGestureActive=false;
-    isRotating=false;
-    dragPointerId=null;
-    stageShell.classList.remove('dragging');
-    syncPanelHeight();
-    queueRender();
+ }else if(obj.library&&typeof obj.library==='object'){
+  for(const [type,recipe] of Object.entries(obj.library)){if(!LABEL[type])continue;const cleaned=cleanRecipe({...recipe,type});lib.push({id:uid(),name:LABEL[type]+' 1',recipe:cleaned,createdAt:new Date().toISOString()});}
+ }else throw Error('Missing flower library');
+ if(obj.arrangement.length>1000)throw Error('Arrangement too large');
+ const arrangement=[];
+ for(const a of obj.arrangement){
+  if(!a||typeof a!=='object')continue;
+  let recipe;
+  try{recipe=cleanRecipe(a.recipe || lib.find(f=>f.id===a.flowerId)?.recipe);}catch(e){continue;}
+  arrangement.push({id:typeof a.id==='string'&&a.id.length<120?a.id:uid(),flowerId:typeof a.flowerId==='string'?a.flowerId:null,flowerName:String(a.flowerName||LABEL[recipe.type]).slice(0,100),recipe,
+   x:clamp(Number.isFinite(a.x)?a.x:.5,0,1),y:clamp(Number.isFinite(a.y)?a.y:.5,0,1),size:clamp(Number.isFinite(a.size)?a.size:.35,.12,1.15),rx:Number.isFinite(a.rx)?a.rx:-.22,ry:Number.isFinite(a.ry)?a.ry:0,order:Number.isFinite(a.order)?a.order:arrangement.length});
+ }
+ return {format:'flowergraph-studio',version:2,library:lib,arrangement};
+}
+let stored=emptyData(), dataStatus='Loading GitHub JSON…', dirty=false, loadingRemote=true, changeCount=0;
+let breeze={strength:'gentle',playing:false,clock:0,last:0};
+// A null draft intentionally leaves the Create canvas completely empty at startup.
+let app={tab:'create',draft:null,editingId:null,libSelected:null,placeId:null,placing:false,selected:null,mode:'2d',rotX:-.22,rotY:.56,zoom:1,autoRotate:false,drawProgress:1,fullscreen:false};
+let cache=new Map(),thumbCache=new Map(),toastTimer=null,drawRaf=0;
+function cacheLocal(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({data:stored,dirty}));}catch(e){dataStatus='Browser storage unavailable; download JSON to keep changes.';}}
+function save(){dirty=true;changeCount++;dataStatus='Local changes — download JSON to publish';cacheLocal();}
+function notify(t){const n=$('toast');n.textContent=t;n.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.classList.remove('visible'),2600);}
+function dandelion(recipe){let seed=recipe.seed>>>0;function rand(){seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296;}const lines=[]; const put=(pts,component,width=1,alpha=.6)=>lines.push({points:pts,component,width,alpha});let count=recipe.style==='simple'?78:recipe.style==='rich'?122:166;let tufts=recipe.style==='simple'?8:recipe.style==='rich'?15:22;const golden=Math.PI*(3-Math.sqrt(5));for(let i=0;i<count;i++){const y=1-2*(i+.5)/count,az=i*golden,rr=Math.sqrt(1-y*y),d={x:Math.cos(az)*rr,y,z:Math.sin(az)*rr};const base={x:d.x*.10,y:d.y*.10-.47,z:d.z*.10};const tip={x:d.x*.66,y:d.y*.66-.47,z:d.z*.66};put([base,tip],'stem',.63,.43);for(let t=0;t<tufts;t++){let a=t*6.283/tufts + rand()*.08,side={x:Math.cos(a),y:Math.sin(a),z:.13*Math.sin(a*2)};put([tip,{x:tip.x+d.x*.07+side.x*.13,y:tip.y+d.y*.07+side.y*.13,z:tip.z+d.z*.07+side.z*.13}],'flower',.44,.52);}}put([{x:0,y:1.35,z:0},{x:0,y:-.47,z:0}],'stem',2.2,.9);return lines;}
+GENERATORS.dandelion=dandelion;
+function geometry(recipe){const key=`${recipe.type}-${recipe.seed}-${recipe.style}`;if(cache.has(key))return cache.get(key);let raw=GENERATORS[recipe.type](recipe);const transformed=[];for(const line of raw){if(!Array.isArray(line.points)||line.points.length<2)continue;let pts=line.points; if(recipe.type==='dahlia')pts=pts.map(p=>({x:p.x,y:-p.z-.40,z:p.y}));transformed.push({...line,points:pts});}
+if(recipe.type==='dahlia'){let maxY=Math.max(...transformed.flatMap(l=>l.points.map(p=>p.y)));transformed.push({component:'stem',points:Array.from({length:28},(_,i)=>{const t=i/27;return{x:.025*Math.sin(Math.PI*t),y:maxY+.91*t,z:-.02};}),width:2.2,alpha:.87});}
+const box={minX:Infinity,maxX:-Infinity,minY:Infinity,maxY:-Infinity,minZ:Infinity,maxZ:-Infinity};for(const line of transformed)for(const p of line.points){for(const a of ['x','y','z']){box['min'+a.toUpperCase()]=Math.min(box['min'+a.toUpperCase()],p[a]);box['max'+a.toUpperCase()]=Math.max(box['max'+a.toUpperCase()],p[a]);}}const width=box.maxX-box.minX,height=box.maxY-box.minY,depth=box.maxZ-box.minZ;const scale=1.8/Math.max(1.5,width,height,depth);const cx=(box.maxX+box.minX)/2,cy=(box.maxY+box.minY)/2,cz=(box.maxZ+box.minZ)/2;
+for(const line of transformed){line.points=line.points.map(p=>({x:(p.x-cx)*scale,y:(p.y-cy)*scale,z:(p.z-cz)*scale}));}
+const result={lines:transformed,bounds:{width:width*scale,height:height*scale}};cache.set(key,result);if(cache.size>100)cache.delete(cache.keys().next().value);return result;}
+function classify(line){if(line.component==='stem')return 'stem'; if(line.component==='stalks')return 'stem';if(line.component==='spots'||line.component==='center')return 'detail';if(line.component==='buds'||line.component==='petals'||line.component==='florets'||line.component==='corona')return 'flower';if(line.color){const c=line.color.toLowerCase();if(['#73a976','#71966c','#6ea46e','#d8b550','#6e9d70','#72a970','#82a77a'].includes(c))return 'stem';if(['#e5aa43','#d4c99b','#ecebd0'].includes(c))return 'detail';}return 'flower';}
+function transform(p,rx,ry,mode){let {x,y,z}=p;if(mode==='3d'){const c=Math.cos(ry),s=Math.sin(ry),u=x*c+z*s,v=-x*s+z*c; const c2=Math.cos(rx),s2=Math.sin(rx);return {x:u,y:y*c2-v*s2,z:y*s2+v*c2};}return {x,y,z};}
+function breezeFor(item,time){const h=Array.from(String(item.id)).reduce((v,ch)=>(Math.imul(v,33)+ch.charCodeAt(0))>>>0,5381);const phase=h*.00011,direction=(h%2)?1:-1,t=time*.001;const shared=Math.sin(t*.72)*.62+Math.sin(t*.31+1.2)*.27;const local=Math.sin(t*(.87+(h%23)*.012)+phase)*.26+Math.sin(t*1.43+phase*1.91)*.12;const gust=Math.max(0,Math.sin(t*.17-.8))*.20;const intensity=breeze.strength==='windy'?2.5:1;return {x:(shared+local+gust)*.072*intensity,y:(Math.sin(t*.58+phase)*.28+shared*.18)*.065*intensity*direction};}
+function swayPoint(p,b){const u=clamp((.92-p.y)/1.85,0,1);const f=u*u*(1.20-.20*u);return {x:p.x+b.x*f,y:p.y,z:p.z+b.y*f};}
+function paint(c,recipe,rect,options={}){let {x,y,w,h}=rect;const geo=geometry(recipe),breezeShift=options.breeze||null,mode=options.mode||'2d',rx=options.rx||0,ry=options.ry||0,zoom=options.zoom||1,opacity=options.opacity??1,progress=options.progress??1;let sf=Math.min(w,h)*.47*zoom;const prepared=geo.lines.map((line,i)=>({line,i,depth:mode==='3d'?transform(line.points[Math.floor(line.points.length/2)],rx,ry,'3d').z:0}));if(mode==='3d')prepared.sort((a,b)=>a.depth-b.depth);const count=Math.ceil(prepared.length*progress);c.save();c.beginPath();c.rect(x,y,w,h);c.clip();c.lineJoin='round';c.lineCap='round';for(let j=0;j<count;j++){const {line}=prepared[j];let category=classify(line);let hex=recipe.colors[category]||DEFAULT[recipe.type];let rgb=hex.match(/[a-f\d]{2}/gi)?.map(q=>parseInt(q,16))||[220,190,220]; const alpha=clamp((line.alpha??.48)*opacity,0,1);c.strokeStyle=`rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`;let width=(line.width||.7)*Math.min(w,h)/640;c.lineWidth=Math.max(.25,width*(category==='stem'?(0.35+(recipe.stemWidth??50)/48):1));c.beginPath();line.points.forEach((p,k)=>{const q=transform(breezeShift?swayPoint(p,breezeShift):p,rx,ry,mode),pers=mode==='3d'?3.6/(3.6-q.z):1,px=x+w/2+q.x*sf*pers,py=y+h*.51+q.y*sf*pers;k===0?c.moveTo(px,py):c.lineTo(px,py);});c.stroke();}c.restore();}
+function sizeCanvas(){const dpr=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect(),w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(w!==canvas.width||h!==canvas.height){canvas.width=w;canvas.height=h;}}
+function render(){sizeCanvas();const w=canvas.width,h=canvas.height;ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);if(app.tab==='create'){if(app.draft)paint(ctx,app.draft,{x:0,y:0,w,h},{mode:app.mode,rx:app.rotX,ry:app.rotY,zoom:app.zoom,progress:app.drawProgress});}else if(app.tab==='arrange'){const ordered=[...stored.arrangement].sort((a,b)=>a.order-b.order);for(const item of ordered){const side=Math.min(w,h)*item.size*app.zoom;const x=item.x*w-side/2,y=item.y*h-side/2;paint(ctx,item.recipe,{x,y,w:side,h:side},{mode:'3d',rx:item.rx,ry:item.ry,breeze:breeze.playing&&breeze.strength!=='still'?breezeFor(item,breeze.clock):null});if(app.selected===item.id){ctx.save();ctx.setLineDash([6,5]);ctx.strokeStyle='rgba(255,255,255,.66)';ctx.lineWidth=1.3;ctx.strokeRect(x+5,y+5,side-10,side-10);ctx.restore();}}}else drawLibraryCanvas();}
+let scheduled=false;function queue(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;render();});}
+function makeThumb(entry){let key=entry.id+'|'+JSON.stringify(entry.recipe);if(thumbCache.has(key))return thumbCache.get(key);const c=document.createElement('canvas');c.width=125;c.height=125;const x=c.getContext('2d');x.fillStyle='#000';x.fillRect(0,0,125,125);paint(x,entry.recipe,{x:0,y:0,w:125,h:125},{mode:'3d',rx:-.22,ry:.30,zoom:.9});const url=c.toDataURL('image/png');thumbCache.set(key,url);if(thumbCache.size>100)thumbCache.delete(thumbCache.keys().next().value);return url;}
+function drawLibraryCanvas(){const w=canvas.width,h=canvas.height,n=stored.library.length;if(!n){ctx.fillStyle='#8e929e';ctx.textAlign='center';ctx.font=`${Math.max(14,Math.round(w/33))}px sans-serif`;ctx.fillText('Your flower library is empty',w/2,h/2);return;}const active=stored.library.find(f=>f.id===app.libSelected);if(active){paint(ctx,active.recipe,{x:0,y:0,w,h},{mode:'3d',rx:-.22,ry:.30,zoom:app.zoom});return;}const list=stored.library.slice(0,9),cols=3,rows=Math.ceil(list.length/cols),cell=Math.min(w/cols,h/Math.max(3,rows));for(let i=0;i<list.length;i++){const col=i%cols,row=Math.floor(i/cols),x=(w-cell*cols)/2+col*cell,y=h*.10+row*cell;paint(ctx,list[i].recipe,{x,y,w:cell,h:cell},{mode:'3d',rx:-.21,ry:.25,zoom:.82});ctx.fillStyle='#c7c7ca';ctx.textAlign='center';ctx.font=`${Math.max(11,Math.round(cell/11))}px sans-serif`;ctx.fillText(list[i].name,x+cell/2,y+cell*.94,cell*.93);}if(n>9){ctx.fillStyle='#aaa';ctx.font=`${Math.max(11,Math.round(w/34))}px sans-serif`;ctx.fillText(`+ ${n-9} more in library`,w/2,h*.96);}}
+function button(label,action,extra=''){return `<button class="btn ${extra}" data-action="${action}">${label}</button>`;}
+function flowerButtons(selected){return `<div class="flower-grid">${TYPES.map(([id,name])=>`<button class="flower-option ${selected===id?'active':''}" data-flower="${id}">${name}</button>`).join('')}</div>`;}
+function dataSection(){return `<div class="section"><h3>GitHub JSON Data</h3><p class="hint" id="dataStatus">${escapeHtml(dataStatus)}</p>${button('Download Updated JSON','export','wide primary')}<div class="row" style="margin-top:8px">${button('Import JSON','import','mini')}${button('Reload GitHub JSON','reload','mini')}</div><p class="hint">Place ${DATA_FILE} beside the HTML file in your GitHub repository. Opening the hosted app reads it automatically. Changes are saved locally until you download the updated JSON and replace the file on GitHub.</p></div>`;}
+function renderControls(){
+ document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===app.tab));
+ const creating=app.tab==='create'&&!!app.draft;
+ $('draw').classList.toggle('control-off',!creating);$('rotate').classList.toggle('control-off',!creating);$('dimension').classList.toggle('control-off',!creating);
+ stage.classList.toggle('placing',app.tab==='arrange'&&app.placing);stage.classList.toggle('moving',app.tab==='arrange'&&!app.placing);
+ $('arrangeBadge').classList.toggle('hidden',app.tab!=='arrange');
+ const source=stored.library.find(f=>f.id===app.placeId);
+ $('arrangeBadge').textContent=app.placing?`Tap to place ${source?.name||'flower'}`:'Drag a flower to move it';
+ let html='';
+ if(app.tab==='create'){
+  html=`<div class="section"><h3>Choose a Flower</h3>${flowerButtons(app.draft?.type)}${!app.draft?'<p class="hint">Select a flower to begin. The canvas stays empty until then.</p>':''}</div>`;
+  if(app.draft){
+   html+=`<div class="section"><h3>Flower Style</h3><div class="styles">${['simple','rich','wandering'].map(s=>button(s[0].toUpperCase()+s.slice(1),'style:'+s,app.draft.style===s?'active':'' )).join('')}</div>${button('New Flower','new','wide primary')}</div>`;
+   html+=`<div class="section"><h3>Stem</h3><div class="control-label"><span>Stem Width</span><span id="stemValue">${app.draft.stemWidth}%</span></div><input aria-label="Stem width" id="stemWidth" class="range" type="range" min="10" max="100" step="5" value="${app.draft.stemWidth}"><div class="hint">Narrow ← → Wide</div></div>`;
+   html+=`<div class="section"><h3>Colors</h3><div class="colors-row">${[['flower','Flower'],['stem','Stem'],['detail','Detail']].map(([key,label])=>`<button class="btn mini" data-color="${key}"><span class="dot" style="background:${app.draft.colors[key]}"></span>${label}</button>`).join('')}</div><div class="palette hidden" id="palette"></div></div>`;
+   html+=`<div class="section">${app.editingId?`<p class="hint">Editing ${escapeHtml(stored.library.find(f=>f.id===app.editingId)?.name||'saved flower')}</p>`:''}${button('Save as New Flower','saveNew','wide primary')}${app.editingId?button('Update This Saved Flower','update','wide'):''}${button('Download Updated JSON','export','wide')}<p class="hint">Each Save adds a version to your working library. Download the JSON when ready to publish it on GitHub.</p></div>`;
   }
-
-  function pointerDistance(){
-    const pts=[...activePointers.values()];
-    if(pts.length<2)return 0;
-    return Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+ }else if(app.tab==='library'){
+  if(!stored.library.length){html=`<div class="empty">Your flower library is empty.<br>Create a flower and select Save as New Flower.</div>${button('Create a Flower','create','wide primary')}`;}
+  else{
+   html=`<div class="section"><h3>Saved Flowers (${stored.library.length})</h3><div class="saved-grid">${stored.library.map(f=>`<button data-saved="${escapeHtml(f.id)}" class="saved-option ${f.id===app.libSelected?'active':''}"><img class="preview" alt="" src="${makeThumb(f)}"><span>${escapeHtml(f.name)}</span></button>`).join('')}</div></div>`;
+   const selected=stored.library.find(f=>f.id===app.libSelected);
+   if(selected)html+=`<div class="section"><h3>${escapeHtml(selected.name)}</h3>${button('Place Flower','place','wide primary')}${button('Edit Flower','edit','wide')}${button('Remove from Library','delLib','wide mini')}</div>`;
   }
-
-  canvas.addEventListener('pointerdown',event=>{
-    if(event.pointerType==='touch')return;
-    if(isDrawing)return;
-    activePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
-
-    if(activePointers.size===1){
-      if(state.dimension==='3d'){
-        isRotating=true;
-        dragPointerId=event.pointerId;
-        dragLastX=event.clientX;
-        dragLastY=event.clientY;
-        stageShell.classList.add('dragging');
-      }
-    }else{
-        isRotating=false;
-      dragPointerId=null;
-      stageShell.classList.remove('dragging');
-      if(activePointers.size===2){
-        pinchStartDistance=pointerDistance();
-        pinchStartZoom=state.viewZoom;
-      }
-    }
-
-    canvas.setPointerCapture?.(event.pointerId);
-    event.preventDefault();
-  });
-
-  canvas.addEventListener('pointermove',event=>{
-    if(event.pointerType==='touch')return;
-    if(!activePointers.has(event.pointerId))return;
-    activePointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
-
-    if(activePointers.size===2){
-      const dist=pointerDistance();
-      if(pinchStartDistance>0){
-        state.viewZoom=Math.max(0.45,Math.min(5,pinchStartZoom*(dist/pinchStartDistance)));
-        queueRender();
-      }
-      event.preventDefault();
-      return;
-    }
-
-    if(state.dimension==='3d'&&isRotating&&event.pointerId===dragPointerId){
-      const dx=event.clientX-dragLastX;
-      const dy=event.clientY-dragLastY;
-      dragLastX=event.clientX;
-      dragLastY=event.clientY;
-      state.viewRotY+=dx*.0105;
-      state.viewRotX=Math.max(-1.42,Math.min(1.42,state.viewRotX+dy*.0105));
-      queueRender();
-      event.preventDefault();
-    }
-  });
-
-  function endPointer(event){
-    if(event.pointerType==='touch')return;
-    activePointers.delete(event.pointerId);
-    if(event.pointerId===dragPointerId){
-      isRotating=false;
-      dragPointerId=null;
-      stageShell.classList.remove('dragging');
-    }
-
-    if(activePointers.size<2){
-      pinchStartDistance=0;
-      pinchStartZoom=state.viewZoom;
-    }
-
-    queueRender();
+  html+=dataSection();
+ }else{
+  const item=stored.arrangement.find(a=>a.id===app.selected),n=stored.arrangement.length;
+  html=`<div class="section"><h3>Arrange Flowers</h3><p class="hint">${app.placing?'Tap empty space to add another copy. Drag any flower to move it.':'Touch and drag a flower to move it. Release anywhere.'}</p>${app.placing?button('Done Placing','donePlace','wide primary'):button('Choose Flower to Place','choosePlace','wide primary')}</div>`;
+  html+=`<div class="section"><h3>Breeze — Test Settings</h3><div class="styles">${['still','gentle','windy'].map(k=>button(k[0].toUpperCase()+k.slice(1),'breeze:'+k,breeze.strength===k?'active':'' )).join('')}</div>${button(breeze.playing?'Pause Breeze':'Start Breeze','breezeToggle','wide primary')}<p class="hint">Temporary breeze controls. The animation setting is not part of the saved JSON.</p></div>`;
+  if(app.placing&&source)html+=`<div class="section"><h3>Adding: ${escapeHtml(source.name)}</h3>${button('Choose Another Flower','choosePlace','wide')}</div>`;
+  if(item)html+=`<div class="section"><h3>Selected: ${escapeHtml(item.flowerName||LABEL[item.recipe.type])}</h3><div class="row">${button('− Smaller','smaller')}${button('+ Larger','larger')}</div><div class="layer-controls" style="margin-top:8px">${button('Send Back','back','mini')}${button('Bring Forward','front','mini')}</div>${button('Remove Flower','remove','wide mini')}<p class="hint">Tap and drag to move this flower.</p></div>`;
+  html+=`<div class="section"><p class="muted">${n} flower${n===1?'':'s'} in arrangement</p>${button('Clear Arrangement','clear','wide mini')}</div>`+dataSection();
+ }
+ controls.innerHTML=html;
+ controls.querySelectorAll('[data-flower]').forEach(b=>b.onclick=()=>{app.draft=G(b.dataset.flower,'rich');app.editingId=null;app.zoom=1;app.drawProgress=1;renderControls();queue();});
+ controls.querySelectorAll('[data-saved]').forEach(b=>b.onclick=()=>{app.libSelected=b.dataset.saved;renderControls();queue();});
+ controls.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>{const pal=$('palette');pal.classList.remove('hidden');pal.innerHTML=COLORS.map(col=>`<button class="swatch ${col===app.draft.colors[b.dataset.color]?'active':''}" title="${col}" data-swatch="${col}" style="background:${col}"></button>`).join('');pal.querySelectorAll('[data-swatch]').forEach(s=>s.onclick=()=>{app.draft.colors[b.dataset.color]=s.dataset.swatch;renderControls();queue();});});
+ controls.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>act(b.dataset.action));
+ const slider=$('stemWidth');if(slider)slider.oninput=()=>{app.draft.stemWidth=Number(slider.value);$('stemValue').textContent=`${app.draft.stemWidth}%`;queue();};
+}
+function tab(t){app.tab=t;if(t==='arrange')app.placing=false;renderControls();queue();}
+function confirmDialog(title,message,yesLabel,onYes){$('modalTitle').textContent=title;$('modalBody').textContent=message;$('modalConfirm').textContent=yesLabel;$('modal').classList.add('open');$('modalCancel').onclick=()=>$('modal').classList.remove('open');$('modalConfirm').onclick=()=>{$('modal').classList.remove('open');onYes();};}
+function selectedFlower(){return stored.library.find(f=>f.id===app.libSelected);}
+function placeMode(id){if(!stored.library.some(f=>f.id===id)){notify('Select a saved flower first.');return;}app.placeId=id;app.placing=true;app.selected=null;app.tab='arrange';renderControls();queue();}
+function nextName(type){let n=1;const existing=new Set(stored.library.map(f=>f.name));while(existing.has(LABEL[type]+' '+n))n++;return LABEL[type]+' '+n;}
+function resetDataSelection(){app.selected=null;app.libSelected=null;app.placeId=null;app.placing=false;app.editingId=null;}
+function downloadJSON(){const file=new Blob([JSON.stringify(stored,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(file);const link=document.createElement('a');link.href=url;link.download=DATA_FILE;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);notify('JSON downloaded — replace the file on GitHub to publish changes.');}
+function act(a){
+ if(a.startsWith('breeze:')){breeze.strength=a.split(':')[1];breeze.playing=breeze.strength!=='still';breeze.last=0;}
+ else if(a==='breezeToggle'){if(breeze.strength==='still')breeze.strength='gentle';breeze.playing=!breeze.playing;breeze.last=0;}
+ else if(a.startsWith('style:')&&app.draft){app.draft.style=a.split(':')[1];}
+ else if(a==='new'&&app.draft){app.draft.seed=(Math.random()*4294967295)>>>0;app.editingId=null;}
+ else if(a==='saveNew'&&app.draft){const record={id:uid(),name:nextName(app.draft.type),recipe:structuredClone(app.draft),createdAt:new Date().toISOString()};stored.library.push(record);app.libSelected=record.id;app.editingId=record.id;save();notify(`${record.name} saved locally. Download JSON to publish.`);}
+ else if(a==='update'&&app.draft){const entry=stored.library.find(f=>f.id===app.editingId);if(entry){confirmDialog('Update saved flower?',`Update ${entry.name}? Already placed flowers will keep their original designs.`,'Update',()=>{entry.recipe=structuredClone(app.draft);thumbCache.clear();save();renderControls();queue();notify(`${entry.name} updated locally.`);});return;}}
+ else if(a==='create')tab('create');
+ else if(a==='place'){const f=selectedFlower();if(f){placeMode(f.id);return;}}
+ else if(a==='edit'){const f=selectedFlower();if(f){app.draft=structuredClone(f.recipe);app.editingId=f.id;app.drawProgress=1;tab('create');return;}}
+ else if(a==='delLib'){const f=selectedFlower();if(f){confirmDialog('Remove saved flower?',`Remove ${f.name}? Flowers already placed in Arrange will remain.`, 'Remove',()=>{stored.library=stored.library.filter(v=>v.id!==f.id);if(app.editingId===f.id)app.editingId=null;app.libSelected=null;thumbCache.clear();save();renderControls();queue();});return;}}
+ else if(a==='donePlace'){app.placing=false;}
+ else if(a==='choosePlace'){app.placing=false;tab('library');return;}
+ else if(a==='smaller'||a==='larger'){const i=stored.arrangement.find(e=>e.id===app.selected);if(i){i.size=clamp(i.size+(a==='smaller'?-.045:.045),.12,1.15);save();}}
+ else if(a==='front'||a==='back'){const i=stored.arrangement.find(e=>e.id===app.selected);if(i){let orders=stored.arrangement.map(e=>e.order);i.order=a==='front'?Math.max(...orders)+1:Math.min(...orders)-1;save();}}
+ else if(a==='remove'){stored.arrangement=stored.arrangement.filter(e=>e.id!==app.selected);app.selected=null;save();}
+ else if(a==='clear'){confirmDialog('Clear arrangement?','This removes all flowers currently placed on the canvas. Your library will be kept.','Clear',()=>{stored.arrangement=[];app.selected=null;save();renderControls();queue();});return;}
+ else if(a==='export'){downloadJSON();}
+ else if(a==='import'){$('importFile').click();return;}
+ else if(a==='reload'){if(dirty)confirmDialog('Reload GitHub JSON?', 'This replaces changes you have made locally since the last GitHub upload. Download JSON first to keep them.','Reload',()=>loadRemote(true));else loadRemote(true);return;}
+ renderControls();queue();
+}
+$('importFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const obj=normalizeData(JSON.parse(await f.text()));confirmDialog('Import Flowergraph JSON?',`Load ${obj.library.length} saved flowers and ${obj.arrangement.length} placed flowers? This replaces the current working library and arrangement.`,'Import',()=>{stored=obj;dirty=true;dataStatus='Imported JSON — download JSON to publish';cacheLocal();resetDataSelection();thumbCache.clear();renderControls();queue();notify('JSON loaded successfully');});}catch(err){notify('Invalid Flowergraph JSON file');console.error(err);}e.target.value='';});
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+const P=e=>{const r=canvas.getBoundingClientRect();return {x:clamp((e.clientX-r.left)/r.width,0,1),y:clamp((e.clientY-r.top)/r.height,0,1)};};let drag=null;
+function hit(p){let list=[...stored.arrangement].sort((a,b)=>b.order-a.order);for(const a of list){let side=a.size,dx=(p.x-a.x)/(side*.55),dy=(p.y-a.y)/(side*.55);if(dx*dx+dy*dy<1.15)return a;}return null;}
+canvas.addEventListener('pointerdown',e=>{
+ if(app.tab!=='arrange'){if(app.tab==='create'&&app.draft&&app.mode==='3d'){drag={camera:true,x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);}return;}
+ let p=P(e),item=hit(p);
+ if(item){app.selected=item.id;drag={id:item.id,dx:p.x-item.x,dy:p.y-item.y};canvas.setPointerCapture(e.pointerId);stage.classList.add('dragging');renderControls();queue();}
+ else if(app.placing){const f=stored.library.find(f=>f.id===app.placeId);if(!f){notify('Choose a saved flower first.');return;}let recipe=structuredClone(f.recipe),n=stored.arrangement.filter(i=>i.flowerId===f.id).length;let angle=(n*2.399963229728653+Math.random()*.35)%(Math.PI*2);let newItem={id:uid(),flowerId:f.id,flowerName:f.name,recipe,x:p.x,y:p.y,size:.35,rx:-.28+.2*Math.sin(n*1.9),ry:angle,order:stored.arrangement.length?Math.max(...stored.arrangement.map(x=>x.order))+1:0};stored.arrangement.push(newItem);app.selected=newItem.id;save();renderControls();queue();}
+ else{app.selected=null;renderControls();queue();}e.preventDefault();
+});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;if(drag.camera){let dx=e.clientX-drag.x,dy=e.clientY-drag.y;app.rotY+=dx*.009;app.rotX=clamp(app.rotX+dy*.009,-1.4,1.4);drag.x=e.clientX;drag.y=e.clientY;}else{let p=P(e),item=stored.arrangement.find(x=>x.id===drag.id);if(item){item.x=clamp(p.x-drag.dx,0,1);item.y=clamp(p.y-drag.dy,0,1);}}queue();e.preventDefault();});
+function endDrag(){if(drag&&!drag.camera)save();drag=null;stage.classList.remove('dragging');}
+canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);
+$('rotate').onclick=()=>{if(!app.draft)return;app.autoRotate=!app.autoRotate;if(app.autoRotate)app.mode='3d';$('rotate').classList.toggle('active',app.autoRotate);queue();};
+$('dimension').onclick=()=>{if(!app.draft)return;app.mode=app.mode==='2d'?'3d':'2d';queue();};let hold=null,longTriggered=false;
+$('dimension').addEventListener('pointerdown',()=>{longTriggered=false;clearTimeout(hold);hold=setTimeout(()=>{longTriggered=true;setFullscreen(true);},650);});$('dimension').addEventListener('pointerup',()=>clearTimeout(hold));$('dimension').addEventListener('pointercancel',()=>clearTimeout(hold));$('dimension').addEventListener('click',e=>{if(longTriggered){longTriggered=false;e.stopImmediatePropagation();}},true);
+function setFullscreen(on){app.fullscreen=on;document.body.classList.toggle('fullscreen',on);queue();} $('fullClose').onclick=()=>setFullscreen(false);$('fullPlus').onclick=()=>{app.zoom=clamp(app.zoom*1.13,.5,4);queue();};$('fullMinus').onclick=()=>{app.zoom=clamp(app.zoom/1.13,.5,4);queue();};
+stage.addEventListener('wheel',e=>{if(app.tab==='create'&&app.draft){e.preventDefault();app.zoom=clamp(app.zoom*(e.deltaY>0?.92:1.08),.5,4);queue();}},{passive:false});
+$('draw').onclick=()=>{if(!app.draft)return;if(drawRaf)cancelAnimationFrame(drawRaf);let start=performance.now();function step(now){app.drawProgress=clamp((now-start)/8000,0,1);queue();if(app.drawProgress<1)drawRaf=requestAnimationFrame(step);else drawRaf=0;}drawRaf=requestAnimationFrame(step);};
+let lastTime=0;function tick(now){if(app.autoRotate&&app.tab==='create'&&app.draft){if(lastTime)app.rotY+=(now-lastTime)*.00033;queue();}if(app.tab==='arrange'&&breeze.playing&&breeze.strength!=='still'&&stored.arrangement.length){if(!breeze.last||now-breeze.last>=38){const delta=breeze.last?Math.min(now-breeze.last,90):38;breeze.clock+=delta;breeze.last=now;queue();}}else breeze.last=0;lastTime=now;requestAnimationFrame(tick);}requestAnimationFrame(tick);
+new ResizeObserver(()=>queue()).observe(stage);
+function readLocalCache(){try{const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(data?.data){return {data:normalizeData(data.data),dirty:!!data.dirty};}const old=JSON.parse(localStorage.getItem('flowergraph-studio-v1')||'null');if(old?.library&&old?.arrangement){return {data:normalizeData(old),dirty:true};}}catch(e){console.warn('Could not read locally saved Flowergraph data',e);}return null;}
+async function loadRemote(force=false){
+ if(loadingRemote&&!force)return;
+ loadingRemote=true;
+ dataStatus='Loading '+DATA_FILE+'…';renderControls();
+ try{
+  const response=await fetch('./'+DATA_FILE+'?v='+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const remote=normalizeData(await response.json());
+  const local=readLocalCache();
+  if(!force&&local?.dirty&&JSON.stringify(local.data)!==JSON.stringify(remote)){
+   stored=local.data;dirty=true;dataStatus='Local unpublished changes loaded; GitHub JSON available';
+  }else{
+   stored=remote;dirty=false;dataStatus='Loaded '+DATA_FILE+' from GitHub';cacheLocal();
   }
-  canvas.addEventListener('pointerup',endPointer);
-  canvas.addEventListener('pointercancel',endPointer);
-  canvas.addEventListener('lostpointercapture',endPointer);
+  resetDataSelection();thumbCache.clear();
+ }catch(e){
+  console.warn('GitHub JSON loading unavailable',e);
+  const local=readLocalCache();if(local){stored=local.data;dirty=local.dirty;dataStatus=dirty?'Local unpublished changes loaded; GitHub JSON unavailable':'Local backup loaded; GitHub JSON unavailable';}
+  else {stored=emptyData();dirty=false;dataStatus='No GitHub JSON loaded. Import JSON or host HTML and JSON together.';}
+ }
+ loadingRemote=false;renderControls();queue();
+}
+// Allow startup to read the relative JSON even when there is no local cache.
+loadingRemote=false;
+renderControls();queue();loadRemote();
 
-  stageShell.addEventListener('wheel',event=>{
-    event.preventDefault();
-    const factor=event.deltaY<0?1.10:(1/1.10);
-    adjustZoom(factor);
-  },{passive:false});
-
-  function touchDistance(touches){
-    if(touches.length<2)return 0;
-    const a=touches[0],b=touches[1];
-    return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
-  }
-
-  canvas.addEventListener('touchstart',event=>{
-    if(isDrawing)return;
-    if(event.touches.length===2){
-      touchPinchStartDistance=touchDistance(event.touches);
-      touchPinchStartZoom=state.viewZoom;
-      isRotating=false;
-      stageShell.classList.remove('dragging');
-      event.preventDefault();
-      return;
-    }
-    if(event.touches.length===1&&state.dimension==='3d'){
-      touchRotateLastX=event.touches[0].clientX;
-      touchRotateLastY=event.touches[0].clientY;
-      isRotating=true;
-      stageShell.classList.add('dragging');
-      event.preventDefault();
-    }
-  },{passive:false});
-
-  canvas.addEventListener('touchmove',event=>{
-    if(isDrawing)return;
-    if(event.touches.length===2){
-      const dist=touchDistance(event.touches);
-      if(touchPinchStartDistance>0){
-        state.viewZoom=Math.max(0.45,Math.min(5,touchPinchStartZoom*(dist/touchPinchStartDistance)));
-        queueRender();
-      }
-      event.preventDefault();
-      return;
-    }
-    if(event.touches.length===1&&state.dimension==='3d'&&isRotating){
-      const t=event.touches[0];
-      const dx=t.clientX-touchRotateLastX;
-      const dy=t.clientY-touchRotateLastY;
-      touchRotateLastX=t.clientX;
-      touchRotateLastY=t.clientY;
-      state.viewRotY+=dx*.0105;
-      state.viewRotX=Math.max(-1.42,Math.min(1.42,state.viewRotX+dy*.0105));
-      queueRender();
-      event.preventDefault();
-    }
-  },{passive:false});
-
-  function endTouchGesture(event){
-    if(event.touches.length<2){
-      touchPinchStartDistance=0;
-      touchPinchStartZoom=state.viewZoom;
-    }
-    if(event.touches.length===0){
-      isRotating=false;
-      stageShell.classList.remove('dragging');
-    }else if(event.touches.length===1&&state.dimension==='3d'){
-      touchRotateLastX=event.touches[0].clientX;
-      touchRotateLastY=event.touches[0].clientY;
-      isRotating=true;
-    }
-    event.preventDefault();
-  }
-  canvas.addEventListener('touchend',endTouchGesture,{passive:false});
-  canvas.addEventListener('touchcancel',endTouchGesture,{passive:false});
-
-  // Safari / Dropbox Preview often exposes pinch as Gesture Events rather than
-  // ordinary two-touch movement. Use Safari's scale value to zoom the figure
-  // while preventing the browser/preview itself from magnifying the page.
-  stageShell.addEventListener('gesturestart',event=>{
-    if(isDrawing)return;
-    safariGestureActive=true;
-    safariGestureStartZoom=state.viewZoom;
-    touchPinchStartDistance=0;
-    isRotating=false;
-    stageShell.classList.remove('dragging');
-    event.preventDefault();
-  },{passive:false});
-
-  stageShell.addEventListener('gesturechange',event=>{
-    if(isDrawing)return;
-    if(!safariGestureActive){
-      safariGestureActive=true;
-      safariGestureStartZoom=state.viewZoom;
-    }
-    const scale=Number.isFinite(event.scale)?event.scale:1;
-    state.viewZoom=Math.max(0.45,Math.min(5,safariGestureStartZoom*scale));
-    pinchStartZoom=state.viewZoom;
-    touchPinchStartZoom=state.viewZoom;
-    queueRender();
-    event.preventDefault();
-  },{passive:false});
-
-  stageShell.addEventListener('gestureend',event=>{
-    safariGestureActive=false;
-    safariGestureStartZoom=state.viewZoom;
-    pinchStartZoom=state.viewZoom;
-    touchPinchStartZoom=state.viewZoom;
-    event.preventDefault();
-  },{passive:false});
-
-  function adjustZoom(factor){
-    state.viewZoom=Math.max(0.45,Math.min(5,state.viewZoom*factor));
-    pinchStartZoom=state.viewZoom;
-    queueRender();
-  }
-
-  fullscreenCloseBtn.addEventListener('click',()=>{ if(state.immersive) setImmersive(false); });
-  fullscreenZoomInBtn.addEventListener('click',()=>{ if(state.immersive) adjustZoom(1.12); });
-  fullscreenZoomOutBtn.addEventListener('click',()=>{ if(state.immersive) adjustZoom(1/1.12); });
-
-  function setChangeStyle(value){
-    state.changeStyle=value;
-    syncStyleUI();
-  }
-
-  ['pointerdown','pointerup'].forEach(type=>{
-    fullscreenCloseBtn.addEventListener(type,e=>e.preventDefault());
-    fullscreenZoomInBtn.addEventListener(type,e=>e.preventDefault());
-    fullscreenZoomOutBtn.addEventListener(type,e=>e.preventDefault());
-  });
-
-  visibilityBtn.addEventListener('click',()=>{
-    const turnOn=!selectedIndices().every(i=>state.layers[i].enabled);
-    applyToSelected(layer=>layer.enabled=turnOn);
-    syncUI();queueRender();
-  });
-
-  function nudgeSize(delta){
-    applyToSelected(layer=>layer.scale=Math.max(10,Math.min(100,layer.scale+delta)));
-    syncUI();queueRender();
-  }
-  sizeMinus.addEventListener('click',()=>nudgeSize(-5));
-  sizePlus.addEventListener('click',()=>nudgeSize(5));
-
-  function changeSelectedCurves(){
-    selectedIndices().forEach(i=>{
-      const layer=state.layers[i];
-      const spec=randomSpirographSpec();
-      layer.type=spec.type;
-      layer.R=spec.R;
-      layer.r=spec.r;
-      layer.dPct=spec.dPct;
-      layer.rotation=spec.rotation;
-      layer.phi=spec.phi;
-      layer.zAmp=spec.zAmp;
-      layer.zFreq=spec.zFreq;
-      invalidateLayer(i);
-    });
-    syncUI();queueRender();
-  }
-
-  function selectStyleAndChange(value){
-    setChangeStyle(value);
-    changeSelectedCurves();
-  }
-  styleSimpleBtn.addEventListener('click',()=>selectStyleAndChange('simple'));
-  styleRichBtn.addEventListener('click',()=>selectStyleAndChange('rich'));
-  styleWanderingBtn.addEventListener('click',()=>selectStyleAndChange('wandering'));
-
-  function drawSnapshot(){
-    if(isDrawing)return;
-    resizeCanvas();
-
-    const view={centerX:canvas.width/2,centerY:canvas.height/2,radius:guideRadius()};
-    const layersSnapshot=[];
-    for(let i=0;i<LAYER_COUNT;i++){
-      const layer=state.layers[i];
-      if(!layer.enabled)continue;
-      const points=projectedPoints(i,view);
-      layersSnapshot.push({
-        points,
-        color:layer.color.hex,
-        lineWidth:(i===0?1.15:1)*(Math.min(canvas.width,canvas.height)/1024),
-        lastIndex:0
-      });
-    }
-    const snapshot={view,layers:layersSnapshot};
-
-    isDrawing=true;
-    renderQueued=false;
-    drawBtn.disabled=true;
-    drawBtn.textContent='Drawing…';
-    ctx.fillStyle='#000';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    const duration=20000;
-    const start=performance.now();
-
-    function frame(now){
-      const t=Math.min(1,(now-start)/duration);
-
-      for(const layer of snapshot.layers){
-        const pts=layer.points;
-        if(pts.length<2)continue;
-        const target=Math.max(1,Math.floor((pts.length-1)*t));
-        if(target>layer.lastIndex){
-          ctx.save();
-          ctx.lineCap='round';
-          ctx.lineJoin='round';
-          ctx.strokeStyle=rgba(layer.color,.98);
-          ctx.lineWidth=layer.lineWidth;
-          ctx.beginPath();
-          ctx.moveTo(pts[layer.lastIndex].x,pts[layer.lastIndex].y);
-          for(let j=layer.lastIndex+1;j<=target;j++)ctx.lineTo(pts[j].x,pts[j].y);
-          ctx.stroke();
-          ctx.restore();
-          layer.lastIndex=target;
-        }
-      }
-
-      if(t<1){
-        drawRaf=requestAnimationFrame(frame);
-      }else{
-        isDrawing=false;
-        drawRaf=null;
-        drawBtn.disabled=false;
-        drawBtn.textContent='Draw';
-        render();
-      }
-    }
-
-    drawRaf=requestAnimationFrame(frame);
-  }
-
-  drawBtn.addEventListener('click',drawSnapshot);
-
-  function buildPalette(){
-    const container=document.getElementById('sharedPalette');
-    crayon16.forEach(color=>{
-      const btn=document.createElement('button');
-      btn.type='button';btn.className='swatch-button';btn.title=color.name;btn.style.background=color.hex;
-      if(color.hex==='#FFFFFF')btn.style.borderColor='rgba(0,0,0,.28)';
-      btn.addEventListener('click',()=>{applyToSelected(layer=>layer.color=color);syncUI();queueRender()});
-      container.appendChild(btn);
-    });
-
-    document.querySelectorAll('.layer-select-btn').forEach(btn=>btn.addEventListener('click',()=>{
-      state.allSelected=false;
-      state.activeLayer=+btn.dataset.layer;
-      state.layers[state.activeLayer].enabled=true;
-      syncUI();queueRender();
-    }));
-
-    allBtn.addEventListener('click',()=>{
-      state.allSelected=true;
-      state.layers.forEach(layer=>layer.enabled=true);
-      syncUI();queueRender();
-    });
-  }
-
-  function isTouchPortrait(){
-    return matchMedia('(hover:none) and (pointer:coarse) and (orientation:portrait)').matches;
-  }
-
-  function syncPanelHeight(){
-    if(state.immersive){
-      controlPanel.style.removeProperty('height');
-      controlPanel.style.removeProperty('max-height');
-      return;
-    }
-    if(isTouchPortrait()){
-      controlPanel.style.removeProperty('height');
-      controlPanel.style.removeProperty('max-height');
-      return;
-    }
-    const h=Math.round(stageShell.getBoundingClientRect().height);
-    if(h>0){
-      controlPanel.style.height=`${h}px`;
-      controlPanel.style.maxHeight=`${h}px`;
-    }
-  }
-
-  new ResizeObserver(()=>{syncPanelHeight();queueRender()}).observe(stageShell);
-  window.addEventListener('resize',()=>{syncPanelHeight();queueRender()});
-
-  buildPalette();
-  syncPanelHeight();
-  syncUI();
-  syncDimensionUI();
-  queueRender();
-})();
-</script>
-</body>
-</html>
+</script></body></html>
