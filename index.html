@@ -1,7 +1,7 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flowergraph Studio 1.08</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flowergraph Studio 1.10</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;height:100%;background:#050505;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}body{padding:10px;overflow:hidden}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}.app{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,470px);gap:10px;height:100%}.stage,.panel{border:1px solid #292b32;border-radius:22px;background:#080808;min-width:0;overflow:hidden}.stage{position:relative;align-self:start;aspect-ratio:1/1;width:100%;max-height:calc(100vh - 20px)}canvas{width:100%;height:100%;display:block;touch-action:none}.panel{display:flex;flex-direction:column;padding:12px;gap:10px}.panel-head{display:flex;align-items:center;gap:9px;flex-shrink:0}.panel-head .tabs{flex:1;min-width:0}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex-shrink:0}.tab,.btn,.flower-option,.saved-option{background:#1b1d22;border:1px solid #414651;border-radius:12px;color:white;padding:11px 8px;font-weight:700;min-height:45px}.tab.active,.btn.active,.flower-option.active,.saved-option.active{border:2px solid white;background:#30333b}.info-toggle{width:45px;height:45px;flex:none;border-radius:12px;border:1px solid #414651;background:#1b1d22;color:#eee;display:flex;align-items:center;justify-content:center;padding:0}.info-toggle svg{width:23px;height:23px}.info-toggle.active{border:2px solid #fff;background:#1b1d22}/* Help is a floating, nonblocking popup, not a panel section. */
-.info-popup{position:fixed;top:20px;left:20px;width:min(405px,calc(100vw - 28px));max-height:78dvh;overflow:auto;overscroll-behavior:contain;z-index:48;border:1px solid #777d88;border-radius:17px;background:#1b1e24;padding:16px;box-shadow:0 20px 65px #000e,0 0 0 1px #ffffff0d}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#050505;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}body{padding:10px;overflow:hidden}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}.app{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,470px);gap:10px;height:100%}.stage,.panel{border:1px solid #292b32;border-radius:22px;background:#080808;min-width:0;overflow:hidden}.stage{position:relative;align-self:start;aspect-ratio:1/1;width:100%;max-height:calc(100vh - 20px)}.stage::before{content:"";display:block;padding-top:100%}.stage canvas{position:absolute;top:0;left:0;width:100%;height:100%;display:block;touch-action:none}body.fullscreen .stage::before{display:none}.panel{display:flex;flex-direction:column;padding:12px;gap:10px}.panel-head{display:flex;align-items:center;gap:9px;flex-shrink:0}.panel-head .tabs{flex:1;min-width:0}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex-shrink:0}.tab,.btn,.flower-option,.saved-option{background:#1b1d22;border:1px solid #414651;border-radius:12px;color:white;padding:11px 8px;font-weight:700;min-height:45px}.tab.active,.btn.active,.flower-option.active,.saved-option.active{border:2px solid white;background:#30333b}.info-toggle{width:45px;height:45px;flex:none;border-radius:12px;border:1px solid #414651;background:#1b1d22;color:#eee;display:flex;align-items:center;justify-content:center;padding:0}.info-toggle svg{width:23px;height:23px}.info-toggle.active{border:2px solid #fff;background:#1b1d22}/* Help is a floating, nonblocking popup, not a panel section. */
+.info-popup{position:fixed;top:20px;left:20px;width:405px;max-width:calc(100vw - 28px);max-height:78vh;max-height:78dvh;overflow:auto;overscroll-behavior:contain;z-index:48;border:1px solid #777d88;border-radius:17px;background:#1b1e24;padding:16px;box-shadow:0 20px 65px #000e,0 0 0 1px #ffffff0d}
 .info-popup-head{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:7px}
 .info-popup-head .info-heading{margin:0}
 .info-close{color:#eee;background:#2b2e36;border:1px solid #69707b;border-radius:9px;width:32px;height:32px;display:grid;place-items:center;flex-shrink:0;font-size:23px;line-height:1}
@@ -9,11 +9,31 @@
 .math-equations{display:grid;gap:8px;margin-top:11px}
 .math-equation{background:#111317;border:1px solid #414651;border-radius:10px;padding:9px 10px}
 .math-formula{display:block;font:500 14px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#eee;overflow-wrap:anywhere}
-.math-note{font-size:12px;color:#b9bdc9;line-height:1.4;margin-top:3px}.info-heading{font-size:16px;font-weight:700;margin:0 0 5px}.info-copy{font-size:14px;line-height:1.48;color:#d5d7de;margin:0}.math-toggle{display:block;width:100%;margin-top:10px;color:#eee;background:#242830;border:1px solid #747b86;border-radius:10px;padding:9px 11px;text-align:left;font-weight:650}.math-toggle.active{border:2px solid white;background:#242830}.math-copy{font-size:13px;line-height:1.5;color:#c8d0dc;margin:9px 2px 1px}.info-toggle:focus-visible,.math-toggle:focus-visible,.info-close:focus-visible{outline:2px solid #fff;outline-offset:2px}.panel-scroll{overflow:auto;min-height:0;overscroll-behavior:contain;padding-right:2px;padding-bottom:28px}.section{border:1px solid #2a2e37;background:#111215;border-radius:16px;padding:12px;margin-bottom:10px}.section h3{font-size:16px;margin:0 0 10px}.flower-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.flower-option{min-height:51px}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1;min-width:0}.row .btn{min-width:0}.styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.wide{width:100%;margin-top:9px}.primary{background:#30333b;border:1px solid #747b86;font-size:18px;min-height:55px}.hint{color:#aeb2bc;font-size:13px;line-height:1.45;margin:8px 0 0}.muted{color:#949ba7;font-size:13px}.range{width:100%;accent-color:#cab1dd;touch-action:pan-x}.mini{font-size:13px;min-height:39px}.control-label{font-size:13px;color:#b8beca;display:flex;justify-content:space-between;margin:10px 0 2px}.palette{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}.swatch{aspect-ratio:1;border-radius:9px;border:2px solid #777}.swatch.active{border:3px solid white}.colors-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.colors-row .btn{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;padding-left:4px;padding-right:4px;white-space:nowrap}.colors-row .dot{flex-shrink:0}.creation-actions{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px}.creation-actions .btn{width:100%;margin:0;min-width:0;font-size:clamp(13px,1.3vw,16px);padding:9px 5px}.dot{width:15px;height:15px;border-radius:50%;display:inline-block;border:1px solid #eee}.left-actions{position:absolute;bottom:12px;left:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-start;gap:9px}.overlay{opacity:.45;color:#eee;background:none;border:none;font-weight:700;padding:0}.camera{position:absolute;bottom:12px;right:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:9px}.camera button{color:#eee;opacity:.45;background:none;border:none;font-weight:700}.camera button.active{opacity:.75}.filename{color:#777;text-align:center;font-size:11px;margin-top:12px}.empty{color:#aeb2bb;text-align:center;padding:38px 14px;border:1px dashed #4a4d56;border-radius:15px;line-height:1.55}.saved-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.saved-option{padding:7px;display:flex;gap:8px;align-items:center;text-align:left}.preview{width:58px;height:58px;background:#000;border-radius:8px;flex-shrink:0}.toast{position:absolute;top:15px;left:50%;transform:translateX(-50%);background:#282831;border:1px solid #656670;border-radius:12px;padding:9px 14px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:12}.toast.visible{opacity:1}.layer-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.arrange-badge{position:absolute;top:12px;left:14px;background:#18191fcc;border:1px solid #555a64;border-radius:10px;padding:7px 10px;color:#cfd2d9;font-size:13px;z-index:4;pointer-events:none}.fullscreenClose,.fullscreenZoom{display:none}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal.open{display:flex}.modal-body{width:min(450px,100%);padding:17px;background:#15171c;border:1px solid #505664;border-radius:18px}.modal h3{margin-top:0}.modbuttons{display:flex;gap:10px;margin-top:18px}.modbuttons>*{flex:1}.control-off{display:none!important}.stage.placing{cursor:crosshair}.stage.moving{cursor:grab}.stage.dragging{cursor:grabbing}.hidden{display:none!important}.panel [disabled]{opacity:.33;cursor:default}
-body.fullscreen{padding:0;overflow:hidden}body.fullscreen .stage{position:fixed;inset:0;width:100vw;height:100dvh;max-height:none;z-index:30;border:0;border-radius:0;aspect-ratio:auto}body.fullscreen .left-actions,body.fullscreen .camera{display:none}body.fullscreen .fullscreenClose,body.fullscreen .fullscreenZoom{display:flex;position:fixed;z-index:40;background:none;color:#eee;opacity:.65;border:0;font-size:42px;width:65px;height:65px;align-items:center;justify-content:center}body.fullscreen .fullscreenClose{top:10px;right:10px}body.fullscreen .fullscreenZoom.in{top:10px;left:10px}body.fullscreen .fullscreenZoom.out{top:76px;left:10px}
-@media(max-width:1000px) and (hover:hover){body{overflow:auto;padding:0}.app{display:block;height:auto}.stage{max-height:none}.panel{border-radius:20px;height:auto}.panel-scroll{overflow:visible}}
-@media(max-width:700px){body{padding:0}.app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:5px;height:100dvh}.stage{max-height:none;aspect-ratio:1/1;border-radius:0 0 17px 17px}.panel{border-radius:17px 17px 0 0}.tab{font-size:15px}.panel-scroll{overflow:auto}}
-</style></head><body><div class="app"><section class="stage" id="stage"><canvas id="art"></canvas><div class="arrange-badge hidden" id="arrangeBadge"></div><div class="toast" id="toast"></div><div class="left-actions"><button class="overlay" id="full" type="button">Full</button><button class="overlay" id="draw" type="button">Draw</button></div><div class="camera"><button id="rotate">Rotate</button><button id="dimension">2D | 3D</button></div></section><aside class="panel"><div class="panel-head"><div class="tabs"><button class="tab active" data-tab="create">Create</button><button class="tab" data-tab="library">Library</button><button class="tab" data-tab="arrange">Arrange</button></div><button class="info-toggle" id="infoToggle" type="button" aria-label="Information mode" aria-pressed="false" title="Information"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="9.25"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r=".75" fill="currentColor" stroke="none"/></svg></button></div><div class="panel-scroll" id="controls"></div><div class="filename">Flowergraph_Studio_1.08.html</div></aside></div><div class="info-popup hidden" id="infoPopup" role="dialog" aria-labelledby="infoHeading" aria-describedby="infoCopy">
+.math-note{font-size:12px;color:#b9bdc9;line-height:1.4;margin-top:3px}.info-heading{font-size:16px;font-weight:700;margin:0 0 5px}.info-copy{font-size:14px;line-height:1.48;color:#d5d7de;margin:0}.math-toggle{display:block;width:100%;margin-top:10px;color:#eee;background:#242830;border:1px solid #747b86;border-radius:10px;padding:9px 11px;text-align:left;font-weight:650}.math-toggle.active{border:2px solid white;background:#242830}.math-copy{font-size:13px;line-height:1.5;color:#c8d0dc;margin:9px 2px 1px}.info-toggle:focus-visible,.math-toggle:focus-visible,.info-close:focus-visible{outline:2px solid #fff;outline-offset:2px}.panel-scroll{overflow:auto;min-height:0;overscroll-behavior:contain;padding-right:2px;padding-bottom:28px}.section{border:1px solid #2a2e37;background:#111215;border-radius:16px;padding:12px;margin-bottom:10px}.section h3{font-size:16px;margin:0 0 10px}.flower-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.flower-option{min-height:51px}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1;min-width:0}.row .btn{min-width:0}.styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.wide{width:100%;margin-top:9px}.primary{background:#30333b;border:1px solid #747b86;font-size:18px;min-height:55px}.hint{color:#aeb2bc;font-size:13px;line-height:1.45;margin:8px 0 0}.muted{color:#949ba7;font-size:13px}.range{width:100%;min-width:0;accent-color:#cab1dd;touch-action:pan-x}.range-stepper{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:center;gap:8px}.range-step{height:42px;width:42px;display:grid;place-items:center;border:1px solid #414651;border-radius:11px;background:#1b1d22;color:#f3f3f3;font-size:26px;font-weight:500;line-height:1;padding:0}.range-step:active{border-color:#fff;background:#30333b}.range-step:focus-visible{outline:2px solid #fff;outline-offset:2px}.mini{font-size:13px;min-height:39px}.control-label{font-size:13px;color:#b8beca;display:flex;justify-content:space-between;margin:10px 0 2px}.palette{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}.swatch{aspect-ratio:1;border-radius:9px;border:2px solid #777}.swatch.active{border:3px solid white}.colors-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.colors-row .btn{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;padding-left:4px;padding-right:4px;white-space:nowrap}.colors-row .dot{flex-shrink:0}.creation-actions{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px}.creation-actions .btn{width:100%;margin:0;min-width:0;font-size:15px;padding:9px 5px}.dot{width:15px;height:15px;border-radius:50%;display:inline-block;border:1px solid #eee}.left-actions{position:absolute;bottom:12px;left:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-start;gap:9px}.overlay{opacity:.45;color:#eee;background:none;border:none;font-weight:700;padding:0}.camera{position:absolute;bottom:12px;right:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:9px}.camera button{color:#eee;opacity:.45;background:none;border:none;font-weight:700}.camera button.active{opacity:.75}.filename{color:#777;text-align:center;font-size:11px;margin-top:12px}.empty{color:#aeb2bb;text-align:center;padding:38px 14px;border:1px dashed #4a4d56;border-radius:15px;line-height:1.55}.saved-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.saved-option{padding:7px;display:flex;gap:8px;align-items:center;text-align:left}.preview{width:58px;height:58px;background:#000;border-radius:8px;flex-shrink:0}.toast{position:absolute;top:15px;left:50%;transform:translateX(-50%);background:#282831;border:1px solid #656670;border-radius:12px;padding:9px 14px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:12}.toast.visible{opacity:1}.layer-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.arrange-badge{position:absolute;top:12px;left:14px;background:#18191fcc;border:1px solid #555a64;border-radius:10px;padding:7px 10px;color:#cfd2d9;font-size:13px;z-index:4;pointer-events:none}.fullscreenClose,.fullscreenZoom{display:none}.modal{position:fixed;top:0;right:0;bottom:0;left:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal.open{display:flex}.modal-body{width:min(450px,100%);padding:17px;background:#15171c;border:1px solid #505664;border-radius:18px}.modal h3{margin-top:0}.modbuttons{display:flex;gap:10px;margin-top:18px}.modbuttons>*{flex:1}.control-off{display:none!important}.stage.placing{cursor:crosshair}.stage.moving{cursor:grab}.stage.dragging{cursor:grabbing}.hidden{display:none!important}.panel [disabled]{opacity:.33;cursor:default}
+body.fullscreen{padding:0;overflow:hidden}body.fullscreen .stage{position:fixed;top:0;right:0;bottom:0;left:0;width:100vw;height:100vh;height:var(--app-height,100vh);height:100dvh;max-height:none;z-index:30;border:0;border-radius:0;aspect-ratio:auto}body.fullscreen .left-actions,body.fullscreen .camera{display:none}body.fullscreen .fullscreenClose,body.fullscreen .fullscreenZoom{display:flex;position:fixed;z-index:40;background:none;color:#eee;opacity:.65;border:0;font-size:42px;width:65px;height:65px;align-items:center;justify-content:center}body.fullscreen .fullscreenClose{top:10px;right:10px}body.fullscreen .fullscreenZoom.in{top:10px;left:10px}body.fullscreen .fullscreenZoom.out{top:76px;left:10px}
+/* 9.7-inch iPad landscape (1024x768) keeps two columns with flexible widths. */
+@media (min-width:901px) and (max-width:1200px){
+ .app{grid-template-columns:minmax(0,1fr) minmax(340px,40vw)}
+}
+/* Tablets in portrait need a stacked layout, regardless of hover/mouse support. */
+@media (max-width:900px) and (orientation:portrait), (max-width:700px){
+ body{padding:0;overflow:hidden}
+ .app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:5px;height:100vh;height:var(--app-height,100vh)}
+ .stage{max-height:none;aspect-ratio:1/1;border-radius:0 0 17px 17px}
+ .panel{min-height:0;border-radius:17px 17px 0 0}
+ .panel-scroll{overflow:auto;-webkit-overflow-scrolling:touch}
+ .tab{font-size:15px}
+}
+/* iPad portrait: keep the figure square, but leave real room for controls. */
+@media (min-width:701px) and (max-width:900px) and (orientation:portrait){
+ .stage{width:64vh;max-width:100%;margin:0 auto}
+ .panel{max-width:none}
+}
+@media (max-width:700px){.stage{width:100%}.panel-head{gap:6px}.info-toggle{width:43px;height:43px}}
+/* Touch-first Safari needs scrolling to remain inside the control list. */
+@supports (-webkit-overflow-scrolling:touch){.panel-scroll{-webkit-overflow-scrolling:touch}}
+
+</style></head><body><div class="app"><section class="stage" id="stage"><canvas id="art"></canvas><div class="arrange-badge hidden" id="arrangeBadge"></div><div class="toast" id="toast"></div><div class="left-actions"><button class="overlay" id="full" type="button">Full</button><button class="overlay" id="draw" type="button">Draw</button></div><div class="camera"><button id="rotate">Rotate</button><button id="dimension">2D | 3D</button></div></section><aside class="panel"><div class="panel-head"><div class="tabs"><button class="tab active" data-tab="create">Create</button><button class="tab" data-tab="library">Library</button><button class="tab" data-tab="arrange">Arrange</button></div><button class="info-toggle" id="infoToggle" type="button" aria-label="Information mode" aria-pressed="false" title="Information"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="9.25"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r=".75" fill="currentColor" stroke="none"/></svg></button></div><div class="panel-scroll" id="controls"></div><div class="filename">Flowergraph_Studio_1.10.html</div></aside></div><div class="info-popup hidden" id="infoPopup" role="dialog" aria-labelledby="infoHeading" aria-describedby="infoCopy">
 <div class="info-popup-head"><h2 class="info-heading" id="infoHeading">Information</h2><button class="info-close" type="button" id="infoClose" aria-label="Close guidance" title="Close">×</button></div>
 <p class="info-copy" id="infoCopy">Click any button for guidance</p>
 <button class="math-toggle hidden" id="mathToggle" type="button" aria-expanded="false" aria-controls="mathDetails">How the mathematics works ▾</button>
@@ -70,7 +90,7 @@ function surf(p,u,w){
   const twist=w*span+p.twist*u;
   const x=radial[0]*reach+side[0]*twist;
   const y=radial[1]*reach+side[1]*twist;
-  const z=p.height+p.lift*u+p.curl*u*u+(.055+.065*((state.recipe?.curlPct||52)/100))*w*w*Math.sin(Math.PI*u)-p.curl*.55*Math.pow(u,4);
+  const z=p.height+p.lift*u+p.curl*u*u+(.055+.065*(((state.recipe&&state.recipe.curlPct)||52)/100))*w*w*Math.sin(Math.PI*u)-p.curl*.55*Math.pow(u,4);
   return {x,y,z};
 }
 function pushLine(lines,points,width,alpha){ if(points.length>1) lines.push({points,width,alpha,color:'#df679a'}); }
@@ -707,10 +727,17 @@ function build(){
  return state.geometry;
 };
 const TYPES=[['dandelion','Dandelion'],['dahlia','Dahlia'],['lace',"Queen Anne's Lace"],['iris','Iris'],['passion','Passionflower'],['foxglove','Foxglove'],['allium','Allium']];
-const LABEL=Object.fromEntries(TYPES);
+const LABEL={};for(const pair of TYPES)LABEL[pair[0]]=pair[1];
 const COLORS=['#F7F7F2','#F2E6D8','#D5CABD','#7A5C3E','#C54B4B','#E6873C','#F0C84B','#8BAA47','#4F8B57','#4D8EA8','#4B68C5','#7B62C7','#A06BC7','#D36CAB','#C0A4E6','#B7B7B7'];
 const DEFAULT={dandelion:'#efe8d3',dahlia:'#df679a',lace:'#ecebd0',iris:'#af90dc',passion:'#bf9cec',foxglove:'#d36cab',allium:'#c0a4e6'};
 const $=id=>document.getElementById(id),canvas=$('art'),ctx=canvas.getContext('2d'),stage=$('stage'),controls=$('controls');
+// 9.7-inch iPads may run Safari without structuredClone, Pointer Events, or ResizeObserver.
+const copyRecipe=value=>JSON.parse(JSON.stringify(value));
+const tabletDevice=/iPad/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function updateViewportHeight(){document.documentElement.style.setProperty('--app-height',window.innerHeight+'px');}
+updateViewportHeight();
+window.addEventListener('resize',updateViewportHeight);
+window.addEventListener('orientationchange',()=>{setTimeout(()=>{updateViewportHeight();queue();positionInfoPopup();},180);});
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const G=(type,style='rich',seed=(Math.random()*4294967295)>>>0)=>({type,style,seed,stemWidth:50,colors:{flower:DEFAULT[type],stem:'#679b65',detail:type==='foxglove'?'#f2e6d8':'#e1ba64'}});
 let stored={library:{},arrangement:[]};
@@ -726,10 +753,11 @@ function notify(t){const n=$('toast');n.textContent=t;n.classList.add('visible')
 function dandelion(recipe){let seed=recipe.seed>>>0;function rand(){seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296;}const lines=[]; const put=(pts,component,width=1,alpha=.6)=>lines.push({points:pts,component,width,alpha});let count=recipe.style==='simple'?78:recipe.style==='rich'?122:166;let tufts=recipe.style==='simple'?8:recipe.style==='rich'?15:22;const golden=Math.PI*(3-Math.sqrt(5));for(let i=0;i<count;i++){const y=1-2*(i+.5)/count,az=i*golden,rr=Math.sqrt(1-y*y),d={x:Math.cos(az)*rr,y,z:Math.sin(az)*rr};const base={x:d.x*.10,y:d.y*.10-.47,z:d.z*.10};const tip={x:d.x*.66,y:d.y*.66-.47,z:d.z*.66};put([base,tip],'stem',.63,.43);for(let t=0;t<tufts;t++){let a=t*6.283/tufts + rand()*.08,side={x:Math.cos(a),y:Math.sin(a),z:.13*Math.sin(a*2)};put([tip,{x:tip.x+d.x*.07+side.x*.13,y:tip.y+d.y*.07+side.y*.13,z:tip.z+d.z*.07+side.z*.13}],'flower',.44,.52);}}put([{x:0,y:1.35,z:0},{x:0,y:-.47,z:0}],'stem',2.2,.9);return lines;}
 GENERATORS.dandelion=dandelion;
 function geometry(recipe){const key=`${recipe.type}-${recipe.seed}-${recipe.style}`;if(cache.has(key))return cache.get(key);let raw=GENERATORS[recipe.type](recipe);const transformed=[];for(const line of raw){if(!Array.isArray(line.points)||line.points.length<2)continue;let pts=line.points; if(recipe.type==='dahlia')pts=pts.map(p=>({x:p.x,y:-p.z-.40,z:p.y}));transformed.push({...line,points:pts});}
-if(recipe.type==='dahlia'){let maxY=Math.max(...transformed.flatMap(l=>l.points.map(p=>p.y)));transformed.push({component:'stem',points:Array.from({length:28},(_,i)=>{const t=i/27;return{x:.025*Math.sin(Math.PI*t),y:maxY+.91*t,z:-.02};}),width:2.2,alpha:.87});}
+if(recipe.type==='dahlia'){let maxY=-Infinity;for(const line of transformed)for(const p of line.points)maxY=Math.max(maxY,p.y);transformed.push({component:'stem',points:Array.from({length:28},(_,i)=>{const t=i/27;return{x:.025*Math.sin(Math.PI*t),y:maxY+.91*t,z:-.02};}),width:2.2,alpha:.87});}
 const box={minX:Infinity,maxX:-Infinity,minY:Infinity,maxY:-Infinity,minZ:Infinity,maxZ:-Infinity};for(const line of transformed)for(const p of line.points){for(const a of ['x','y','z']){box['min'+a.toUpperCase()]=Math.min(box['min'+a.toUpperCase()],p[a]);box['max'+a.toUpperCase()]=Math.max(box['max'+a.toUpperCase()],p[a]);}}const width=box.maxX-box.minX,height=box.maxY-box.minY,depth=box.maxZ-box.minZ;const scale=1.8/Math.max(1.5,width,height,depth);const cx=(box.maxX+box.minX)/2,cy=(box.maxY+box.minY)/2,cz=(box.maxZ+box.minZ)/2;
 for(const line of transformed){line.points=line.points.map(p=>({x:(p.x-cx)*scale,y:(p.y-cy)*scale,z:(p.z-cz)*scale}));}
-const result={lines:transformed,bounds:{width:width*scale,height:height*scale}};cache.set(key,result);if(cache.size>100)cache.delete(cache.keys().next().value);return result;}
+for(const line of transformed)line.category=classify(line);
+const result={lines:transformed,bounds:{width:width*scale,height:height*scale}};cache.set(key,result);if(cache.size>(tabletDevice?16:60))cache.delete(cache.keys().next().value);return result;}
 function classify(line){if(line.component==='stem')return 'stem'; if(line.component==='stalks')return 'stem';if(line.component==='spots'||line.component==='center')return 'detail';if(line.component==='buds'||line.component==='petals'||line.component==='florets'||line.component==='corona')return 'flower';if(line.color){const c=line.color.toLowerCase();if(['#73a976','#71966c','#6ea46e','#d8b550','#6e9d70','#72a970','#82a77a'].includes(c))return 'stem';if(['#e5aa43','#d4c99b','#ecebd0'].includes(c))return 'detail';}return 'flower';}
 function transform(p,rx,ry,mode){let {x,y,z}=p;if(mode==='3d'){const c=Math.cos(ry),s=Math.sin(ry),u=x*c+z*s,v=-x*s+z*c; const c2=Math.cos(rx),s2=Math.sin(rx);return {x:u,y:y*c2-v*s2,z:y*s2+v*c2};}return {x,y,z};}
 // Temporary animation preview: deform local 3D points while preserving the stem's anchored foot.
@@ -752,8 +780,40 @@ function swayPoint(p,b){
  return {x:p.x+b.x*f,y:p.y,z:p.z+b.y*f};
 }
 function stemScale(value){const v=clamp(Number(value)||50,10,100);const original=.35+v/48;const extended=Math.max(0,(v-50)/50);return original*(1+4*Math.pow(extended,1.2));}
-function paint(c,recipe,rect,options={}){let {x,y,w,h}=rect;const geo=geometry(recipe),breezeShift=options.breeze||null,mode=options.mode||'2d',rx=options.rx||0,ry=options.ry||0,zoom=options.zoom||1,opacity=options.opacity??1,progress=options.progress??1;let sf=Math.min(w,h)*.47*zoom;const prepared=geo.lines.map((line,i)=>({line,i,depth:mode==='3d'?transform(line.points[Math.floor(line.points.length/2)],rx,ry,'3d').z:0}));if(mode==='3d')prepared.sort((a,b)=>a.depth-b.depth);const count=Math.ceil(prepared.length*progress);c.save();c.beginPath();c.rect(x,y,w,h);c.clip();c.lineJoin='round';c.lineCap='round';for(let j=0;j<count;j++){const {line}=prepared[j];let category=classify(line);let hex=recipe.colors[category]||DEFAULT[recipe.type];let rgb=hex.match(/[a-f\d]{2}/gi)?.map(q=>parseInt(q,16))||[220,190,220]; const alpha=clamp((line.alpha??.48)*opacity,0,1);c.strokeStyle=`rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`;let width=(line.width||.7)*Math.min(w,h)/640;c.lineWidth=Math.max(.25,width*(category==='stem'?stemScale(recipe.stemWidth??50):1));c.beginPath();line.points.forEach((p,k)=>{const q=transform(breezeShift?swayPoint(p,breezeShift):p,rx,ry,mode),pers=mode==='3d'?3.6/(3.6-q.z):1,px=x+w/2+q.x*sf*pers,py=y+h*.51+q.y*sf*pers;k===0?c.moveTo(px,py):c.lineTo(px,py);});c.stroke();}c.restore();}
-function sizeCanvas(){const dpr=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect(),w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(w!==canvas.width||h!==canvas.height){canvas.width=w;canvas.height=h;}}
+function paint(c,recipe,rect,options={}){
+ const {x,y,w,h}=rect,geo=geometry(recipe);
+ const breezeShift=options.breeze||null,mode=options.mode||'2d',rx=options.rx||0,ry=options.ry||0;
+ const zoom=options.zoom||1,opacity=options.opacity==null?1:options.opacity;
+ const progress=options.progress==null?1:options.progress;
+ const sf=Math.min(w,h)*.47*zoom;
+ const prepared=geo.lines.map((line,i)=>({line,i,depth:mode==='3d'?transform(line.points[(line.points.length/2)|0],rx,ry,'3d').z:0}));
+ if(mode==='3d')prepared.sort((a,b)=>a.depth-b.depth);
+ const colors={};for(const key of ['flower','stem','detail']){
+  const hex=recipe.colors[key]||DEFAULT[recipe.type]||'#dcbedd';
+  const parts=hex.match(/[a-f\d]{2}/gi);
+  colors[key]=parts?parts.map(h=>parseInt(h,16)):[220,190,220];
+ }
+ const count=Math.ceil(prepared.length*progress),basis=Math.min(w,h)/640;
+ const stemMultiplier=stemScale(recipe.stemWidth==null?50:recipe.stemWidth);
+ c.save();c.beginPath();c.rect(x,y,w,h);c.clip();c.lineJoin='round';c.lineCap='round';
+ for(let j=0;j<count;j++){
+  const line=prepared[j].line,category=line.category||classify(line),rgb=colors[category];
+  const alpha=clamp((line.alpha==null?.48:line.alpha)*opacity,0,1);
+  c.strokeStyle=`rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`;
+  const width=(line.width||.7)*basis;
+  c.lineWidth=Math.max(.25,width*(category==='stem'?stemMultiplier:1));
+  c.beginPath();
+  line.points.forEach((p,k)=>{
+   const q=transform(breezeShift?swayPoint(p,breezeShift):p,rx,ry,mode);
+   const pers=mode==='3d'?3.6/(3.6-q.z):1;
+   const px=x+w/2+q.x*sf*pers,py=y+h*.51+q.y*sf*pers;
+   if(k===0)c.moveTo(px,py);else c.lineTo(px,py);
+  });
+  c.stroke();
+ }
+ c.restore();
+}
+function sizeCanvas(){const dpr=Math.min(window.devicePixelRatio||1,tabletDevice?1.5:2),r=canvas.getBoundingClientRect(),w=Math.max(1,Math.round(r.width*dpr)),h=Math.max(1,Math.round(r.height*dpr));if(w!==canvas.width||h!==canvas.height){canvas.width=w;canvas.height=h;}}
 function render(){sizeCanvas();const w=canvas.width,h=canvas.height;ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);if(app.tab==='create'){paint(ctx,app.draft,{x:0,y:0,w,h},{mode:app.mode,rx:app.rotX,ry:app.rotY,zoom:app.zoom,progress:app.drawProgress});}else if(app.tab==='arrange'){const ordered=[...stored.arrangement].sort((a,b)=>a.order-b.order);for(const item of ordered){const side=Math.min(w,h)*item.size*app.zoom;const x=item.x*w-side/2,y=item.y*h-side/2;paint(ctx,item.recipe,{x,y,w:side,h:side},{mode:'3d',rx:item.rx,ry:item.ry,breeze:breeze.playing?breezeFor(item,breeze.clock):null});if(app.selected===item.id){ctx.save();ctx.setLineDash([6,5]);ctx.strokeStyle='rgba(255,255,255,.66)';ctx.lineWidth=1.3;ctx.strokeRect(x+5,y+5,side-10,side-10);ctx.restore();}}}else drawLibraryCanvas();}
 let scheduled=false;function queue(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;render();});}
 function makeThumb(recipe){const c=document.createElement('canvas');c.width=125;c.height=125;const x=c.getContext('2d');x.fillStyle='#000';x.fillRect(0,0,125,125);paint(x,recipe,{x:0,y:0,w:125,h:125},{mode:'3d',rx:-.22,ry:.30,zoom:.9});return c.toDataURL('image/png');}
@@ -763,7 +823,7 @@ function button(label,action,extra=''){return `<button class="btn ${extra}" data
 function flowerButtons(selected,kind){return `<div class="flower-grid">${TYPES.map(([id,name])=>`<button class="flower-option ${selected===id?'active':''}" data-${kind}="${id}">${name}</button>`).join('')}</div>`;}
 function renderControls(){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===app.tab));$('draw').classList.toggle('control-off',app.tab!=='create');const showCamera=app.tab==='create'||(app.tab==='library'&&!!app.libSelected&&!!stored.library[app.libSelected]);$('rotate').classList.toggle('control-off',!showCamera);$('dimension').classList.toggle('control-off',!showCamera);$('full').classList.toggle('control-off',!showCamera);$('rotate').classList.toggle('active',app.autoRotate);stage.classList.toggle('placing',app.tab==='arrange'&&app.placing);stage.classList.toggle('moving',app.tab==='arrange'&&!app.placing);$('arrangeBadge').classList.toggle('hidden',app.tab!=='arrange');$('arrangeBadge').textContent=app.placing?`Tap anywhere to place ${LABEL[app.placeType]}`:'Drag a flower to move it';let html='';
 if(app.tab==='create'){
-html=`<div class="section"><h3>Choose a Flower</h3>${flowerButtons(app.draft.type,'flower')}</div><div class="section"><div class="creation-actions">${button('Generate New Flower','new','primary')}${button('Save','save','primary')}</div></div><div class="section"><h3>Stem Width</h3><input aria-label="Stem Width" id="stemWidth" class="range" type="range" min="10" max="100" step="1" value="${app.draft.stemWidth}"></div><div class="section"><h3>Colors</h3><div class="colors-row">${[['flower','Flower'],['stem','Stem'],['detail','Detail']].map(([key,label])=>`<button class="btn mini ${activeColorPart===key?'active':''}" data-color="${key}" aria-pressed="${activeColorPart===key}"><span class="dot" style="background:${app.draft.colors[key]}"></span>${label}</button>`).join('')}</div><div class="palette hidden" id="palette"></div></div>`;
+html=`<div class="section"><h3>Choose a Flower</h3>${flowerButtons(app.draft.type,'flower')}</div><div class="section"><div class="creation-actions">${button('Generate New Flower','new','primary')}${button('Save','save','primary')}</div></div><div class="section"><h3>Stem Width</h3><div class="range-stepper"><button type="button" class="range-step" id="stemDecrease" aria-label="Decrease stem width" title="Decrease stem width">−</button><input aria-label="Stem Width" id="stemWidth" class="range" type="range" min="10" max="100" step="1" value="${app.draft.stemWidth}"><button type="button" class="range-step" id="stemIncrease" aria-label="Increase stem width" title="Increase stem width">+</button></div></div><div class="section"><h3>Colors</h3><div class="colors-row">${[['flower','Flower'],['stem','Stem'],['detail','Detail']].map(([key,label])=>`<button class="btn mini ${activeColorPart===key?'active':''}" data-color="${key}" aria-pressed="${activeColorPart===key}"><span class="dot" style="background:${app.draft.colors[key]}"></span>${label}</button>`).join('')}</div><div class="palette hidden" id="palette"></div></div>`;
 }else if(app.tab==='library'){
 const keys=TYPES.map(a=>a[0]).filter(k=>stored.library[k]);if(!keys.length){html=`<div class="empty">Your flower library is empty. Create a flower and select Save.</div>${button('Create a Flower','create','wide primary')}`;}else{html=`<div class="section"><h3>Saved Flowers (${keys.length} of 7)</h3><div class="saved-grid">${keys.map(k=>`<button data-saved="${k}" class="saved-option ${k===app.libSelected?'active':''}"><img class="preview" alt="" src="${makeThumb(stored.library[k])}"><span>${LABEL[k]}</span></button>`).join('')}</div></div>`;if(app.libSelected&&stored.library[app.libSelected])html+=`<div class="section"><h3>${LABEL[app.libSelected]}</h3>${button('Place Flower','place:'+app.libSelected,'wide primary')}${button('Edit Flower','edit:'+app.libSelected,'wide')}${button('Remove from Library','delLib:'+app.libSelected,'wide mini')}</div>`;}
 
@@ -774,7 +834,8 @@ if(app.placing)html+=`<div class="section"><h3>Adding: ${LABEL[app.placeType]}</
 if(item)html+=`<div class="section"><h3>Selected: ${LABEL[item.recipe.type]}</h3><div class="row">${button('− Smaller','smaller')}${button('+ Larger','larger')}</div><div class="layer-controls" style="margin-top:8px">${button('Send Back','back','mini')}${button('Bring Forward','front','mini')}</div>${button('Remove Flower','remove','wide mini')}<p class="hint">Tap a flower to select it. Drag it to move it.</p></div>`;
 html+=`<div class="section"><p class="muted">${n} flower${n===1?'':'s'} in arrangement</p>${button('Save','saveArrangement','wide')}${button('Clear Arrangement','clear','wide mini')}</div>`;
 }
-controls.innerHTML=html;controls.querySelectorAll('[data-flower]').forEach(b=>b.onclick=()=>{app.draft=G(b.dataset.flower,'rich');activate3DRotation();renderControls();queue();});controls.querySelectorAll('[data-saved]').forEach(b=>b.onclick=()=>{app.libSelected=b.dataset.saved;activate3DRotation();renderControls();queue();});controls.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>openColorPalette(b.dataset.color));controls.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>act(b.dataset.action));const slider=$('stemWidth');if(slider){slider.onpointerdown=e=>{if(infoMode){e.preventDefault();infoAnchor=slider;showControlInfo('stemWidth');}};slider.onkeydown=e=>{if(infoMode){e.preventDefault();infoAnchor=slider;showControlInfo('stemWidth');}};slider.oninput=()=>{if(infoMode){slider.value=app.draft.stemWidth;infoAnchor=slider;showControlInfo('stemWidth');return;}app.draft.stemWidth=Number(slider.value);queue();};}if(app.tab==='create'&&activeColorPart)openColorPalette(activeColorPart);}
+controls.innerHTML=html;controls.querySelectorAll('[data-flower]').forEach(b=>b.onclick=()=>{app.draft=G(b.dataset.flower,'rich');activate3DRotation();renderControls();queue();});controls.querySelectorAll('[data-saved]').forEach(b=>b.onclick=()=>{app.libSelected=b.dataset.saved;activate3DRotation();renderControls();queue();});controls.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>openColorPalette(b.dataset.color));controls.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>act(b.dataset.action));const slider=$('stemWidth');if(slider){slider.addEventListener('touchstart',e=>{if(infoMode){e.preventDefault();infoAnchor=slider;showControlInfo('stemWidth');}},{passive:false});slider.onpointerdown=e=>{if(infoMode){e.preventDefault();infoAnchor=slider;showControlInfo('stemWidth');}};slider.onkeydown=e=>{if(infoMode){e.preventDefault();infoAnchor=slider;showControlInfo('stemWidth');}};slider.oninput=()=>{if(infoMode){slider.value=app.draft.stemWidth;infoAnchor=slider;showControlInfo('stemWidth');return;}app.draft.stemWidth=Number(slider.value);queue();};$('stemDecrease').onclick=()=>stepStemWidth(-1);$('stemIncrease').onclick=()=>stepStemWidth(1);}if(app.tab==='create'&&activeColorPart)openColorPalette(activeColorPart);}
+function stepStemWidth(amount){const slider=$('stemWidth');if(!slider)return;const current=Number(app.draft.stemWidth);const next=clamp(current+amount,Number(slider.min),Number(slider.max));if(next===current)return;app.draft.stemWidth=next;slider.value=next;queue();}
 function openColorPalette(part){
  const palette=$('palette');if(!palette)return;
  activeColorPart=part;
@@ -793,11 +854,11 @@ function placeMode(type){if(!stored.library[type]){notify('Save this flower to t
 function act(a){
 if(a==='breezeToggle'){breeze.playing=!breeze.playing;breeze.last=0;}
 else if(a==='new'){app.draft.style=['simple','rich','wandering'][Math.floor(Math.random()*3)];app.draft.seed=(Math.random()*4294967295)>>>0;activate3DRotation();}
-else if(a==='save'){const put=()=>{stored.library[app.draft.type]=structuredClone(app.draft);app.libSelected=app.draft.type;save();notify(`${LABEL[app.draft.type]} saved locally`);};if(stored.library[app.draft.type])confirmDialog('Replace saved flower?',`Replace your saved ${LABEL[app.draft.type]} design? Flowers already placed in Arrange will stay unchanged.`,'Replace',put);else put();}
+else if(a==='save'){const put=()=>{stored.library[app.draft.type]=copyRecipe(app.draft);app.libSelected=app.draft.type;save();notify(`${LABEL[app.draft.type]} saved locally`);};if(stored.library[app.draft.type])confirmDialog('Replace saved flower?',`Replace your saved ${LABEL[app.draft.type]} design? Flowers already placed in Arrange will stay unchanged.`,'Replace',put);else put();}
 else if(a==='saveArrangement'){save();notify('Arrangement saved locally');}
 else if(a==='create')tab('create');
 else if(a.startsWith('place:')){placeMode(a.slice(6));return;}
-else if(a.startsWith('edit:')){app.draft=structuredClone(stored.library[a.slice(5)]);activate3DRotation();tab('create');return;}
+else if(a.startsWith('edit:')){app.draft=copyRecipe(stored.library[a.slice(5)]);activate3DRotation();tab('create');return;}
 else if(a.startsWith('delLib:')){let k=a.slice(7);confirmDialog('Remove saved flower?',`Remove ${LABEL[k]} from your library? Already placed flowers will remain in Arrange.`,'Remove',()=>{delete stored.library[k];if(app.libSelected===k)app.libSelected=null;save();renderControls();queue();});return;}
 else if(a==='donePlace'){app.placing=false;}
 else if(a==='choosePlace'){app.placing=false;tab('library');return;}
@@ -881,7 +942,9 @@ const CONTROL_GUIDE = {
  save:['Save Flower','Save the current flower in this browser’s library. Saving the same species again replaces its earlier saved design after confirmation.'],
  saveArrangement:['Save Arrangement','Keep the current arrangement in this browser’s local storage. It is not uploaded or downloaded.'],
  breezeToggle:['Breeze','Turn the Windy-strength breeze animation on or off for the arrangement. The breeze is a visual preview.'],
- stemWidth:['Stem Width','Drag the slider to make the flower’s stem lines thinner or thicker. The right end allows much thicker stems.'],
+ stemWidth:['Stem Width','Drag the slider to adjust stem thickness. Use − and + at either end for precise one-step changes. The right end allows much thicker stems.'],
+ stemDecrease:['Decrease Stem Width','Reduce the stem thickness by one step without dragging the slider.'],
+ stemIncrease:['Increase Stem Width','Increase the stem thickness by one step without dragging the slider.'],
  draw:['Draw','Replay the current flower as a line-by-line drawing over about eight seconds.'],
  rotate:['Rotate','Switch continuous 3D rotation on or off. You can also drag the flower to rotate it manually.'],
  dimension:['2D | 3D','Toggle between a flat 2D view and a perspective 3D view.'],
@@ -912,7 +975,7 @@ function positionInfoPopup(){
  const popup=$('infoPopup');
  if(popup.classList.contains('hidden'))return;
  const figure=stage.getBoundingClientRect();
- const control=infoAnchor?.isConnected ? infoAnchor.getBoundingClientRect() : $('infoToggle').getBoundingClientRect();
+ const control=infoAnchor && infoAnchor.isConnected ? infoAnchor.getBoundingClientRect() : $('infoToggle').getBoundingClientRect();
  const inset=12;
  const availableWidth=Math.max(160,figure.width-inset*2);
  popup.style.width=Math.min(405,availableWidth)+'px';
@@ -949,7 +1012,7 @@ function showInfo(title,description,math='',equations=[]){
  $('infoCopy').textContent=description;
  $('mathCopy').textContent=math;
  const list=$('mathEquations');
- list.replaceChildren();
+ list.textContent='';
  for(const [formula,note] of equations){
   const row=document.createElement('div');row.className='math-equation';
   const f=document.createElement('span');f.className='math-formula';f.textContent=formula;
@@ -1020,24 +1083,71 @@ document.addEventListener('click',event=>{
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 const P=(e)=>{const r=canvas.getBoundingClientRect();return {x:clamp((e.clientX-r.left)/r.width,0,1),y:clamp((e.clientY-r.top)/r.height,0,1)};};let drag=null;
 function hit(p){let list=[...stored.arrangement].sort((a,b)=>b.order-a.order);for(const a of list){let side=a.size,dx=(p.x-a.x)/(side*.55),dy=(p.y-a.y)/(side*.55);if(dx*dx+dy*dy<1.15)return a;}return null;}
-canvas.addEventListener('pointerdown',e=>{if(infoMode){e.preventDefault();infoAnchor=canvas;showControlInfo('canvas');return;}if(app.tab!=='arrange'){if((app.tab==='create'||(app.tab==='library'&&!!app.libSelected))&&app.mode==='3d'){drag={camera:true,x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);}return;}let p=P(e),item=hit(p);if(item){app.selected=item.id;drag={id:item.id,dx:p.x-item.x,dy:p.y-item.y};canvas.setPointerCapture(e.pointerId);stage.classList.add('dragging');renderControls();queue();}else if(app.placing&&stored.library[app.placeType]){let recipe=structuredClone(stored.library[app.placeType]),n=stored.arrangement.filter(i=>i.recipe.type===app.placeType).length;let angle=(n*2.399963229728653+Math.random()*.35)%(Math.PI*2);let item={id:(Date.now().toString(36)+Math.random().toString(36).slice(2,7)),recipe,x:p.x,y:p.y,size:.35,rx:-.28+.2*Math.sin(n*1.9),ry:angle,order:stored.arrangement.length?Math.max(...stored.arrangement.map(x=>x.order))+1:0};stored.arrangement.push(item);app.selected=item.id;save();renderControls();queue();}else{app.selected=null;renderControls();queue();}e.preventDefault();});
-canvas.addEventListener('pointermove',e=>{if(!drag)return;if(drag.camera){let dx=e.clientX-drag.x,dy=e.clientY-drag.y;app.rotY+=dx*.009;app.rotX=clamp(app.rotX+dy*.009,-1.4,1.4);drag.x=e.clientX;drag.y=e.clientY;}else{let p=P(e),item=stored.arrangement.find(x=>x.id===drag.id);if(item){item.x=clamp(p.x-drag.dx,0,1);item.y=clamp(p.y-drag.dy,0,1);}}queue();e.preventDefault();});
+function captureCanvasPointer(e){if(e.pointerId!=null&&canvas.setPointerCapture){try{canvas.setPointerCapture(e.pointerId);}catch(error){}}}
+function canvasStart(e){
+ if(infoMode){e.preventDefault();infoAnchor=canvas;showControlInfo('canvas');return;}
+ if(app.tab!=='arrange'){
+  if((app.tab==='create'||(app.tab==='library'&&app.libSelected))&&app.mode==='3d'){
+   drag={camera:true,x:e.clientX,y:e.clientY};captureCanvasPointer(e);
+  }
+  return;
+ }
+ const p=P(e),item=hit(p);
+ if(item){app.selected=item.id;drag={id:item.id,dx:p.x-item.x,dy:p.y-item.y};captureCanvasPointer(e);stage.classList.add('dragging');renderControls();queue();}
+ else if(app.placing&&stored.library[app.placeType]){
+  const recipe=copyRecipe(stored.library[app.placeType]),n=stored.arrangement.filter(i=>i.recipe.type===app.placeType).length;
+  const angle=(n*2.399963229728653+Math.random()*.35)%(Math.PI*2);
+  const item={id:(Date.now().toString(36)+Math.random().toString(36).slice(2,7)),recipe,x:p.x,y:p.y,size:.35,rx:-.28+.2*Math.sin(n*1.9),ry:angle,order:stored.arrangement.length?Math.max(...stored.arrangement.map(x=>x.order))+1:0};
+  stored.arrangement.push(item);app.selected=item.id;save();renderControls();queue();
+ }else{app.selected=null;renderControls();queue();}
+ e.preventDefault();
+}
+function canvasMove(e){
+ if(!drag)return;
+ if(drag.camera){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;app.rotY+=dx*.009;app.rotX=clamp(app.rotX+dy*.009,-1.4,1.4);drag.x=e.clientX;drag.y=e.clientY;}
+ else{const p=P(e),item=stored.arrangement.find(x=>x.id===drag.id);if(item){item.x=clamp(p.x-drag.dx,0,1);item.y=clamp(p.y-drag.dy,0,1);}}
+ queue();e.preventDefault();
+}
 function endDrag(){if(drag&&!drag.camera)save();drag=null;stage.classList.remove('dragging');}
-canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);
+if(typeof window.PointerEvent==='function'){
+ canvas.addEventListener('pointerdown',canvasStart);
+ canvas.addEventListener('pointermove',canvasMove);
+ canvas.addEventListener('pointerup',endDrag);
+ canvas.addEventListener('pointercancel',endDrag);
+ canvas.addEventListener('lostpointercapture',endDrag);
+}else{
+ // Pre-13.4 iPad Safari: use touch events (and mouse events for external mice).
+ const asEvent=(touch,original)=>({clientX:touch.clientX,clientY:touch.clientY,preventDefault:()=>original.preventDefault()});
+ canvas.addEventListener('touchstart',e=>{if(e.changedTouches.length===1){canvasStart(asEvent(e.changedTouches[0],e));e.preventDefault();}},{passive:false});
+ canvas.addEventListener('touchmove',e=>{if(e.changedTouches.length&&drag){canvasMove(asEvent(e.changedTouches[0],e));}},{passive:false});
+ canvas.addEventListener('touchend',endDrag,{passive:false});
+ canvas.addEventListener('touchcancel',endDrag,{passive:false});
+ canvas.addEventListener('mousedown',canvasStart);
+ window.addEventListener('mousemove',canvasMove);
+ window.addEventListener('mouseup',endDrag);
+}
 $('rotate').onclick=()=>{app.autoRotate=!app.autoRotate;if(app.autoRotate)app.mode='3d';$('rotate').classList.toggle('active',app.autoRotate);queue();};
 $('dimension').onclick=()=>{app.mode=app.mode==='2d'?'3d':'2d';if(app.mode==='2d')app.autoRotate=false;$('rotate').classList.toggle('active',app.autoRotate);queue();};
 $('full').onclick=()=>setFullscreen(true);
 function setFullscreen(on){document.body.classList.toggle('fullscreen',on);queue();} $('fullClose').onclick=()=>setFullscreen(false);$('fullPlus').onclick=()=>{app.zoom=clamp(app.zoom*1.13,.5,4);queue();};$('fullMinus').onclick=()=>{app.zoom=clamp(app.zoom/1.13,.5,4);queue();};
 stage.addEventListener('wheel',e=>{if(infoMode){e.preventDefault();infoAnchor=canvas;showControlInfo('canvas');return;}if(app.tab==='create'){e.preventDefault();app.zoom=clamp(app.zoom*(e.deltaY>0?.92:1.08),.5,4);queue();}},{passive:false});
 $('draw').onclick=()=>{if(drawRaf)cancelAnimationFrame(drawRaf);let start=performance.now();function step(now){app.drawProgress=clamp((now-start)/8000,0,1);queue();if(app.drawProgress<1)drawRaf=requestAnimationFrame(step);else drawRaf=0;}drawRaf=requestAnimationFrame(step);};
-let lastTime=0;function tick(now){
- if(app.autoRotate&&(app.tab==='create'||(app.tab==='library'&&!!app.libSelected))){if(lastTime)app.rotY+=(now-lastTime)*.00033;queue();}
- if(app.tab==='arrange'&&breeze.playing&&stored.arrangement.length){
-  if(!breeze.last||now-breeze.last>=38){const delta=breeze.last?Math.min(now-breeze.last,90):38;breeze.clock+=delta;breeze.last=now;queue();}
- }else breeze.last=0;
- lastTime=now;requestAnimationFrame(tick);
-}requestAnimationFrame(tick);
-new ResizeObserver(()=>queue()).observe(stage);
+// Cap animation frequency on older iPads without changing any saved flower geometry.
+const frameInterval=tabletDevice?1000/24:1000/60;
+let lastFrame=0;
+function tick(now){
+ if(document.hidden){lastFrame=now;requestAnimationFrame(tick);return;}
+ if(now-lastFrame>=frameInterval){
+  const delta=lastFrame?Math.min(now-lastFrame,90):frameInterval;
+  if(app.autoRotate&&(app.tab==='create'||(app.tab==='library'&&app.libSelected))){app.rotY+=delta*.00033;queue();}
+  if(app.tab==='arrange'&&breeze.playing&&stored.arrangement.length){breeze.clock+=delta;queue();}
+  lastFrame=now;
+ }
+ requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>queue()).observe(stage);
+else window.addEventListener('resize',()=>queue());
 renderControls();queue();
 
 </script></body></html>
