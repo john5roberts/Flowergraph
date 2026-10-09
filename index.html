@@ -1,10 +1,24 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flowergraph Studio 1.03</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flowergraph Studio 1.08</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;height:100%;background:#050505;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}body{padding:10px;overflow:hidden}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}.app{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,470px);gap:10px;height:100%}.stage,.panel{border:1px solid #292b32;border-radius:22px;background:#080808;min-width:0;overflow:hidden}.stage{position:relative;align-self:start;aspect-ratio:1/1;width:100%;max-height:calc(100vh - 20px)}canvas{width:100%;height:100%;display:block;touch-action:none}.panel{display:flex;flex-direction:column;padding:12px;gap:10px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex-shrink:0}.tab,.btn,.flower-option,.saved-option{background:#1b1d22;border:1px solid #414651;border-radius:12px;color:white;padding:11px 8px;font-weight:700;min-height:45px}.tab.active,.btn.active,.flower-option.active,.saved-option.active{border:2px solid white;background:#30333b}.panel-scroll{overflow:auto;min-height:0;overscroll-behavior:contain;padding-right:2px;padding-bottom:28px}.section{border:1px solid #2a2e37;background:#111215;border-radius:16px;padding:12px;margin-bottom:10px}.section h3{font-size:16px;margin:0 0 10px}.flower-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.flower-option{min-height:51px}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1;min-width:0}.row .btn{min-width:0}.styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.wide{width:100%;margin-top:9px}.primary{background:#30333b;border:1px solid #747b86;font-size:18px;min-height:55px}.hint{color:#aeb2bc;font-size:13px;line-height:1.45;margin:8px 0 0}.muted{color:#949ba7;font-size:13px}.range{width:100%;accent-color:#cab1dd;touch-action:pan-x}.mini{font-size:13px;min-height:39px}.control-label{font-size:13px;color:#b8beca;display:flex;justify-content:space-between;margin:10px 0 2px}.palette{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}.swatch{aspect-ratio:1;border-radius:9px;border:2px solid #777}.swatch.active{border:3px solid white}.colors-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.colors-row .btn{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;padding-left:4px;padding-right:4px;white-space:nowrap}.colors-row .dot{flex-shrink:0}.creation-actions{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px}.creation-actions .btn{width:100%;margin:0;min-width:0;font-size:clamp(13px,1.3vw,16px);padding:9px 5px}.dot{width:15px;height:15px;border-radius:50%;display:inline-block;border:1px solid #eee}.overlay{position:absolute;bottom:12px;left:14px;z-index:5;opacity:.45;color:#eee;background:none;border:none;font-weight:700}.camera{position:absolute;bottom:12px;right:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:4px}.camera button{color:#eee;opacity:.45;background:none;border:none;font-weight:700}.camera button.active{opacity:.75}.filename{color:#777;text-align:center;font-size:11px;margin-top:12px}.empty{color:#aeb2bb;text-align:center;padding:38px 14px;border:1px dashed #4a4d56;border-radius:15px;line-height:1.55}.saved-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.saved-option{padding:7px;display:flex;gap:8px;align-items:center;text-align:left}.preview{width:58px;height:58px;background:#000;border-radius:8px;flex-shrink:0}.status{color:#c4b5db;min-height:20px;font-size:13px;margin-top:6px}.toast{position:absolute;top:15px;left:50%;transform:translateX(-50%);background:#282831;border:1px solid #656670;border-radius:12px;padding:9px 14px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:12}.toast.visible{opacity:1}.layer-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.arrange-badge{position:absolute;top:12px;left:14px;background:#18191fcc;border:1px solid #555a64;border-radius:10px;padding:7px 10px;color:#cfd2d9;font-size:13px;z-index:4;pointer-events:none}.fullscreenClose,.fullscreenZoom{display:none}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal.open{display:flex}.modal-body{width:min(450px,100%);padding:17px;background:#15171c;border:1px solid #505664;border-radius:18px}.modal h3{margin-top:0}.modbuttons{display:flex;gap:10px;margin-top:18px}.modbuttons>*{flex:1}.control-off{display:none!important}.stage.placing{cursor:crosshair}.stage.moving{cursor:grab}.stage.dragging{cursor:grabbing}.hidden{display:none!important}.panel [disabled]{opacity:.33;cursor:default}
-body.fullscreen{padding:0;overflow:hidden}body.fullscreen .stage{position:fixed;inset:0;width:100vw;height:100dvh;max-height:none;z-index:30;border:0;border-radius:0;aspect-ratio:auto}body.fullscreen .fullscreenClose,body.fullscreen .fullscreenZoom{display:flex;position:fixed;z-index:40;background:none;color:#eee;opacity:.65;border:0;font-size:42px;width:65px;height:65px;align-items:center;justify-content:center}body.fullscreen .fullscreenClose{top:10px;right:10px}body.fullscreen .fullscreenZoom.in{top:10px;left:10px}body.fullscreen .fullscreenZoom.out{top:76px;left:10px}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#050505;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}body{padding:10px;overflow:hidden}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}.app{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,470px);gap:10px;height:100%}.stage,.panel{border:1px solid #292b32;border-radius:22px;background:#080808;min-width:0;overflow:hidden}.stage{position:relative;align-self:start;aspect-ratio:1/1;width:100%;max-height:calc(100vh - 20px)}canvas{width:100%;height:100%;display:block;touch-action:none}.panel{display:flex;flex-direction:column;padding:12px;gap:10px}.panel-head{display:flex;align-items:center;gap:9px;flex-shrink:0}.panel-head .tabs{flex:1;min-width:0}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex-shrink:0}.tab,.btn,.flower-option,.saved-option{background:#1b1d22;border:1px solid #414651;border-radius:12px;color:white;padding:11px 8px;font-weight:700;min-height:45px}.tab.active,.btn.active,.flower-option.active,.saved-option.active{border:2px solid white;background:#30333b}.info-toggle{width:45px;height:45px;flex:none;border-radius:12px;border:1px solid #414651;background:#1b1d22;color:#eee;display:flex;align-items:center;justify-content:center;padding:0}.info-toggle svg{width:23px;height:23px}.info-toggle.active{border:2px solid #fff;background:#1b1d22}/* Help is a floating, nonblocking popup, not a panel section. */
+.info-popup{position:fixed;top:20px;left:20px;width:min(405px,calc(100vw - 28px));max-height:78dvh;overflow:auto;overscroll-behavior:contain;z-index:48;border:1px solid #777d88;border-radius:17px;background:#1b1e24;padding:16px;box-shadow:0 20px 65px #000e,0 0 0 1px #ffffff0d}
+.info-popup-head{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:7px}
+.info-popup-head .info-heading{margin:0}
+.info-close{color:#eee;background:#2b2e36;border:1px solid #69707b;border-radius:9px;width:32px;height:32px;display:grid;place-items:center;flex-shrink:0;font-size:23px;line-height:1}
+.info-popup .math-copy{margin-top:11px}
+.math-equations{display:grid;gap:8px;margin-top:11px}
+.math-equation{background:#111317;border:1px solid #414651;border-radius:10px;padding:9px 10px}
+.math-formula{display:block;font:500 14px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#eee;overflow-wrap:anywhere}
+.math-note{font-size:12px;color:#b9bdc9;line-height:1.4;margin-top:3px}.info-heading{font-size:16px;font-weight:700;margin:0 0 5px}.info-copy{font-size:14px;line-height:1.48;color:#d5d7de;margin:0}.math-toggle{display:block;width:100%;margin-top:10px;color:#eee;background:#242830;border:1px solid #747b86;border-radius:10px;padding:9px 11px;text-align:left;font-weight:650}.math-toggle.active{border:2px solid white;background:#242830}.math-copy{font-size:13px;line-height:1.5;color:#c8d0dc;margin:9px 2px 1px}.info-toggle:focus-visible,.math-toggle:focus-visible,.info-close:focus-visible{outline:2px solid #fff;outline-offset:2px}.panel-scroll{overflow:auto;min-height:0;overscroll-behavior:contain;padding-right:2px;padding-bottom:28px}.section{border:1px solid #2a2e37;background:#111215;border-radius:16px;padding:12px;margin-bottom:10px}.section h3{font-size:16px;margin:0 0 10px}.flower-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.flower-option{min-height:51px}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1;min-width:0}.row .btn{min-width:0}.styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.wide{width:100%;margin-top:9px}.primary{background:#30333b;border:1px solid #747b86;font-size:18px;min-height:55px}.hint{color:#aeb2bc;font-size:13px;line-height:1.45;margin:8px 0 0}.muted{color:#949ba7;font-size:13px}.range{width:100%;accent-color:#cab1dd;touch-action:pan-x}.mini{font-size:13px;min-height:39px}.control-label{font-size:13px;color:#b8beca;display:flex;justify-content:space-between;margin:10px 0 2px}.palette{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}.swatch{aspect-ratio:1;border-radius:9px;border:2px solid #777}.swatch.active{border:3px solid white}.colors-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.colors-row .btn{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;padding-left:4px;padding-right:4px;white-space:nowrap}.colors-row .dot{flex-shrink:0}.creation-actions{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px}.creation-actions .btn{width:100%;margin:0;min-width:0;font-size:clamp(13px,1.3vw,16px);padding:9px 5px}.dot{width:15px;height:15px;border-radius:50%;display:inline-block;border:1px solid #eee}.left-actions{position:absolute;bottom:12px;left:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-start;gap:9px}.overlay{opacity:.45;color:#eee;background:none;border:none;font-weight:700;padding:0}.camera{position:absolute;bottom:12px;right:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:9px}.camera button{color:#eee;opacity:.45;background:none;border:none;font-weight:700}.camera button.active{opacity:.75}.filename{color:#777;text-align:center;font-size:11px;margin-top:12px}.empty{color:#aeb2bb;text-align:center;padding:38px 14px;border:1px dashed #4a4d56;border-radius:15px;line-height:1.55}.saved-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.saved-option{padding:7px;display:flex;gap:8px;align-items:center;text-align:left}.preview{width:58px;height:58px;background:#000;border-radius:8px;flex-shrink:0}.toast{position:absolute;top:15px;left:50%;transform:translateX(-50%);background:#282831;border:1px solid #656670;border-radius:12px;padding:9px 14px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:12}.toast.visible{opacity:1}.layer-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.arrange-badge{position:absolute;top:12px;left:14px;background:#18191fcc;border:1px solid #555a64;border-radius:10px;padding:7px 10px;color:#cfd2d9;font-size:13px;z-index:4;pointer-events:none}.fullscreenClose,.fullscreenZoom{display:none}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal.open{display:flex}.modal-body{width:min(450px,100%);padding:17px;background:#15171c;border:1px solid #505664;border-radius:18px}.modal h3{margin-top:0}.modbuttons{display:flex;gap:10px;margin-top:18px}.modbuttons>*{flex:1}.control-off{display:none!important}.stage.placing{cursor:crosshair}.stage.moving{cursor:grab}.stage.dragging{cursor:grabbing}.hidden{display:none!important}.panel [disabled]{opacity:.33;cursor:default}
+body.fullscreen{padding:0;overflow:hidden}body.fullscreen .stage{position:fixed;inset:0;width:100vw;height:100dvh;max-height:none;z-index:30;border:0;border-radius:0;aspect-ratio:auto}body.fullscreen .left-actions,body.fullscreen .camera{display:none}body.fullscreen .fullscreenClose,body.fullscreen .fullscreenZoom{display:flex;position:fixed;z-index:40;background:none;color:#eee;opacity:.65;border:0;font-size:42px;width:65px;height:65px;align-items:center;justify-content:center}body.fullscreen .fullscreenClose{top:10px;right:10px}body.fullscreen .fullscreenZoom.in{top:10px;left:10px}body.fullscreen .fullscreenZoom.out{top:76px;left:10px}
 @media(max-width:1000px) and (hover:hover){body{overflow:auto;padding:0}.app{display:block;height:auto}.stage{max-height:none}.panel{border-radius:20px;height:auto}.panel-scroll{overflow:visible}}
 @media(max-width:700px){body{padding:0}.app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:5px;height:100dvh}.stage{max-height:none;aspect-ratio:1/1;border-radius:0 0 17px 17px}.panel{border-radius:17px 17px 0 0}.tab{font-size:15px}.panel-scroll{overflow:auto}}
-</style></head><body><div class="app"><section class="stage" id="stage"><canvas id="art"></canvas><div class="arrange-badge hidden" id="arrangeBadge"></div><div class="toast" id="toast"></div><button class="overlay" id="draw">Draw</button><div class="camera"><button id="rotate">Rotate</button><button id="dimension">2D | 3D</button></div></section><aside class="panel"><div class="tabs"><button class="tab active" data-tab="create">Create</button><button class="tab" data-tab="library">Library</button><button class="tab" data-tab="arrange">Arrange</button></div><div class="panel-scroll" id="controls"></div><div class="filename">Flowergraph_Studio_1.03.html</div></aside></div><button class="fullscreenClose" id="fullClose">×</button><button class="fullscreenZoom in" id="fullPlus">+</button><button class="fullscreenZoom out" id="fullMinus">−</button><div class="modal" id="modal"><div class="modal-body"><h3 id="modalTitle"></h3><div class="muted" id="modalBody"></div><div class="modbuttons"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalConfirm">Replace</button></div></div></div>
+</style></head><body><div class="app"><section class="stage" id="stage"><canvas id="art"></canvas><div class="arrange-badge hidden" id="arrangeBadge"></div><div class="toast" id="toast"></div><div class="left-actions"><button class="overlay" id="full" type="button">Full</button><button class="overlay" id="draw" type="button">Draw</button></div><div class="camera"><button id="rotate">Rotate</button><button id="dimension">2D | 3D</button></div></section><aside class="panel"><div class="panel-head"><div class="tabs"><button class="tab active" data-tab="create">Create</button><button class="tab" data-tab="library">Library</button><button class="tab" data-tab="arrange">Arrange</button></div><button class="info-toggle" id="infoToggle" type="button" aria-label="Information mode" aria-pressed="false" title="Information"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="9.25"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r=".75" fill="currentColor" stroke="none"/></svg></button></div><div class="panel-scroll" id="controls"></div><div class="filename">Flowergraph_Studio_1.08.html</div></aside></div><div class="info-popup hidden" id="infoPopup" role="dialog" aria-labelledby="infoHeading" aria-describedby="infoCopy">
+<div class="info-popup-head"><h2 class="info-heading" id="infoHeading">Information</h2><button class="info-close" type="button" id="infoClose" aria-label="Close guidance" title="Close">×</button></div>
+<p class="info-copy" id="infoCopy">Click any button for guidance</p>
+<button class="math-toggle hidden" id="mathToggle" type="button" aria-expanded="false" aria-controls="mathDetails">How the mathematics works ▾</button>
+<div class="hidden" id="mathDetails"><p class="math-copy" id="mathCopy"></p><div class="math-equations" id="mathEquations"></div></div>
+</div><button class="fullscreenClose" id="fullClose">×</button><button class="fullscreenZoom in" id="fullPlus">+</button><button class="fullscreenZoom out" id="fullMinus">−</button><div class="modal" id="modal"><div class="modal-body"><h3 id="modalTitle"></h3><div class="muted" id="modalBody"></div><div class="modbuttons"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalConfirm">Replace</button></div></div></div>
 <script>
 const GENERATORS={};
 GENERATORS["dahlia"] = (recipe) => {
@@ -99,7 +113,7 @@ function build(){
 };
 GENERATORS["iris"] = (recipe) => {
  const state={seed:recipe.seed,style:recipe.style,geometry:[],recipe:null, colors:{},mode:'2d'};
- const TAU=Math.PI*2, GOLDEN=Math.PI*(3-Math.sqrt(5));
+ const TAU=Math.PI*2;
 
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const add=(a,b)=>({x:a.x+b.x,y:a.y+b.y,z:a.z+b.z});
@@ -701,9 +715,12 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const G=(type,style='rich',seed=(Math.random()*4294967295)>>>0)=>({type,style,seed,stemWidth:50,colors:{flower:DEFAULT[type],stem:'#679b65',detail:type==='foxglove'?'#f2e6d8':'#e1ba64'}});
 let stored={library:{},arrangement:[]};
 try{const got=JSON.parse(localStorage.getItem('flowergraph-studio-v1')||'null');if(got&&got.library&&Array.isArray(got.arrangement))stored=got;}catch(e){}
-let breeze={strength:'windy',playing:false,clock:0,last:0};
-let app={tab:'create',draft:G('dandelion','rich',104729),libSelected:null,placeType:null,placing:false,selected:null,mode:'3d',rotX:-.22,rotY:.56,zoom:1,autoRotate:true,drawProgress:1,fullscreen:false};
-let cache=new Map(), libraryThumbs=new Map(), toastTimer=null,drawRaf=0;
+let breeze={playing:false,clock:0,last:0};
+let app={tab:'create',draft:G('dandelion','rich',104729),libSelected:null,placeType:null,placing:false,selected:null,mode:'3d',rotX:-.22,rotY:.56,zoom:1,autoRotate:true,drawProgress:1};
+let cache=new Map(), toastTimer=null, drawRaf=0;
+// Only the currently edited color component receives the active-button styling.
+let activeColorPart=null;
+let infoMode=false;
 const save=()=>{try{localStorage.setItem('flowergraph-studio-v1',JSON.stringify(stored));}catch(e){notify('Unable to save locally in this browser.');}};
 function notify(t){const n=$('toast');n.textContent=t;n.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.classList.remove('visible'),2300);}
 function dandelion(recipe){let seed=recipe.seed>>>0;function rand(){seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296;}const lines=[]; const put=(pts,component,width=1,alpha=.6)=>lines.push({points:pts,component,width,alpha});let count=recipe.style==='simple'?78:recipe.style==='rich'?122:166;let tufts=recipe.style==='simple'?8:recipe.style==='rich'?15:22;const golden=Math.PI*(3-Math.sqrt(5));for(let i=0;i<count;i++){const y=1-2*(i+.5)/count,az=i*golden,rr=Math.sqrt(1-y*y),d={x:Math.cos(az)*rr,y,z:Math.sin(az)*rr};const base={x:d.x*.10,y:d.y*.10-.47,z:d.z*.10};const tip={x:d.x*.66,y:d.y*.66-.47,z:d.z*.66};put([base,tip],'stem',.63,.43);for(let t=0;t<tufts;t++){let a=t*6.283/tufts + rand()*.08,side={x:Math.cos(a),y:Math.sin(a),z:.13*Math.sin(a*2)};put([tip,{x:tip.x+d.x*.07+side.x*.13,y:tip.y+d.y*.07+side.y*.13,z:tip.z+d.z*.07+side.z*.13}],'flower',.44,.52);}}put([{x:0,y:1.35,z:0},{x:0,y:-.47,z:0}],'stem',2.2,.9);return lines;}
@@ -744,9 +761,9 @@ function drawLibraryCanvas(){const w=canvas.width,h=canvas.height,n=Object.keys(
 if(app.libSelected&&stored.library[app.libSelected]){paint(ctx,stored.library[app.libSelected],{x:0,y:0,w,h},{mode:app.mode,rx:app.rotX,ry:app.rotY,zoom:app.zoom});return;}if(!n){ctx.fillStyle='#8e929e';ctx.textAlign='center';ctx.font=`${Math.max(14,Math.round(w/33))}px sans-serif`;ctx.fillText('Your flower library is empty',w/2,h/2);return;}const keys=Object.keys(stored.library),cols=3,cell=Math.min(w/cols,h/3);for(let i=0;i<keys.length;i++){const col=i%cols,row=Math.floor(i/cols),x=(w-cell*cols)/2+col*cell,y=h*.13+row*cell;paint(ctx,stored.library[keys[i]],{x,y,w:cell,h:cell},{mode:'3d',rx:-.21,ry:.25,zoom:.82});ctx.fillStyle='#c7c7ca';ctx.textAlign='center';ctx.font=`${Math.max(11,Math.round(cell/10))}px sans-serif`;ctx.fillText(LABEL[keys[i]],x+cell/2,y+cell*.95);if(app.libSelected===keys[i]){ctx.strokeStyle='#ddd';ctx.lineWidth=1.5;ctx.strokeRect(x+4,y+3,cell-8,cell-8);}}}
 function button(label,action,extra=''){return `<button class="btn ${extra}" data-action="${action}">${label}</button>`;}
 function flowerButtons(selected,kind){return `<div class="flower-grid">${TYPES.map(([id,name])=>`<button class="flower-option ${selected===id?'active':''}" data-${kind}="${id}">${name}</button>`).join('')}</div>`;}
-function renderControls(){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===app.tab));$('draw').classList.toggle('control-off',app.tab!=='create');const showCamera=app.tab==='create'||(app.tab==='library'&&!!app.libSelected&&!!stored.library[app.libSelected]);$('rotate').classList.toggle('control-off',!showCamera);$('dimension').classList.toggle('control-off',!showCamera);$('rotate').classList.toggle('active',app.autoRotate);stage.classList.toggle('placing',app.tab==='arrange'&&app.placing);stage.classList.toggle('moving',app.tab==='arrange'&&!app.placing);$('arrangeBadge').classList.toggle('hidden',app.tab!=='arrange');$('arrangeBadge').textContent=app.placing?`Tap anywhere to place ${LABEL[app.placeType]}`:'Drag a flower to move it';let html='';
+function renderControls(){document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===app.tab));$('draw').classList.toggle('control-off',app.tab!=='create');const showCamera=app.tab==='create'||(app.tab==='library'&&!!app.libSelected&&!!stored.library[app.libSelected]);$('rotate').classList.toggle('control-off',!showCamera);$('dimension').classList.toggle('control-off',!showCamera);$('full').classList.toggle('control-off',!showCamera);$('rotate').classList.toggle('active',app.autoRotate);stage.classList.toggle('placing',app.tab==='arrange'&&app.placing);stage.classList.toggle('moving',app.tab==='arrange'&&!app.placing);$('arrangeBadge').classList.toggle('hidden',app.tab!=='arrange');$('arrangeBadge').textContent=app.placing?`Tap anywhere to place ${LABEL[app.placeType]}`:'Drag a flower to move it';let html='';
 if(app.tab==='create'){
-html=`<div class="section"><h3>Choose a Flower</h3>${flowerButtons(app.draft.type,'flower')}</div><div class="section"><div class="creation-actions">${button('Generate New Flower','new','primary')}${button('Save','save','primary')}</div></div><div class="section"><h3>Stem Width</h3><input aria-label="Stem Width" id="stemWidth" class="range" type="range" min="10" max="100" step="1" value="${app.draft.stemWidth}"></div><div class="section"><h3>Colors</h3><div class="colors-row">${[['flower','Flower'],['stem','Stem'],['detail','Detail']].map(([key,label])=>`<button class="btn mini" data-color="${key}"><span class="dot" style="background:${app.draft.colors[key]}"></span>${label}</button>`).join('')}</div><div class="palette hidden" id="palette"></div></div>`;
+html=`<div class="section"><h3>Choose a Flower</h3>${flowerButtons(app.draft.type,'flower')}</div><div class="section"><div class="creation-actions">${button('Generate New Flower','new','primary')}${button('Save','save','primary')}</div></div><div class="section"><h3>Stem Width</h3><input aria-label="Stem Width" id="stemWidth" class="range" type="range" min="10" max="100" step="1" value="${app.draft.stemWidth}"></div><div class="section"><h3>Colors</h3><div class="colors-row">${[['flower','Flower'],['stem','Stem'],['detail','Detail']].map(([key,label])=>`<button class="btn mini ${activeColorPart===key?'active':''}" data-color="${key}" aria-pressed="${activeColorPart===key}"><span class="dot" style="background:${app.draft.colors[key]}"></span>${label}</button>`).join('')}</div><div class="palette hidden" id="palette"></div></div>`;
 }else if(app.tab==='library'){
 const keys=TYPES.map(a=>a[0]).filter(k=>stored.library[k]);if(!keys.length){html=`<div class="empty">Your flower library is empty. Create a flower and select Save.</div>${button('Create a Flower','create','wide primary')}`;}else{html=`<div class="section"><h3>Saved Flowers (${keys.length} of 7)</h3><div class="saved-grid">${keys.map(k=>`<button data-saved="${k}" class="saved-option ${k===app.libSelected?'active':''}"><img class="preview" alt="" src="${makeThumb(stored.library[k])}"><span>${LABEL[k]}</span></button>`).join('')}</div></div>`;if(app.libSelected&&stored.library[app.libSelected])html+=`<div class="section"><h3>${LABEL[app.libSelected]}</h3>${button('Place Flower','place:'+app.libSelected,'wide primary')}${button('Edit Flower','edit:'+app.libSelected,'wide')}${button('Remove from Library','delLib:'+app.libSelected,'wide mini')}</div>`;}
 
@@ -757,13 +774,24 @@ if(app.placing)html+=`<div class="section"><h3>Adding: ${LABEL[app.placeType]}</
 if(item)html+=`<div class="section"><h3>Selected: ${LABEL[item.recipe.type]}</h3><div class="row">${button('− Smaller','smaller')}${button('+ Larger','larger')}</div><div class="layer-controls" style="margin-top:8px">${button('Send Back','back','mini')}${button('Bring Forward','front','mini')}</div>${button('Remove Flower','remove','wide mini')}<p class="hint">Tap a flower to select it. Drag it to move it.</p></div>`;
 html+=`<div class="section"><p class="muted">${n} flower${n===1?'':'s'} in arrangement</p>${button('Save','saveArrangement','wide')}${button('Clear Arrangement','clear','wide mini')}</div>`;
 }
-controls.innerHTML=html;controls.querySelectorAll('[data-flower]').forEach(b=>b.onclick=()=>{app.draft=G(b.dataset.flower,'rich');activate3DRotation();renderControls();queue();});controls.querySelectorAll('[data-saved]').forEach(b=>b.onclick=()=>{app.libSelected=b.dataset.saved;activate3DRotation();renderControls();queue();});controls.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>{let pal=$('palette');pal.classList.remove('hidden');pal.innerHTML=COLORS.map(col=>`<button class="swatch ${col===app.draft.colors[b.dataset.color]?'active':''}" title="${col}" data-swatch="${col}" style="background:${col}"></button>`).join('');pal.querySelectorAll('[data-swatch]').forEach(s=>s.onclick=()=>{app.draft.colors[b.dataset.color]=s.dataset.swatch;renderControls();queue();});});controls.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>act(b.dataset.action));const slider=$('stemWidth');if(slider)slider.oninput=()=>{app.draft.stemWidth=Number(slider.value);queue();};}
+controls.innerHTML=html;controls.querySelectorAll('[data-flower]').forEach(b=>b.onclick=()=>{app.draft=G(b.dataset.flower,'rich');activate3DRotation();renderControls();queue();});controls.querySelectorAll('[data-saved]').forEach(b=>b.onclick=()=>{app.libSelected=b.dataset.saved;activate3DRotation();renderControls();queue();});controls.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>openColorPalette(b.dataset.color));controls.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>act(b.dataset.action));const slider=$('stemWidth');if(slider){slider.onpointerdown=e=>{if(infoMode){e.preventDefault();infoAnchor=slider;showControlInfo('stemWidth');}};slider.onkeydown=e=>{if(infoMode){e.preventDefault();infoAnchor=slider;showControlInfo('stemWidth');}};slider.oninput=()=>{if(infoMode){slider.value=app.draft.stemWidth;infoAnchor=slider;showControlInfo('stemWidth');return;}app.draft.stemWidth=Number(slider.value);queue();};}if(app.tab==='create'&&activeColorPart)openColorPalette(activeColorPart);}
+function openColorPalette(part){
+ const palette=$('palette');if(!palette)return;
+ activeColorPart=part;
+ controls.querySelectorAll('[data-color]').forEach(button=>{const active=button.dataset.color===part;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
+ palette.classList.remove('hidden');
+ palette.innerHTML=COLORS.map(color=>`<button class="swatch ${color===app.draft.colors[part]?'active':''}" title="${color}" aria-label="Color ${color}" data-swatch="${color}" style="background:${color}"></button>`).join('');
+ palette.querySelectorAll('[data-swatch]').forEach(button=>button.onclick=()=>{
+  if(infoMode){infoAnchor=button;showControlInfo('swatch');return;}
+  app.draft.colors[part]=button.dataset.swatch;renderControls();queue();
+ });
+}
 function activate3DRotation(){app.mode='3d';app.autoRotate=true;app.drawProgress=1;}
 function tab(t){app.tab=t;if(t==='arrange'){app.placing=false;}renderControls();queue();}
 function confirmDialog(title,message,yesLabel,onYes){$('modalTitle').textContent=title;$('modalBody').textContent=message;$('modalConfirm').textContent=yesLabel;$('modal').classList.add('open');$('modalCancel').onclick=()=>$('modal').classList.remove('open');$('modalConfirm').onclick=()=>{$('modal').classList.remove('open');onYes();};}
 function placeMode(type){if(!stored.library[type]){notify('Save this flower to the library first.');return;}app.placeType=type;app.placing=true;app.selected=null;app.tab='arrange';renderControls();queue();}
 function act(a){
-if(a==='breezeToggle'){breeze.strength='windy';breeze.playing=!breeze.playing;breeze.last=0;}
+if(a==='breezeToggle'){breeze.playing=!breeze.playing;breeze.last=0;}
 else if(a==='new'){app.draft.style=['simple','rich','wandering'][Math.floor(Math.random()*3)];app.draft.seed=(Math.random()*4294967295)>>>0;activate3DRotation();}
 else if(a==='save'){const put=()=>{stored.library[app.draft.type]=structuredClone(app.draft);app.libSelected=app.draft.type;save();notify(`${LABEL[app.draft.type]} saved locally`);};if(stored.library[app.draft.type])confirmDialog('Replace saved flower?',`Replace your saved ${LABEL[app.draft.type]} design? Flowers already placed in Arrange will stay unchanged.`,'Replace',put);else put();}
 else if(a==='saveArrangement'){save();notify('Arrangement saved locally');}
@@ -778,18 +806,229 @@ else if(a==='front'||a==='back'){const i=stored.arrangement.find(e=>e.id===app.s
 else if(a==='remove'){stored.arrangement=stored.arrangement.filter(e=>e.id!==app.selected);app.selected=null;save();}
 else if(a==='clear'){confirmDialog('Clear arrangement?','This removes all flowers currently placed on the canvas. Your library will be kept.','Clear',()=>{stored.arrangement=[];app.selected=null;save();renderControls();queue();});return;}
 renderControls();queue();}
+// INFORMATION MODE: Uses event capture so explanation taps never accidentally Save,
+// Delete, or adjust the controls they describe. Tabs may still be visited safely.
+const FLOWER_GUIDE = {
+ dandelion: {
+  summary:'A globe of delicate seed stalks, each tipped with fine radiating filaments. Select it to design a dandelion.',
+  math:'Directions are spread around a sphere using the golden angle (about 137.5°) and evenly spaced vertical coordinates. Each direction becomes a stalk with a circular cluster of fine tuft lines. A repeatable random seed adds small variations.',
+  equations:[
+   ['θᵢ = iπ(3 − √5)','The golden angle spaces seed directions around the globe.'],
+   ['yᵢ = 1 − 2(i + ½)/N','Vertical coordinates are spread evenly between the two poles.'],
+   ['rᵢ = √(1 − yᵢ²); (xᵢ,zᵢ) = rᵢ(cos θᵢ, sin θᵢ)','These coordinates place each seed on a sphere.']
+  ]
+ },
+ dahlia: {
+  summary:'A dense bloom of overlapping, curling petals arranged in layers. Select it to design a dahlia.',
+  math:'Petals are positioned with golden-angle spacing and divided into radial layers. Each petal is a curved 3D surface: its reach increases along its length, while sine-shaped width, lift, curl and twist shape the edges.',
+  equations:[
+   ['θᵢ = iπ(3 − √5) + εᵢ','Golden-angle spacing, with a small random offset, distributes petals.'],
+   ['R(u) = R₀ + Lu','Petal surfaces extend outward from their starting radius.'],
+   ['W(u) ∝ sin(πu)^0.70','Width narrows smoothly toward the base and tip; lift and curl add 3D shape.']
+  ]
+ },
+ lace: {
+  summary:'Queen Anne’s lace: a shallow, airy umbrella of branching stems and tiny five-petaled blossoms.',
+  math:'Major rays are spread around a shallow dome using golden-angle spacing. Smaller branches diverge at varied polar angles, and each blossom is built from five evenly spaced petal tips.',
+  equations:[
+   ['θᵢ = iπ(3 − √5) + εᵢ','Golden-angle directions spread the umbrella’s branching rays.'],
+   ['Pᵢ = C + (Rᵢ cos θᵢ, −hᵢ, Rᵢ sin θᵢ)','Each branch ends at a point on a shallow dome.'],
+   ['αₖ = 2πk/5 + φ','Five regularly spaced angles create the miniature blossoms.']
+  ]
+ },
+ iris: {
+  summary:'An iris with three upright petals and three downward-curving falls, surrounded by sword-shaped leaves.',
+  math:'Six petals are sampled as curved parametric surfaces in 3D. Their changing width follows a sine function; bends, twists, and low-amplitude sine waves add shape and subtle irregularity.',
+  equations:[
+   ['θ(u) = θ₀ + τu²','A quadratic twist turns each petal as it grows.'],
+   ['W(u) = W₀ sin(πu)^0.76(1 − 0.11u)','The petal widens and tapers without sharp corners.'],
+   ['P(u,v) = radial(u) + vW(u)·side(u) + height(u)','Two surface coordinates define 3D points along and across the petal.']
+  ]
+ },
+ passion: {
+  summary:'A passionflower with broad petals, a fine radial corona, and a raised central structure.',
+  math:'Petal surfaces extend outward along sine- and cosine-based radial directions. Numerous corona filaments form concentric rings; their length, tilt and curvature vary with seeded parameters.',
+  equations:[
+   ['θₖ = 2πk/N','Corona filaments fan out at evenly spaced angles.'],
+   ['P(r,θ) = C + r(cos θ, sin θ)','Radial coordinates position the petals and filaments around the center.'],
+   ['P(t) = (1 − t)A + tB','Linear interpolation joins points along a sampled curve; seeded variation changes each filament.']
+  ]
+ },
+ foxglove: {
+  summary:'A tall foxglove spike with tubular, speckled bells and tapering foliage.',
+  math:'Each bell is formed from curves around a 3D tube with a widening mouth. Bloom positions follow a gently bent stem. The varying radii, droop, and spot coordinates create natural differences.',
+  equations:[
+   ['R(t,θ) = r₀[0.63 + (F − 0.63)t^1.65][1 + 0.075t⁴cos(5θ)]','The bell widens toward its mouth, with five subtle lobes.'],
+   ['P(t,θ) = center(t) + R(t,θ)[Bcos θ + Csin θ]','Local perpendicular directions wrap the bell in 3D.'],
+   ['D(t) ∝ t²','A quadratic downward offset adds droop to the flowers.']
+  ]
+ },
+ allium: {
+  summary:'A spherical allium head assembled from many outward-pointing stalks and tiny star-like florets.',
+  math:'Stalk directions approximate uniform coverage of a sphere through golden-angle distribution. At each end, small florets are drawn with six rotationally spaced petals. Seeded variation adjusts size, density, and bend.',
+  equations:[
+   ['θᵢ = iπ(3 − √5); yᵢ = 1 − 2(i + ½)/N','Golden-angle sampling distributes stalk directions over a sphere.'],
+   ['dᵢ = (√(1 − yᵢ²)cos θᵢ, yᵢ, √(1 − yᵢ²)sin θᵢ)','This unit vector points each stalk outward from the flower head.'],
+   ['φₖ = 2πk/6 + εₖ','Six nearly equally spaced petals form each small floret.']
+  ]
+ }
+};
+const CONTROL_GUIDE = {
+ create:['Create','Choose a flower species, generate its structure, change its stem thickness or colors, and save it in the local library.'],
+ library:['Library','View locally saved flowers. Choose one to see it, edit its design, remove it, or place it in Arrange.'],
+ arrange:['Arrange','Place flowers from the library, drag them to new positions, adjust their size or stacking order, and save your arrangement.'],
+ new:['Generate New Flower','Generates a new variation of the selected flower. Simple, Rich, or Wandering is chosen at random, along with a new random seed.'],
+ save:['Save Flower','Save the current flower in this browser’s library. Saving the same species again replaces its earlier saved design after confirmation.'],
+ saveArrangement:['Save Arrangement','Keep the current arrangement in this browser’s local storage. It is not uploaded or downloaded.'],
+ breezeToggle:['Breeze','Turn the Windy-strength breeze animation on or off for the arrangement. The breeze is a visual preview.'],
+ stemWidth:['Stem Width','Drag the slider to make the flower’s stem lines thinner or thicker. The right end allows much thicker stems.'],
+ draw:['Draw','Replay the current flower as a line-by-line drawing over about eight seconds.'],
+ rotate:['Rotate','Switch continuous 3D rotation on or off. You can also drag the flower to rotate it manually.'],
+ dimension:['2D | 3D','Toggle between a flat 2D view and a perspective 3D view.'],
+ full:['Full','Enter a full-screen view of the current flower. Tap × to return, or use + and − to change zoom.'],
+ fullClose:['Close Full Screen','Return from full-screen viewing to the regular Flower Studio layout.'],
+ fullPlus:['Zoom In','Magnify the flower in the full-screen view.'],
+ fullMinus:['Zoom Out','Reduce the magnification of the flower in the full-screen view.'],
+ createAction:['Create a Flower','Switch to Create to design and save your first flower.'],
+ place:['Place Flower','Start adding copies of the selected saved flower to your arrangement by tapping the canvas.'],
+ edit:['Edit Flower','Load the selected saved design into Create so you can adjust it and save again.'],
+ delLib:['Remove from Library','Remove the saved flower from this browser’s library, after confirmation. Flowers already placed in the arrangement remain.'],
+ donePlace:['Done Placing','Stop adding flowers to the arrangement. Existing flowers remain where you placed them.'],
+ choosePlace:['Choose Flower to Place','Go to the library to select a flower for the arrangement.'],
+ smaller:['Smaller','Make the selected flower slightly smaller in the arrangement.'],
+ larger:['Larger','Make the selected flower slightly larger in the arrangement.'],
+ back:['Send Back','Move the selected flower behind other flowers in the arrangement’s stacking order.'],
+ front:['Bring Forward','Move the selected flower in front of other flowers.'],
+ remove:['Remove Flower','Remove the selected flower from the arrangement, without deleting it from your library.'],
+ clear:['Clear Arrangement','Remove all placed flowers from the canvas after confirmation. Saved flower designs stay in the library.'],
+ canvas:['Flower Canvas','In Create, drag a 3D flower to change its viewing angle. In Arrange, tap to place a flower or drag an existing one to move it.'],
+ swatch:['Color Swatch','Assign this shade to the chosen flower component. The palette changes only the current draft until you save.']
+};
+// The popup floats within the figure, as close as possible to the touched control.
+// Desktop: match the control's top edge and dock against the figure's right edge.
+// Stacked/mobile: dock along the figure's lower edge, nearest the controls below it.
+let infoAnchor=null;
+function positionInfoPopup(){
+ const popup=$('infoPopup');
+ if(popup.classList.contains('hidden'))return;
+ const figure=stage.getBoundingClientRect();
+ const control=infoAnchor?.isConnected ? infoAnchor.getBoundingClientRect() : $('infoToggle').getBoundingClientRect();
+ const inset=12;
+ const availableWidth=Math.max(160,figure.width-inset*2);
+ popup.style.width=Math.min(405,availableWidth)+'px';
+ popup.style.maxHeight=Math.max(100,Math.min(620,figure.height-inset*2,window.innerHeight-16))+'px';
+ const pw=popup.getBoundingClientRect().width;
+ const ph=popup.getBoundingClientRect().height;
+ const minX=figure.left+inset;
+ const maxX=Math.max(minX,figure.right-pw-inset);
+ const minY=Math.max(8,figure.top+inset);
+ const maxY=Math.max(minY,Math.min(window.innerHeight-ph-8,figure.bottom-ph-inset));
+ const panel=document.querySelector('.panel').getBoundingClientRect();
+ const stacked=panel.top>=figure.bottom-5;
+ const overFigure=control.left<figure.right-3 && control.right>figure.left+3 && control.top<figure.bottom && control.bottom>figure.top;
+ let x=maxX,y;
+ if(overFigure){
+  // Figure controls (Full, Draw, Rotate, 2D/3D) should not sit underneath their explanations.
+  const center=figure.left+figure.width/2;
+  x=control.left<center?control.right+inset:control.left-pw-inset;
+  x=Math.max(minX,Math.min(maxX,x));
+  y=control.top;
+ }else if(stacked){
+  // When the control panel is below the square figure there is no common
+  // screen height; keep the explanation at the figure edge closest to the button.
+  y=maxY;
+ }else{
+  y=control.top;
+ }
+ y=Math.max(minY,Math.min(maxY,y));
+ popup.style.left=Math.round(x)+'px';
+ popup.style.top=Math.round(y)+'px';
+}
+function showInfo(title,description,math='',equations=[]){
+ $('infoHeading').textContent=title;
+ $('infoCopy').textContent=description;
+ $('mathCopy').textContent=math;
+ const list=$('mathEquations');
+ list.replaceChildren();
+ for(const [formula,note] of equations){
+  const row=document.createElement('div');row.className='math-equation';
+  const f=document.createElement('span');f.className='math-formula';f.textContent=formula;
+  const n=document.createElement('div');n.className='math-note';n.textContent=note;
+  row.append(f,n);list.append(row);
+ }
+ $('mathToggle').classList.toggle('hidden',!math);
+ $('mathDetails').classList.add('hidden');
+ $('mathToggle').classList.remove('active');
+ $('mathToggle').textContent='How the mathematics works ▾';
+ $('mathToggle').setAttribute('aria-expanded','false');
+ $('infoPopup').classList.remove('hidden');
+ $('infoPopup').scrollTop=0;
+ positionInfoPopup();
+}
+function showFlowerInfo(type,alreadySaved=false){
+ const detail=FLOWER_GUIDE[type];if(!detail)return;
+ showInfo(LABEL[type]||'Flower',detail.summary+(alreadySaved?' This is a saved design in your library.':''),detail.math,detail.equations);
+}
+function showControlInfo(name){const guide=CONTROL_GUIDE[name];if(guide)showInfo(guide[0],guide[1]);else showInfo('Information','Click any button for guidance');}
+$('mathToggle').onclick=()=>{
+ const expanded=$('mathDetails').classList.toggle('hidden')===false;
+ $('mathToggle').classList.toggle('active',expanded);
+ $('mathToggle').setAttribute('aria-expanded',String(expanded));
+ $('mathToggle').textContent=expanded?'Hide mathematics ▴':'How the mathematics works ▾';
+ positionInfoPopup();
+};
+$('infoClose').onclick=()=>{$('infoPopup').classList.add('hidden');infoAnchor=null;};
+$('infoToggle').onclick=()=>{
+ infoMode=!infoMode;
+ $('infoToggle').classList.toggle('active',infoMode);
+ $('infoToggle').setAttribute('aria-pressed',String(infoMode));
+ if(infoMode){infoAnchor=$('infoToggle');showInfo('Information','Click any button for guidance');}
+ else {$('infoPopup').classList.add('hidden');infoAnchor=null;}
+};
+window.addEventListener('resize',positionInfoPopup);
+document.querySelector('.panel-scroll').addEventListener('scroll',positionInfoPopup,{passive:true});
+window.addEventListener('scroll',positionInfoPopup,{passive:true});
+document.addEventListener('keydown',event=>{
+ if(event.key==='Escape' && !$('infoPopup').classList.contains('hidden')){
+  $('infoPopup').classList.add('hidden');event.preventDefault();
+ }
+});
+function explainButton(b){
+ infoAnchor=b;
+ if(b.dataset.flower){showFlowerInfo(b.dataset.flower);return;}
+ if(b.dataset.saved){showFlowerInfo(b.dataset.saved,true);return;}
+ if(b.dataset.color){const part=b.dataset.color;showInfo(part[0].toUpperCase()+part.slice(1)+' Color','Choose a shade for the flower’s '+part+' lines. A new color affects the current draft, not saved designs until you select Save.');openColorPalette(part);return;}
+ if(b.dataset.swatch){showControlInfo('swatch');return;}
+ if(b.dataset.tab){showControlInfo(b.dataset.tab);tab(b.dataset.tab);return;}
+ if(b.dataset.action){const a=b.dataset.action;
+  if(a.startsWith('place:')){showControlInfo('place');return;}
+  if(a.startsWith('edit:')){showControlInfo('edit');return;}
+  if(a.startsWith('delLib:')){showControlInfo('delLib');return;}
+  showControlInfo(a==='create'?'createAction':a);return;
+ }
+ if(CONTROL_GUIDE[b.id])showControlInfo(b.id);
+}
+// Capture all regular button clicks in guidance mode before their normal handlers.
+document.addEventListener('click',event=>{
+ if(!infoMode)return;
+ const b=event.target.closest('button');
+ if(!b || b.id==='infoToggle' || b.closest('#infoPopup') || b.closest('#modal'))return;
+ event.preventDefault();event.stopImmediatePropagation();
+ explainButton(b);
+},true);
+
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 const P=(e)=>{const r=canvas.getBoundingClientRect();return {x:clamp((e.clientX-r.left)/r.width,0,1),y:clamp((e.clientY-r.top)/r.height,0,1)};};let drag=null;
 function hit(p){let list=[...stored.arrangement].sort((a,b)=>b.order-a.order);for(const a of list){let side=a.size,dx=(p.x-a.x)/(side*.55),dy=(p.y-a.y)/(side*.55);if(dx*dx+dy*dy<1.15)return a;}return null;}
-canvas.addEventListener('pointerdown',e=>{if(app.tab!=='arrange'){if((app.tab==='create'||(app.tab==='library'&&!!app.libSelected))&&app.mode==='3d'){drag={camera:true,x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);}return;}let p=P(e),item=hit(p);if(item){app.selected=item.id;drag={id:item.id,dx:p.x-item.x,dy:p.y-item.y};canvas.setPointerCapture(e.pointerId);stage.classList.add('dragging');renderControls();queue();}else if(app.placing&&stored.library[app.placeType]){let recipe=structuredClone(stored.library[app.placeType]),n=stored.arrangement.filter(i=>i.recipe.type===app.placeType).length;let angle=(n*2.399963229728653+Math.random()*.35)%(Math.PI*2);let item={id:(Date.now().toString(36)+Math.random().toString(36).slice(2,7)),recipe,x:p.x,y:p.y,size:.35,rx:-.28+.2*Math.sin(n*1.9),ry:angle,order:stored.arrangement.length?Math.max(...stored.arrangement.map(x=>x.order))+1:0};stored.arrangement.push(item);app.selected=item.id;save();renderControls();queue();}else{app.selected=null;renderControls();queue();}e.preventDefault();});
+canvas.addEventListener('pointerdown',e=>{if(infoMode){e.preventDefault();infoAnchor=canvas;showControlInfo('canvas');return;}if(app.tab!=='arrange'){if((app.tab==='create'||(app.tab==='library'&&!!app.libSelected))&&app.mode==='3d'){drag={camera:true,x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);}return;}let p=P(e),item=hit(p);if(item){app.selected=item.id;drag={id:item.id,dx:p.x-item.x,dy:p.y-item.y};canvas.setPointerCapture(e.pointerId);stage.classList.add('dragging');renderControls();queue();}else if(app.placing&&stored.library[app.placeType]){let recipe=structuredClone(stored.library[app.placeType]),n=stored.arrangement.filter(i=>i.recipe.type===app.placeType).length;let angle=(n*2.399963229728653+Math.random()*.35)%(Math.PI*2);let item={id:(Date.now().toString(36)+Math.random().toString(36).slice(2,7)),recipe,x:p.x,y:p.y,size:.35,rx:-.28+.2*Math.sin(n*1.9),ry:angle,order:stored.arrangement.length?Math.max(...stored.arrangement.map(x=>x.order))+1:0};stored.arrangement.push(item);app.selected=item.id;save();renderControls();queue();}else{app.selected=null;renderControls();queue();}e.preventDefault();});
 canvas.addEventListener('pointermove',e=>{if(!drag)return;if(drag.camera){let dx=e.clientX-drag.x,dy=e.clientY-drag.y;app.rotY+=dx*.009;app.rotX=clamp(app.rotX+dy*.009,-1.4,1.4);drag.x=e.clientX;drag.y=e.clientY;}else{let p=P(e),item=stored.arrangement.find(x=>x.id===drag.id);if(item){item.x=clamp(p.x-drag.dx,0,1);item.y=clamp(p.y-drag.dy,0,1);}}queue();e.preventDefault();});
 function endDrag(){if(drag&&!drag.camera)save();drag=null;stage.classList.remove('dragging');}
 canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);
 $('rotate').onclick=()=>{app.autoRotate=!app.autoRotate;if(app.autoRotate)app.mode='3d';$('rotate').classList.toggle('active',app.autoRotate);queue();};
-$('dimension').onclick=()=>{app.mode=app.mode==='2d'?'3d':'2d';if(app.mode==='2d')app.autoRotate=false;$('rotate').classList.toggle('active',app.autoRotate);queue();};let hold=null,longTriggered=false;
-$('dimension').addEventListener('pointerdown',()=>{longTriggered=false;clearTimeout(hold);hold=setTimeout(()=>{longTriggered=true;setFullscreen(true);},650);});$('dimension').addEventListener('pointerup',()=>clearTimeout(hold));$('dimension').addEventListener('pointercancel',()=>clearTimeout(hold));$('dimension').addEventListener('click',e=>{if(longTriggered){longTriggered=false;e.stopImmediatePropagation();}} ,true);
-function setFullscreen(on){app.fullscreen=on;document.body.classList.toggle('fullscreen',on);queue();} $('fullClose').onclick=()=>setFullscreen(false);$('fullPlus').onclick=()=>{app.zoom=clamp(app.zoom*1.13,.5,4);queue();};$('fullMinus').onclick=()=>{app.zoom=clamp(app.zoom/1.13,.5,4);queue();};
-stage.addEventListener('wheel',e=>{if(app.tab==='create'){e.preventDefault();app.zoom=clamp(app.zoom*(e.deltaY>0?.92:1.08),.5,4);queue();}},{passive:false});
+$('dimension').onclick=()=>{app.mode=app.mode==='2d'?'3d':'2d';if(app.mode==='2d')app.autoRotate=false;$('rotate').classList.toggle('active',app.autoRotate);queue();};
+$('full').onclick=()=>setFullscreen(true);
+function setFullscreen(on){document.body.classList.toggle('fullscreen',on);queue();} $('fullClose').onclick=()=>setFullscreen(false);$('fullPlus').onclick=()=>{app.zoom=clamp(app.zoom*1.13,.5,4);queue();};$('fullMinus').onclick=()=>{app.zoom=clamp(app.zoom/1.13,.5,4);queue();};
+stage.addEventListener('wheel',e=>{if(infoMode){e.preventDefault();infoAnchor=canvas;showControlInfo('canvas');return;}if(app.tab==='create'){e.preventDefault();app.zoom=clamp(app.zoom*(e.deltaY>0?.92:1.08),.5,4);queue();}},{passive:false});
 $('draw').onclick=()=>{if(drawRaf)cancelAnimationFrame(drawRaf);let start=performance.now();function step(now){app.drawProgress=clamp((now-start)/8000,0,1);queue();if(app.drawProgress<1)drawRaf=requestAnimationFrame(step);else drawRaf=0;}drawRaf=requestAnimationFrame(step);};
 let lastTime=0;function tick(now){
  if(app.autoRotate&&(app.tab==='create'||(app.tab==='library'&&!!app.libSelected))){if(lastTime)app.rotY+=(now-lastTime)*.00033;queue();}
