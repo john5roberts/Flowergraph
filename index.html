@@ -1,10 +1,10 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flowergraph Studio 1.02</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flowergraph Studio 1.03</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;height:100%;background:#050505;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}body{padding:10px;overflow:hidden}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}.app{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,470px);gap:10px;height:100%}.stage,.panel{border:1px solid #292b32;border-radius:22px;background:#080808;min-width:0;overflow:hidden}.stage{position:relative;align-self:start;aspect-ratio:1/1;width:100%;max-height:calc(100vh - 20px)}canvas{width:100%;height:100%;display:block;touch-action:none}.panel{display:flex;flex-direction:column;padding:12px;gap:10px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex-shrink:0}.tab,.btn,.flower-option,.saved-option{background:#1b1d22;border:1px solid #414651;border-radius:12px;color:white;padding:11px 8px;font-weight:700;min-height:45px}.tab.active,.btn.active,.flower-option.active,.saved-option.active{border:2px solid white;background:#30333b}.panel-scroll{overflow:auto;min-height:0;overscroll-behavior:contain;padding-right:2px;padding-bottom:28px}.section{border:1px solid #2a2e37;background:#111215;border-radius:16px;padding:12px;margin-bottom:10px}.section h3{font-size:16px;margin:0 0 10px}.flower-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.flower-option{min-height:51px}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1;min-width:0}.row .btn{min-width:0}.styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.wide{width:100%;margin-top:9px}.primary{background:#30333b;border:1px solid #747b86;font-size:18px;min-height:55px}.hint{color:#aeb2bc;font-size:13px;line-height:1.45;margin:8px 0 0}.muted{color:#949ba7;font-size:13px}.range{width:100%;accent-color:#cab1dd;touch-action:pan-x}.mini{font-size:13px;min-height:39px}.control-label{font-size:13px;color:#b8beca;display:flex;justify-content:space-between;margin:10px 0 2px}.palette{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}.swatch{aspect-ratio:1;border-radius:9px;border:2px solid #777}.swatch.active{border:3px solid white}.colors-row{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.colors-row .btn{display:flex;align-items:center;justify-content:center;gap:7px}.dot{width:15px;height:15px;border-radius:50%;display:inline-block;border:1px solid #eee}.overlay{position:absolute;bottom:12px;left:14px;z-index:5;opacity:.45;color:#eee;background:none;border:none;font-weight:700}.camera{position:absolute;bottom:12px;right:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:4px}.camera button{color:#eee;opacity:.45;background:none;border:none;font-weight:700}.camera button.active{opacity:.75}.filename{color:#777;text-align:center;font-size:11px;margin-top:12px}.empty{color:#aeb2bb;text-align:center;padding:38px 14px;border:1px dashed #4a4d56;border-radius:15px;line-height:1.55}.saved-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.saved-option{padding:7px;display:flex;gap:8px;align-items:center;text-align:left}.preview{width:58px;height:58px;background:#000;border-radius:8px;flex-shrink:0}.status{color:#c4b5db;min-height:20px;font-size:13px;margin-top:6px}.toast{position:absolute;top:15px;left:50%;transform:translateX(-50%);background:#282831;border:1px solid #656670;border-radius:12px;padding:9px 14px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:12}.toast.visible{opacity:1}.layer-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.arrange-badge{position:absolute;top:12px;left:14px;background:#18191fcc;border:1px solid #555a64;border-radius:10px;padding:7px 10px;color:#cfd2d9;font-size:13px;z-index:4;pointer-events:none}.fullscreenClose,.fullscreenZoom{display:none}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal.open{display:flex}.modal-body{width:min(450px,100%);padding:17px;background:#15171c;border:1px solid #505664;border-radius:18px}.modal h3{margin-top:0}.modbuttons{display:flex;gap:10px;margin-top:18px}.modbuttons>*{flex:1}.control-off{display:none!important}.stage.placing{cursor:crosshair}.stage.moving{cursor:grab}.stage.dragging{cursor:grabbing}.hidden{display:none!important}.panel [disabled]{opacity:.33;cursor:default}
 body.fullscreen{padding:0;overflow:hidden}body.fullscreen .stage{position:fixed;inset:0;width:100vw;height:100dvh;max-height:none;z-index:30;border:0;border-radius:0;aspect-ratio:auto}body.fullscreen .fullscreenClose,body.fullscreen .fullscreenZoom{display:flex;position:fixed;z-index:40;background:none;color:#eee;opacity:.65;border:0;font-size:42px;width:65px;height:65px;align-items:center;justify-content:center}body.fullscreen .fullscreenClose{top:10px;right:10px}body.fullscreen .fullscreenZoom.in{top:10px;left:10px}body.fullscreen .fullscreenZoom.out{top:76px;left:10px}
 @media(max-width:1000px) and (hover:hover){body{overflow:auto;padding:0}.app{display:block;height:auto}.stage{max-height:none}.panel{border-radius:20px;height:auto}.panel-scroll{overflow:visible}}
 @media(max-width:700px){body{padding:0}.app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:5px;height:100dvh}.stage{max-height:none;aspect-ratio:1/1;border-radius:0 0 17px 17px}.panel{border-radius:17px 17px 0 0}.tab{font-size:15px}.panel-scroll{overflow:auto}}
-</style></head><body><div class="app"><section class="stage" id="stage"><canvas id="art"></canvas><div class="arrange-badge hidden" id="arrangeBadge"></div><div class="toast" id="toast"></div><button class="overlay" id="draw">Draw</button><div class="camera"><button id="rotate">Rotate</button><button id="dimension">2D | 3D</button></div></section><aside class="panel"><div class="tabs"><button class="tab active" data-tab="create">Create</button><button class="tab" data-tab="library">Library</button><button class="tab" data-tab="arrange">Arrange</button></div><div class="panel-scroll" id="controls"></div><div class="filename">Flowergraph_Studio_1.02.html</div></aside></div><button class="fullscreenClose" id="fullClose">×</button><button class="fullscreenZoom in" id="fullPlus">+</button><button class="fullscreenZoom out" id="fullMinus">−</button><div class="modal" id="modal"><div class="modal-body"><h3 id="modalTitle"></h3><div class="muted" id="modalBody"></div><div class="modbuttons"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalConfirm">Replace</button></div></div></div><input class="hidden" id="importFile" type="file" accept=".json,application/json">
+</style></head><body><div class="app"><section class="stage" id="stage"><canvas id="art"></canvas><div class="arrange-badge hidden" id="arrangeBadge"></div><div class="toast" id="toast"></div><button class="overlay" id="draw">Draw</button><div class="camera"><button id="rotate">Rotate</button><button id="dimension">2D | 3D</button></div></section><aside class="panel"><div class="tabs"><button class="tab active" data-tab="create">Create</button><button class="tab" data-tab="library">Library</button><button class="tab" data-tab="arrange">Arrange</button></div><div class="panel-scroll" id="controls"></div><div class="filename">Flowergraph_Studio_1.03.html</div></aside></div><button class="fullscreenClose" id="fullClose">×</button><button class="fullscreenZoom in" id="fullPlus">+</button><button class="fullscreenZoom out" id="fullMinus">−</button><div class="modal" id="modal"><div class="modal-body"><h3 id="modalTitle"></h3><div class="muted" id="modalBody"></div><div class="modbuttons"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalConfirm">Replace</button></div></div></div><input class="hidden" id="importFlowerFile" type="file" accept=".json,application/json"><input class="hidden" id="importArrangementFile" type="file" accept=".json,application/json">
 <script>
 const GENERATORS={};
 GENERATORS["dahlia"] = (recipe) => {
@@ -696,8 +696,10 @@ const TYPES=[['dandelion','Dandelion'],['dahlia','Dahlia'],['lace',"Queen Anne's
 const LABEL=Object.fromEntries(TYPES);
 const COLORS=['#F7F7F2','#F2E6D8','#D5CABD','#7A5C3E','#C54B4B','#E6873C','#F0C84B','#8BAA47','#4F8B57','#4D8EA8','#4B68C5','#7B62C7','#A06BC7','#D36CAB','#C0A4E6','#B7B7B7'];
 const DEFAULT={dandelion:'#efe8d3',dahlia:'#df679a',lace:'#ecebd0',iris:'#af90dc',passion:'#bf9cec',foxglove:'#d36cab',allium:'#c0a4e6'};
-const DATA_FILE='Flowergraph_Data.json';
-const STORAGE_KEY='flowergraph-studio-v2-json-cache';
+const FLOWER_FILE='Flowergraph_Flowers.json';
+const ARRANGEMENT_FILE='Flowergraph_Arrangements.json';
+const STORAGE_KEY='flowergraph-studio-v3-split-cache';
+const OLD_STORAGE_KEY='flowergraph-studio-v2-json-cache';
 const $=id=>document.getElementById(id),canvas=$('art'),ctx=canvas.getContext('2d'),stage=$('stage'),controls=$('controls');
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const uid=()=>((typeof crypto!=='undefined'&&crypto.randomUUID)?crypto.randomUUID():`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,12)}`);
@@ -740,13 +742,14 @@ function normalizeData(obj){
  }
  return {format:'flowergraph-studio',version:2,library:lib,arrangement};
 }
-let stored=emptyData(), dataStatus='Loading GitHub JSON…', dirty=false, loadingRemote=true, changeCount=0;
+let stored=emptyData(), savedArrangements=[], activeArrangementId=null;
+let dirtyFlowers=false, dirtyArrangements=false, arrangementModified=false, loadingRemote=true, changeCount=0;
 let breeze={strength:'gentle',playing:false,clock:0,last:0};
 // A null draft intentionally leaves the Create canvas completely empty at startup.
 let app={tab:'create',draft:null,editingId:null,libSelected:null,placeId:null,placing:false,selected:null,mode:'2d',rotX:-.22,rotY:.56,zoom:1,autoRotate:false,drawProgress:1,fullscreen:false};
 let cache=new Map(),thumbCache=new Map(),toastTimer=null,drawRaf=0;
-function cacheLocal(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({data:stored,dirty}));}catch(e){dataStatus='Browser storage unavailable; download JSON to keep changes.';}}
-function save(){dirty=true;changeCount++;dataStatus='Local changes — download JSON to publish';cacheLocal();}
+function cacheLocal(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({data:stored, savedArrangements, activeArrangementId, dirtyFlowers, dirtyArrangements, arrangementModified}));}catch(e){console.warn('Browser storage unavailable',e);}}
+function save(section='arrangement'){if(section==='flower')dirtyFlowers=true;else{dirtyArrangements=true;arrangementModified=true;}changeCount++;cacheLocal();}
 function notify(t){const n=$('toast');n.textContent=t;n.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>n.classList.remove('visible'),2600);}
 function dandelion(recipe){let seed=recipe.seed>>>0;function rand(){seed=(Math.imul(1664525,seed)+1013904223)>>>0;return seed/4294967296;}const lines=[]; const put=(pts,component,width=1,alpha=.6)=>lines.push({points:pts,component,width,alpha});let count=recipe.style==='simple'?78:recipe.style==='rich'?122:166;let tufts=recipe.style==='simple'?8:recipe.style==='rich'?15:22;const golden=Math.PI*(3-Math.sqrt(5));for(let i=0;i<count;i++){const y=1-2*(i+.5)/count,az=i*golden,rr=Math.sqrt(1-y*y),d={x:Math.cos(az)*rr,y,z:Math.sin(az)*rr};const base={x:d.x*.10,y:d.y*.10-.47,z:d.z*.10};const tip={x:d.x*.66,y:d.y*.66-.47,z:d.z*.66};put([base,tip],'stem',.63,.43);for(let t=0;t<tufts;t++){let a=t*6.283/tufts + rand()*.08,side={x:Math.cos(a),y:Math.sin(a),z:.13*Math.sin(a*2)};put([tip,{x:tip.x+d.x*.07+side.x*.13,y:tip.y+d.y*.07+side.y*.13,z:tip.z+d.z*.07+side.z*.13}],'flower',.44,.52);}}put([{x:0,y:1.35,z:0},{x:0,y:-.47,z:0}],'stem',2.2,.9);return lines;}
 GENERATORS.dandelion=dandelion;
@@ -767,7 +770,6 @@ function makeThumb(entry){let key=entry.id+'|'+JSON.stringify(entry.recipe);if(t
 function drawLibraryCanvas(){const w=canvas.width,h=canvas.height,n=stored.library.length;if(!n){ctx.fillStyle='#8e929e';ctx.textAlign='center';ctx.font=`${Math.max(14,Math.round(w/33))}px sans-serif`;ctx.fillText('Your flower library is empty',w/2,h/2);return;}const active=stored.library.find(f=>f.id===app.libSelected);if(active){paint(ctx,active.recipe,{x:0,y:0,w,h},{mode:'3d',rx:-.22,ry:.30,zoom:app.zoom});return;}const list=stored.library.slice(0,9),cols=3,rows=Math.ceil(list.length/cols),cell=Math.min(w/cols,h/Math.max(3,rows));for(let i=0;i<list.length;i++){const col=i%cols,row=Math.floor(i/cols),x=(w-cell*cols)/2+col*cell,y=h*.10+row*cell;paint(ctx,list[i].recipe,{x,y,w:cell,h:cell},{mode:'3d',rx:-.21,ry:.25,zoom:.82});ctx.fillStyle='#c7c7ca';ctx.textAlign='center';ctx.font=`${Math.max(11,Math.round(cell/11))}px sans-serif`;ctx.fillText(list[i].name,x+cell/2,y+cell*.94,cell*.93);}if(n>9){ctx.fillStyle='#aaa';ctx.font=`${Math.max(11,Math.round(w/34))}px sans-serif`;ctx.fillText(`+ ${n-9} more in library`,w/2,h*.96);}}
 function button(label,action,extra=''){return `<button class="btn ${extra}" data-action="${action}">${label}</button>`;}
 function flowerButtons(selected){return `<div class="flower-grid">${TYPES.map(([id,name])=>`<button class="flower-option ${selected===id?'active':''}" data-flower="${id}">${name}</button>`).join('')}</div>`;}
-function dataSection(){return `<div class="section"><h3>GitHub JSON Data</h3><p class="hint" id="dataStatus">${escapeHtml(dataStatus)}</p>${button('Download Updated JSON','export','wide primary')}<div class="row" style="margin-top:8px">${button('Import JSON','import','mini')}${button('Reload GitHub JSON','reload','mini')}</div><p class="hint">Place ${DATA_FILE} beside the HTML file in your GitHub repository. Opening the hosted app reads it automatically. Changes are saved locally until you download the updated JSON and replace the file on GitHub.</p></div>`;}
 function renderControls(){
  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===app.tab));
  const creating=app.tab==='create'&&!!app.draft;
@@ -783,27 +785,29 @@ function renderControls(){
    html+=`<div class="section"><h3>Flower Style</h3><div class="styles">${['simple','rich','wandering'].map(s=>button(s[0].toUpperCase()+s.slice(1),'style:'+s,app.draft.style===s?'active':'' )).join('')}</div>${button('New Flower','new','wide primary')}</div>`;
    html+=`<div class="section"><h3>Stem</h3><div class="control-label"><span>Stem Width</span><span id="stemValue">${app.draft.stemWidth}%</span></div><input aria-label="Stem width" id="stemWidth" class="range" type="range" min="10" max="100" step="5" value="${app.draft.stemWidth}"><div class="hint">Narrow ← → Wide</div></div>`;
    html+=`<div class="section"><h3>Colors</h3><div class="colors-row">${[['flower','Flower'],['stem','Stem'],['detail','Detail']].map(([key,label])=>`<button class="btn mini" data-color="${key}"><span class="dot" style="background:${app.draft.colors[key]}"></span>${label}</button>`).join('')}</div><div class="palette hidden" id="palette"></div></div>`;
-   html+=`<div class="section">${app.editingId?`<p class="hint">Editing ${escapeHtml(stored.library.find(f=>f.id===app.editingId)?.name||'saved flower')}</p>`:''}${button('Save as New Flower','saveNew','wide primary')}${app.editingId?button('Update This Saved Flower','update','wide'):''}${button('Download Updated JSON','export','wide')}<p class="hint">Each Save adds a version to your working library. Download the JSON when ready to publish it on GitHub.</p></div>`;
+   html+=`<div class="section">${app.editingId?`<p class="hint">Editing ${escapeHtml(stored.library.find(f=>f.id===app.editingId)?.name||'saved flower')}</p>`:''}${button('Save','saveFlower','wide primary')}${app.editingId?button('Save New Version','saveNew','wide'):''}<p class="hint">Saving keeps this flower in your collection and gives you a copy to share.</p></div>`;
   }
  }else if(app.tab==='library'){
-  if(!stored.library.length){html=`<div class="empty">Your flower library is empty.<br>Create a flower and select Save as New Flower.</div>${button('Create a Flower','create','wide primary')}`;}
+  if(!stored.library.length){html=`<div class="empty">Your flower library is empty.<br>Create a flower and select Save.</div>${button('Create a Flower','create','wide primary')}`;}
   else{
    html=`<div class="section"><h3>Saved Flowers (${stored.library.length})</h3><div class="saved-grid">${stored.library.map(f=>`<button data-saved="${escapeHtml(f.id)}" class="saved-option ${f.id===app.libSelected?'active':''}"><img class="preview" alt="" src="${makeThumb(f)}"><span>${escapeHtml(f.name)}</span></button>`).join('')}</div></div>`;
    const selected=stored.library.find(f=>f.id===app.libSelected);
    if(selected)html+=`<div class="section"><h3>${escapeHtml(selected.name)}</h3>${button('Place Flower','place','wide primary')}${button('Edit Flower','edit','wide')}${button('Remove from Library','delLib','wide mini')}</div>`;
   }
-  html+=dataSection();
+  html+=`<div class="section"><div class="row">${button('Save','saveFlowersFile','primary')}${button('Import Flower','importFlower')}</div></div>`;
  }else{
   const item=stored.arrangement.find(a=>a.id===app.selected),n=stored.arrangement.length;
   html=`<div class="section"><h3>Arrange Flowers</h3><p class="hint">${app.placing?'Tap empty space to add another copy. Drag any flower to move it.':'Touch and drag a flower to move it. Release anywhere.'}</p>${app.placing?button('Done Placing','donePlace','wide primary'):button('Choose Flower to Place','choosePlace','wide primary')}</div>`;
-  html+=`<div class="section"><h3>Breeze — Test Settings</h3><div class="styles">${['still','gentle','windy'].map(k=>button(k[0].toUpperCase()+k.slice(1),'breeze:'+k,breeze.strength===k?'active':'' )).join('')}</div>${button(breeze.playing?'Pause Breeze':'Start Breeze','breezeToggle','wide primary')}<p class="hint">Temporary breeze controls. The animation setting is not part of the saved JSON.</p></div>`;
+  html+=`<div class="section"><h3>Breeze — Test Settings</h3><div class="styles">${['still','gentle','windy'].map(k=>button(k[0].toUpperCase()+k.slice(1),'breeze:'+k,breeze.strength===k?'active':'' )).join('')}</div>${button(breeze.playing?'Pause Breeze':'Start Breeze','breezeToggle','wide primary')}<p class="hint">Temporary controls for testing the movement. Saved arrangements keep their original positions.</p></div>`;
   if(app.placing&&source)html+=`<div class="section"><h3>Adding: ${escapeHtml(source.name)}</h3>${button('Choose Another Flower','choosePlace','wide')}</div>`;
   if(item)html+=`<div class="section"><h3>Selected: ${escapeHtml(item.flowerName||LABEL[item.recipe.type])}</h3><div class="row">${button('− Smaller','smaller')}${button('+ Larger','larger')}</div><div class="layer-controls" style="margin-top:8px">${button('Send Back','back','mini')}${button('Bring Forward','front','mini')}</div>${button('Remove Flower','remove','wide mini')}<p class="hint">Tap and drag to move this flower.</p></div>`;
-  html+=`<div class="section"><p class="muted">${n} flower${n===1?'':'s'} in arrangement</p>${button('Clear Arrangement','clear','wide mini')}</div>`+dataSection();
+  html+=`<div class="section"><h3>Save Arrangement</h3><p class="muted">${activeArrangementId?(savedArrangements.find(a=>a.id===activeArrangementId)?.name||'Current arrangement'):'New arrangement'} · ${n} flower${n===1?'':'s'}</p><div class="row">${button('Save','saveArrangement','primary')}${button('Import Arrangement','importArrangement')}</div>${button('New Arrangement','newArrangement','wide')}${button('Clear Arrangement','clear','wide mini')}</div>`;
+  if(savedArrangements.length){html+=`<div class="section"><h3>Saved Arrangements</h3><div class="saved-grid">${savedArrangements.map(a=>`<button data-arrangement="${escapeHtml(a.id)}" class="saved-option ${activeArrangementId===a.id?'active':''}"><span style="display:block;padding:9px 4px">${escapeHtml(a.name)}<span class="muted" style="display:block;margin-top:3px">${a.flowers.length} flowers</span></span></button>`).join('')}</div>${activeArrangementId?button('Remove Saved Arrangement','deleteArrangement','wide mini'):''}</div>`;}
  }
  controls.innerHTML=html;
  controls.querySelectorAll('[data-flower]').forEach(b=>b.onclick=()=>{app.draft=G(b.dataset.flower,'rich');app.editingId=null;app.zoom=1;app.drawProgress=1;renderControls();queue();});
  controls.querySelectorAll('[data-saved]').forEach(b=>b.onclick=()=>{app.libSelected=b.dataset.saved;renderControls();queue();});
+ controls.querySelectorAll('[data-arrangement]').forEach(b=>b.onclick=()=>openSavedArrangement(b.dataset.arrangement));
  controls.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>{const pal=$('palette');pal.classList.remove('hidden');pal.innerHTML=COLORS.map(col=>`<button class="swatch ${col===app.draft.colors[b.dataset.color]?'active':''}" title="${col}" data-swatch="${col}" style="background:${col}"></button>`).join('');pal.querySelectorAll('[data-swatch]').forEach(s=>s.onclick=()=>{app.draft.colors[b.dataset.color]=s.dataset.swatch;renderControls();queue();});});
  controls.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>act(b.dataset.action));
  const slider=$('stemWidth');if(slider)slider.oninput=()=>{app.draft.stemWidth=Number(slider.value);$('stemValue').textContent=`${app.draft.stemWidth}%`;queue();};
@@ -814,30 +818,118 @@ function selectedFlower(){return stored.library.find(f=>f.id===app.libSelected);
 function placeMode(id){if(!stored.library.some(f=>f.id===id)){notify('Select a saved flower first.');return;}app.placeId=id;app.placing=true;app.selected=null;app.tab='arrange';renderControls();queue();}
 function nextName(type){let n=1;const existing=new Set(stored.library.map(f=>f.name));while(existing.has(LABEL[type]+' '+n))n++;return LABEL[type]+' '+n;}
 function resetDataSelection(){app.selected=null;app.libSelected=null;app.placeId=null;app.placing=false;app.editingId=null;}
-function downloadJSON(){const file=new Blob([JSON.stringify(stored,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(file);const link=document.createElement('a');link.href=url;link.download=DATA_FILE;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);notify('JSON downloaded — replace the file on GitHub to publish changes.');}
+function downloadFile(filename,content){
+ const blob=new Blob([JSON.stringify(content,null,2)+'\n'],{type:'application/json'});
+ const url=URL.createObjectURL(blob),link=document.createElement('a');
+ link.href=url;link.download=filename;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+function flowersDocument(){return {format:'flowergraph-flowers',version:3,library:structuredClone(stored.library)};}
+function arrangementsDocument(){return {format:'flowergraph-arrangements',version:3,saved:structuredClone(savedArrangements),active:structuredClone(stored.arrangement),activeId:activeArrangementId};}
+function exportFlowers(){downloadFile(FLOWER_FILE,flowersDocument());notify('Flowers saved.');}
+function exportArrangements(){downloadFile(ARRANGEMENT_FILE,arrangementsDocument());notify('Arrangements saved.');}
+function nextArrangementName(){let n=1;const names=new Set(savedArrangements.map(a=>a.name));while(names.has('Arrangement '+n))n++;return 'Arrangement '+n;}
+function saveCurrentArrangement(){
+ if(!stored.arrangement.length){notify('Place a flower before saving.');return;}
+ let item=savedArrangements.find(a=>a.id===activeArrangementId);
+ if(!item){item={id:uid(),name:nextArrangementName(),flowers:[],updatedAt:''};savedArrangements.push(item);activeArrangementId=item.id;}
+ item.flowers=structuredClone(stored.arrangement);item.updatedAt=new Date().toISOString();arrangementModified=false;
+ dirtyArrangements=true;changeCount++;cacheLocal();exportArrangements();
+}
+function openSavedArrangement(id){
+ const item=savedArrangements.find(a=>a.id===id);if(!item)return;
+ const load=()=>{stored.arrangement=structuredClone(item.flowers);activeArrangementId=item.id;app.selected=null;app.placing=false;arrangementModified=false;dirtyArrangements=true;changeCount++;cacheLocal();renderControls();queue();notify(`${item.name} opened.`);};
+ if(arrangementModified&&stored.arrangement.length)confirmDialog('Open saved arrangement?', 'Changes since your last Save will be replaced.', 'Open',load);
+ else load();
+}
+function newArrangement(){
+ const start=()=>{stored.arrangement=[];activeArrangementId=null;app.selected=null;app.placing=false;arrangementModified=false;dirtyArrangements=true;changeCount++;cacheLocal();renderControls();queue();notify('New arrangement ready.');};
+ if(arrangementModified&&stored.arrangement.length)confirmDialog('Start a new arrangement?', 'Your current changes have not been saved.', 'Start',start);
+ else start();
+}
+function normalizeFlowerFile(obj){
+ if(!obj||typeof obj!=='object')throw Error('Not a flower collection');
+ if(obj.recipe){const recipe=cleanRecipe(obj.recipe);return [{id:typeof obj.id==='string'?obj.id:uid(),name:String(obj.name||LABEL[recipe.type]),recipe,createdAt:obj.createdAt||new Date().toISOString()}];}
+ if(obj.type){const recipe=cleanRecipe(obj);return [{id:uid(),name:LABEL[recipe.type],recipe,createdAt:new Date().toISOString()}];}
+ return normalizeData({...obj,arrangement:[]}).library;
+}
+function cleanPlaced(raw){return normalizeData({format:'flowergraph-studio',version:2,library:[],arrangement:Array.isArray(raw)?raw:[]}).arrangement;}
+function normalizeArrangementFile(obj){
+ if(!obj||typeof obj!=='object')throw Error('Not an arrangement collection');
+ if(Array.isArray(obj.saved)){
+  if(obj.saved.length>100)throw Error('Too many arrangements');
+  const seen=new Set();
+  const saved=obj.saved.map(raw=>{let id=typeof raw.id==='string'?raw.id:uid();if(seen.has(id))id=uid();seen.add(id);return {id,name:String(raw.name||'Arrangement').slice(0,100),flowers:cleanPlaced(raw.flowers||raw.arrangement),updatedAt:raw.updatedAt||''};});
+  return {saved,active:cleanPlaced(obj.active),activeId:typeof obj.activeId==='string'?obj.activeId:null};
+ }
+ if(Array.isArray(obj.arrangement)){
+  const active=cleanPlaced(obj.arrangement);
+  return {saved:active.length?[{id:uid(),name:'Imported Arrangement',flowers:structuredClone(active),updatedAt:new Date().toISOString()}]:[],active,activeId:null};
+ }
+ if(Array.isArray(obj.flowers)){
+  const flowers=cleanPlaced(obj.flowers);return {saved:[{id:typeof obj.id==='string'?obj.id:uid(),name:String(obj.name||'Imported Arrangement').slice(0,100),flowers,updatedAt:''}],active:flowers,activeId:null};
+ }
+ throw Error('Not an arrangement collection');
+}
+function mergeFlowers(incoming){
+ for(const f of incoming){const index=stored.library.findIndex(old=>old.id===f.id);if(index>=0)stored.library[index]=f;else{
+  const names=new Set(stored.library.map(v=>v.name));let name=f.name;
+  if(names.has(name)){let suffix=2;while(names.has(`${name} (${suffix})`))suffix++;name=`${name} (${suffix})`;}
+  stored.library.push({...f,name});
+ }}
+ dirtyFlowers=true;changeCount++;cacheLocal();thumbCache.clear();renderControls();queue();notify(`${incoming.length} flower${incoming.length===1?'':'s'} imported.`);
+}
+function mergeArrangements(incoming){
+ for(const a of incoming.saved){const index=savedArrangements.findIndex(old=>old.id===a.id);if(index>=0)savedArrangements[index]=a;else{
+  const names=new Set(savedArrangements.map(v=>v.name));let name=a.name;
+  if(names.has(name)){let suffix=2;while(names.has(`${name} (${suffix})`))suffix++;name=`${name} (${suffix})`;}
+  savedArrangements.push({...a,name});
+ }}
+ const selected=savedArrangements.find(a=>a.id===incoming.activeId)||savedArrangements.find(a=>a.id===incoming.saved[0]?.id);
+ if(selected){stored.arrangement=structuredClone(selected.flowers);activeArrangementId=selected.id;}
+ else if(incoming.active.length){stored.arrangement=structuredClone(incoming.active);activeArrangementId=null;}
+ app.selected=null;app.placing=false;arrangementModified=false;dirtyArrangements=true;changeCount++;cacheLocal();renderControls();queue();notify(`${incoming.saved.length} arrangement${incoming.saved.length===1?'':'s'} imported.`);
+}
 function act(a){
  if(a.startsWith('breeze:')){breeze.strength=a.split(':')[1];breeze.playing=breeze.strength!=='still';breeze.last=0;}
  else if(a==='breezeToggle'){if(breeze.strength==='still')breeze.strength='gentle';breeze.playing=!breeze.playing;breeze.last=0;}
  else if(a.startsWith('style:')&&app.draft){app.draft.style=a.split(':')[1];}
  else if(a==='new'&&app.draft){app.draft.seed=(Math.random()*4294967295)>>>0;app.editingId=null;}
- else if(a==='saveNew'&&app.draft){const record={id:uid(),name:nextName(app.draft.type),recipe:structuredClone(app.draft),createdAt:new Date().toISOString()};stored.library.push(record);app.libSelected=record.id;app.editingId=record.id;save();notify(`${record.name} saved locally. Download JSON to publish.`);}
- else if(a==='update'&&app.draft){const entry=stored.library.find(f=>f.id===app.editingId);if(entry){confirmDialog('Update saved flower?',`Update ${entry.name}? Already placed flowers will keep their original designs.`,'Update',()=>{entry.recipe=structuredClone(app.draft);thumbCache.clear();save();renderControls();queue();notify(`${entry.name} updated locally.`);});return;}}
+ else if((a==='saveFlower'||a==='saveNew')&&app.draft){
+ const existing=a==='saveFlower'?stored.library.find(f=>f.id===app.editingId):null;
+ if(existing){existing.recipe=structuredClone(app.draft);thumbCache.clear();save('flower');exportFlowers();}
+ else {const record={id:uid(),name:nextName(app.draft.type),recipe:structuredClone(app.draft),createdAt:new Date().toISOString()};stored.library.push(record);app.libSelected=record.id;app.editingId=record.id;save('flower');exportFlowers();}
+}
+ else if(a==='update'&&app.draft){const entry=stored.library.find(f=>f.id===app.editingId);if(entry){confirmDialog('Update saved flower?',`Update ${entry.name}? Already placed flowers will keep their original designs.`,'Update',()=>{entry.recipe=structuredClone(app.draft);thumbCache.clear();save('flower');exportFlowers();renderControls();queue();notify(`${entry.name} updated.`);});return;}}
  else if(a==='create')tab('create');
  else if(a==='place'){const f=selectedFlower();if(f){placeMode(f.id);return;}}
  else if(a==='edit'){const f=selectedFlower();if(f){app.draft=structuredClone(f.recipe);app.editingId=f.id;app.drawProgress=1;tab('create');return;}}
- else if(a==='delLib'){const f=selectedFlower();if(f){confirmDialog('Remove saved flower?',`Remove ${f.name}? Flowers already placed in Arrange will remain.`, 'Remove',()=>{stored.library=stored.library.filter(v=>v.id!==f.id);if(app.editingId===f.id)app.editingId=null;app.libSelected=null;thumbCache.clear();save();renderControls();queue();});return;}}
+ else if(a==='delLib'){const f=selectedFlower();if(f){confirmDialog('Remove saved flower?',`Remove ${f.name}? Flowers already placed in Arrange will remain.`, 'Remove',()=>{stored.library=stored.library.filter(v=>v.id!==f.id);if(app.editingId===f.id)app.editingId=null;app.libSelected=null;thumbCache.clear();save('flower');renderControls();queue();});return;}}
  else if(a==='donePlace'){app.placing=false;}
  else if(a==='choosePlace'){app.placing=false;tab('library');return;}
  else if(a==='smaller'||a==='larger'){const i=stored.arrangement.find(e=>e.id===app.selected);if(i){i.size=clamp(i.size+(a==='smaller'?-.045:.045),.12,1.15);save();}}
  else if(a==='front'||a==='back'){const i=stored.arrangement.find(e=>e.id===app.selected);if(i){let orders=stored.arrangement.map(e=>e.order);i.order=a==='front'?Math.max(...orders)+1:Math.min(...orders)-1;save();}}
  else if(a==='remove'){stored.arrangement=stored.arrangement.filter(e=>e.id!==app.selected);app.selected=null;save();}
  else if(a==='clear'){confirmDialog('Clear arrangement?','This removes all flowers currently placed on the canvas. Your library will be kept.','Clear',()=>{stored.arrangement=[];app.selected=null;save();renderControls();queue();});return;}
- else if(a==='export'){downloadJSON();}
- else if(a==='import'){$('importFile').click();return;}
- else if(a==='reload'){if(dirty)confirmDialog('Reload GitHub JSON?', 'This replaces changes you have made locally since the last GitHub upload. Download JSON first to keep them.','Reload',()=>loadRemote(true));else loadRemote(true);return;}
+ else if(a==='saveFlowersFile'){exportFlowers();}
+ else if(a==='saveArrangement'){saveCurrentArrangement();}
+ else if(a==='newArrangement'){newArrangement();return;}
+ else if(a==='deleteArrangement'){const selected=savedArrangements.find(v=>v.id===activeArrangementId);if(selected){confirmDialog('Remove saved arrangement?',`Remove ${selected.name} from your saved arrangements? Flowers on the canvas will remain.`, 'Remove',()=>{savedArrangements=savedArrangements.filter(v=>v.id!==selected.id);activeArrangementId=null;dirtyArrangements=true;cacheLocal();renderControls();queue();});return;}}
+ else if(a==='importFlower'){$('importFlowerFile').click();return;}
+ else if(a==='importArrangement'){$('importArrangementFile').click();return;}
  renderControls();queue();
 }
-$('importFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const obj=normalizeData(JSON.parse(await f.text()));confirmDialog('Import Flowergraph JSON?',`Load ${obj.library.length} saved flowers and ${obj.arrangement.length} placed flowers? This replaces the current working library and arrangement.`,'Import',()=>{stored=obj;dirty=true;dataStatus='Imported JSON — download JSON to publish';cacheLocal();resetDataSelection();thumbCache.clear();renderControls();queue();notify('JSON loaded successfully');});}catch(err){notify('Invalid Flowergraph JSON file');console.error(err);}e.target.value='';});
+$('importFlowerFile').addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ try{const incoming=normalizeFlowerFile(JSON.parse(await f.text()));mergeFlowers(incoming);}catch(err){notify('Could not import flowers.');console.error(err);}e.target.value='';
+});
+$('importArrangementFile').addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ try{const incoming=normalizeArrangementFile(JSON.parse(await f.text()));
+  const proceed=()=>mergeArrangements(incoming);
+  if(arrangementModified&&stored.arrangement.length)confirmDialog('Import arrangements?', 'Your current canvas will be replaced. Saved arrangements will be kept.', 'Import',proceed);
+  else proceed();
+ }catch(err){notify('Could not import arrangements.');console.error(err);}e.target.value='';
+});
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 const P=e=>{const r=canvas.getBoundingClientRect();return {x:clamp((e.clientX-r.left)/r.width,0,1),y:clamp((e.clientY-r.top)/r.height,0,1)};};let drag=null;
 function hit(p){let list=[...stored.arrangement].sort((a,b)=>b.order-a.order);for(const a of list){let side=a.size,dx=(p.x-a.x)/(side*.55),dy=(p.y-a.y)/(side*.55);if(dx*dx+dy*dy<1.15)return a;}return null;}
@@ -859,31 +951,34 @@ stage.addEventListener('wheel',e=>{if(app.tab==='create'&&app.draft){e.preventDe
 $('draw').onclick=()=>{if(!app.draft)return;if(drawRaf)cancelAnimationFrame(drawRaf);let start=performance.now();function step(now){app.drawProgress=clamp((now-start)/8000,0,1);queue();if(app.drawProgress<1)drawRaf=requestAnimationFrame(step);else drawRaf=0;}drawRaf=requestAnimationFrame(step);};
 let lastTime=0;function tick(now){if(app.autoRotate&&app.tab==='create'&&app.draft){if(lastTime)app.rotY+=(now-lastTime)*.00033;queue();}if(app.tab==='arrange'&&breeze.playing&&breeze.strength!=='still'&&stored.arrangement.length){if(!breeze.last||now-breeze.last>=38){const delta=breeze.last?Math.min(now-breeze.last,90):38;breeze.clock+=delta;breeze.last=now;queue();}}else breeze.last=0;lastTime=now;requestAnimationFrame(tick);}requestAnimationFrame(tick);
 new ResizeObserver(()=>queue()).observe(stage);
-function readLocalCache(){try{const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(data?.data){return {data:normalizeData(data.data),dirty:!!data.dirty};}const old=JSON.parse(localStorage.getItem('flowergraph-studio-v1')||'null');if(old?.library&&old?.arrangement){return {data:normalizeData(old),dirty:true};}}catch(e){console.warn('Could not read locally saved Flowergraph data',e);}return null;}
-async function loadRemote(force=false){
- if(loadingRemote&&!force)return;
- loadingRemote=true;
- dataStatus='Loading '+DATA_FILE+'…';renderControls();
+function readLocalCache(){
  try{
-  const response=await fetch('./'+DATA_FILE+'?v='+Date.now(),{cache:'no-store'});
-  if(!response.ok)throw Error('HTTP '+response.status);
-  const remote=normalizeData(await response.json());
-  const local=readLocalCache();
-  if(!force&&local?.dirty&&JSON.stringify(local.data)!==JSON.stringify(remote)){
-   stored=local.data;dirty=true;dataStatus='Local unpublished changes loaded; GitHub JSON available';
-  }else{
-   stored=remote;dirty=false;dataStatus='Loaded '+DATA_FILE+' from GitHub';cacheLocal();
-  }
-  resetDataSelection();thumbCache.clear();
- }catch(e){
-  console.warn('GitHub JSON loading unavailable',e);
-  const local=readLocalCache();if(local){stored=local.data;dirty=local.dirty;dataStatus=dirty?'Local unpublished changes loaded; GitHub JSON unavailable':'Local backup loaded; GitHub JSON unavailable';}
-  else {stored=emptyData();dirty=false;dataStatus='No GitHub JSON loaded. Import JSON or host HTML and JSON together.';}
- }
- loadingRemote=false;renderControls();queue();
+  const c=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
+  if(c?.data){const data=normalizeData(c.data);return {data,savedArrangements:normalizeArrangementFile({saved:c.savedArrangements||[],active:data.arrangement,activeId:c.activeArrangementId}).saved,activeArrangementId:c.activeArrangementId||null,dirtyFlowers:!!c.dirtyFlowers,dirtyArrangements:!!c.dirtyArrangements,arrangementModified:!!c.arrangementModified};}
+  const old=JSON.parse(localStorage.getItem(OLD_STORAGE_KEY)||'null')||JSON.parse(localStorage.getItem('flowergraph-studio-v1')||'null');
+  if(old?.data||old?.library){const data=normalizeData(old.data||old);return {data,savedArrangements:data.arrangement.length?[{id:uid(),name:'Arrangement 1',flowers:structuredClone(data.arrangement),updatedAt:''}]:[],activeArrangementId:null,dirtyFlowers:true,dirtyArrangements:true,arrangementModified:false};}
+ }catch(e){console.warn('Could not read saved studio state',e);}return null;
 }
-// Allow startup to read the relative JSON even when there is no local cache.
-loadingRemote=false;
+async function fetchFile(filename){const res=await fetch('./'+filename+'?v='+Date.now(),{cache:'no-store'});if(!res.ok)throw Error(`${filename} HTTP ${res.status}`);return res.json();}
+async function loadRemote(){
+ const local=readLocalCache(), startRevision=changeCount;
+ const results=await Promise.allSettled([fetchFile(FLOWER_FILE),fetchFile(ARRANGEMENT_FILE)]);
+ if(startRevision!==changeCount){return;} // Do not replace edits made while files were loading.
+ let flowers=null,arrangements=null;
+ if(results[0].status==='fulfilled')try{flowers=normalizeFlowerFile(results[0].value);}catch(e){console.warn('Flower collection rejected',e);}
+ if(results[1].status==='fulfilled')try{arrangements=normalizeArrangementFile(results[1].value);}catch(e){console.warn('Arrangement collection rejected',e);}
+ // One-time compatibility with earlier combined collections.
+ if(!flowers&&!arrangements)try{const legacy=normalizeData(await fetchFile('Flowergraph_Data.json'));flowers=legacy.library;arrangements=normalizeArrangementFile(legacy);}catch(e){}
+ if(startRevision!==changeCount)return;
+ stored.library=local?.dirtyFlowers||!flowers?local?.data.library||[]:flowers;
+ if(local?.dirtyArrangements||!arrangements){stored.arrangement=local?.data.arrangement||[];savedArrangements=local?.savedArrangements||[];activeArrangementId=local?.activeArrangementId||null;arrangementModified=local?.arrangementModified||false;}
+ else{stored.arrangement=arrangements.active;savedArrangements=arrangements.saved;activeArrangementId=arrangements.activeId;arrangementModified=false;}
+ dirtyFlowers=!!local?.dirtyFlowers;dirtyArrangements=!!local?.dirtyArrangements;
+ // A fresh GitHub load should not be marked dirty, but local edits remain intact.
+ if(!local?.dirtyFlowers&&flowers)dirtyFlowers=false;
+ if(!local?.dirtyArrangements&&arrangements)dirtyArrangements=false;
+ resetDataSelection();cacheLocal();thumbCache.clear();renderControls();queue();
+}
 renderControls();queue();loadRemote();
 
 </script></body></html>
