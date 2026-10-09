@@ -1,10 +1,10 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flowergraph Studio 1.03</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flowergraph Studio 1.04</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;height:100%;background:#050505;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}body{padding:10px;overflow:hidden}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}.app{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,470px);gap:10px;height:100%}.stage,.panel{border:1px solid #292b32;border-radius:22px;background:#080808;min-width:0;overflow:hidden}.stage{position:relative;align-self:start;aspect-ratio:1/1;width:100%;max-height:calc(100vh - 20px)}canvas{width:100%;height:100%;display:block;touch-action:none}.panel{display:flex;flex-direction:column;padding:12px;gap:10px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex-shrink:0}.tab,.btn,.flower-option,.saved-option{background:#1b1d22;border:1px solid #414651;border-radius:12px;color:white;padding:11px 8px;font-weight:700;min-height:45px}.tab.active,.btn.active,.flower-option.active,.saved-option.active{border:2px solid white;background:#30333b}.panel-scroll{overflow:auto;min-height:0;overscroll-behavior:contain;padding-right:2px;padding-bottom:28px}.section{border:1px solid #2a2e37;background:#111215;border-radius:16px;padding:12px;margin-bottom:10px}.section h3{font-size:16px;margin:0 0 10px}.flower-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.flower-option{min-height:51px}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1;min-width:0}.row .btn{min-width:0}.styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.wide{width:100%;margin-top:9px}.primary{background:#30333b;border:1px solid #747b86;font-size:18px;min-height:55px}.hint{color:#aeb2bc;font-size:13px;line-height:1.45;margin:8px 0 0}.muted{color:#949ba7;font-size:13px}.range{width:100%;accent-color:#cab1dd;touch-action:pan-x}.mini{font-size:13px;min-height:39px}.control-label{font-size:13px;color:#b8beca;display:flex;justify-content:space-between;margin:10px 0 2px}.palette{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}.swatch{aspect-ratio:1;border-radius:9px;border:2px solid #777}.swatch.active{border:3px solid white}.colors-row{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.colors-row .btn{display:flex;align-items:center;justify-content:center;gap:7px}.dot{width:15px;height:15px;border-radius:50%;display:inline-block;border:1px solid #eee}.overlay{position:absolute;bottom:12px;left:14px;z-index:5;opacity:.45;color:#eee;background:none;border:none;font-weight:700}.camera{position:absolute;bottom:12px;right:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:4px}.camera button{color:#eee;opacity:.45;background:none;border:none;font-weight:700}.camera button.active{opacity:.75}.filename{color:#777;text-align:center;font-size:11px;margin-top:12px}.empty{color:#aeb2bb;text-align:center;padding:38px 14px;border:1px dashed #4a4d56;border-radius:15px;line-height:1.55}.saved-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.saved-option{padding:7px;display:flex;gap:8px;align-items:center;text-align:left}.preview{width:58px;height:58px;background:#000;border-radius:8px;flex-shrink:0}.status{color:#c4b5db;min-height:20px;font-size:13px;margin-top:6px}.toast{position:absolute;top:15px;left:50%;transform:translateX(-50%);background:#282831;border:1px solid #656670;border-radius:12px;padding:9px 14px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:12}.toast.visible{opacity:1}.layer-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.arrange-badge{position:absolute;top:12px;left:14px;background:#18191fcc;border:1px solid #555a64;border-radius:10px;padding:7px 10px;color:#cfd2d9;font-size:13px;z-index:4;pointer-events:none}.fullscreenClose,.fullscreenZoom{display:none}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal.open{display:flex}.modal-body{width:min(450px,100%);padding:17px;background:#15171c;border:1px solid #505664;border-radius:18px}.modal h3{margin-top:0}.modbuttons{display:flex;gap:10px;margin-top:18px}.modbuttons>*{flex:1}.control-off{display:none!important}.stage.placing{cursor:crosshair}.stage.moving{cursor:grab}.stage.dragging{cursor:grabbing}.hidden{display:none!important}.panel [disabled]{opacity:.33;cursor:default}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#050505;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}body{padding:10px;overflow:hidden}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}.app{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,470px);gap:10px;height:100%}.stage,.panel{border:1px solid #292b32;border-radius:22px;background:#080808;min-width:0;overflow:hidden}.stage{position:relative;align-self:start;aspect-ratio:1/1;width:100%;max-height:calc(100vh - 20px)}canvas{width:100%;height:100%;display:block;touch-action:none}.panel{display:flex;flex-direction:column;padding:12px;gap:10px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex-shrink:0}.tab,.btn,.flower-option,.saved-option{background:#1b1d22;border:1px solid #414651;border-radius:12px;color:white;padding:11px 8px;font-weight:700;min-height:45px}.tab.active,.btn.active,.flower-option.active,.saved-option.active{border:2px solid white;background:#30333b}.panel-scroll{overflow:auto;min-height:0;overscroll-behavior:contain;padding-right:2px;padding-bottom:28px}.section{border:1px solid #2a2e37;background:#111215;border-radius:16px;padding:12px;margin-bottom:10px}.section h3{font-size:16px;margin:0 0 10px}.flower-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.flower-option{min-height:51px}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1;min-width:0}.row .btn{min-width:0}.styles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.wide{width:100%;margin-top:9px}.primary{background:#30333b;border:1px solid #747b86;font-size:18px;min-height:55px}.hint{color:#aeb2bc;font-size:13px;line-height:1.45;margin:8px 0 0}.muted{color:#949ba7;font-size:13px}.range{width:100%;accent-color:#cab1dd;touch-action:pan-x}.mini{font-size:13px;min-height:39px}.control-label{font-size:13px;color:#b8beca;display:flex;justify-content:space-between;margin:10px 0 2px}.palette{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}.swatch{aspect-ratio:1;border-radius:9px;border:2px solid #777}.swatch.active{border:3px solid white}.colors-row{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.colors-row .btn{display:flex;align-items:center;justify-content:center;gap:7px}.dot{width:15px;height:15px;border-radius:50%;display:inline-block;border:1px solid #eee}.overlay{position:absolute;bottom:12px;left:14px;z-index:5;opacity:.45;color:#eee;background:none;border:none;font-weight:700}.camera{position:absolute;bottom:12px;right:14px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:4px}.camera button{color:#eee;opacity:.45;background:none;border:none;font-weight:700}.camera button.active{opacity:.75}.filename{color:#777;text-align:center;font-size:11px;margin-top:12px}.empty{color:#aeb2bb;text-align:center;padding:38px 14px;border:1px dashed #4a4d56;border-radius:15px;line-height:1.55}.saved-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.saved-option{padding:7px;display:flex;gap:8px;align-items:center;text-align:left}.preview{width:58px;height:58px;background:#000;border-radius:8px;flex-shrink:0}.status{color:#c4b5db;min-height:20px;font-size:13px;margin-top:6px}.toast{position:absolute;top:15px;left:50%;transform:translateX(-50%);background:#282831;border:1px solid #656670;border-radius:12px;padding:9px 14px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:12}.toast.visible{opacity:1}.layer-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.arrange-badge{position:absolute;top:12px;left:14px;background:#18191fcc;border:1px solid #555a64;border-radius:10px;padding:7px 10px;color:#cfd2d9;font-size:13px;z-index:4;pointer-events:none}.fullscreenClose,.fullscreenZoom{display:none}.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal.open{display:flex}.modal-body{width:min(450px,100%);padding:17px;background:#15171c;border:1px solid #505664;border-radius:18px}.modal h3{margin-top:0}.modbuttons{display:flex;gap:10px;margin-top:18px}.modbuttons>*{flex:1}.control-off{display:none!important}.stage.placing{cursor:crosshair}.stage.moving{cursor:grab}.stage.dragging{cursor:grabbing}.hidden{display:none!important}.panel [disabled]{opacity:.33;cursor:default}.github-bar{border:1px solid #393b45;background:#111215;border-radius:12px;padding:8px;display:flex;align-items:center;gap:9px;flex-shrink:0}.github-bar .btn{min-height:40px;flex:0 0 auto}.github-bar span{color:#b8c0ca;font-size:12px;line-height:1.3}.github-bar.connected{border-color:#608070}.field{display:block;margin:12px 0 5px;font-size:13px;color:#d2d6df}.text-field{background:#08090d;color:white;border:1px solid #525866;border-radius:9px;padding:12px;width:100%;font:inherit}.note{color:#aeb2bc;font-size:12px;line-height:1.55;margin:10px 0}.github-modal a{color:#d5c5f0}.github-modal .btn{margin-top:8px}.quickadd{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}.quickadd .btn{min-height:49px;overflow-wrap:anywhere;font-size:14px}
 body.fullscreen{padding:0;overflow:hidden}body.fullscreen .stage{position:fixed;inset:0;width:100vw;height:100dvh;max-height:none;z-index:30;border:0;border-radius:0;aspect-ratio:auto}body.fullscreen .fullscreenClose,body.fullscreen .fullscreenZoom{display:flex;position:fixed;z-index:40;background:none;color:#eee;opacity:.65;border:0;font-size:42px;width:65px;height:65px;align-items:center;justify-content:center}body.fullscreen .fullscreenClose{top:10px;right:10px}body.fullscreen .fullscreenZoom.in{top:10px;left:10px}body.fullscreen .fullscreenZoom.out{top:76px;left:10px}
 @media(max-width:1000px) and (hover:hover){body{overflow:auto;padding:0}.app{display:block;height:auto}.stage{max-height:none}.panel{border-radius:20px;height:auto}.panel-scroll{overflow:visible}}
 @media(max-width:700px){body{padding:0}.app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:5px;height:100dvh}.stage{max-height:none;aspect-ratio:1/1;border-radius:0 0 17px 17px}.panel{border-radius:17px 17px 0 0}.tab{font-size:15px}.panel-scroll{overflow:auto}}
-</style></head><body><div class="app"><section class="stage" id="stage"><canvas id="art"></canvas><div class="arrange-badge hidden" id="arrangeBadge"></div><div class="toast" id="toast"></div><button class="overlay" id="draw">Draw</button><div class="camera"><button id="rotate">Rotate</button><button id="dimension">2D | 3D</button></div></section><aside class="panel"><div class="tabs"><button class="tab active" data-tab="create">Create</button><button class="tab" data-tab="library">Library</button><button class="tab" data-tab="arrange">Arrange</button></div><div class="panel-scroll" id="controls"></div><div class="filename">Flowergraph_Studio_1.03.html</div></aside></div><button class="fullscreenClose" id="fullClose">×</button><button class="fullscreenZoom in" id="fullPlus">+</button><button class="fullscreenZoom out" id="fullMinus">−</button><div class="modal" id="modal"><div class="modal-body"><h3 id="modalTitle"></h3><div class="muted" id="modalBody"></div><div class="modbuttons"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalConfirm">Replace</button></div></div></div><input class="hidden" id="importFlowerFile" type="file" accept=".json,application/json"><input class="hidden" id="importArrangementFile" type="file" accept=".json,application/json">
+</style></head><body><div class="app"><section class="stage" id="stage"><canvas id="art"></canvas><div class="arrange-badge hidden" id="arrangeBadge"></div><div class="toast" id="toast"></div><button class="overlay" id="draw">Draw</button><div class="camera"><button id="rotate">Rotate</button><button id="dimension">2D | 3D</button></div></section><aside class="panel"><div class="tabs"><button class="tab active" data-tab="create">Create</button><button class="tab" data-tab="library">Library</button><button class="tab" data-tab="arrange">Arrange</button></div><div class="panel-scroll" id="controls"></div><div class="github-bar" id="githubBar"><button type="button" class="btn mini" id="githubConnect">Connect GitHub</button><span id="githubStatus">Saved on this device until connected.</span></div><div class="filename">Flowergraph_Studio_1.04.html</div></aside></div><button class="fullscreenClose" id="fullClose">×</button><button class="fullscreenZoom in" id="fullPlus">+</button><button class="fullscreenZoom out" id="fullMinus">−</button><div class="modal" id="modal"><div class="modal-body"><h3 id="modalTitle"></h3><div class="muted" id="modalBody"></div><div class="modbuttons"><button class="btn" id="modalCancel">Cancel</button><button class="btn primary" id="modalConfirm">Replace</button></div></div></div><div class="modal github-modal" id="githubModal"><div class="modal-body"><h3>Connect GitHub</h3><p class="note">Connecting lets Save update your published flower collection and arrangements. Without a connection, Save keeps your work on this device.</p><label class="field" for="githubRepo">Repository (owner/repository)</label><input class="text-field" id="githubRepo" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="owner/flowergraph"><label class="field" for="githubToken">GitHub access token</label><input class="text-field" id="githubToken" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Paste token here"><p class="note">Use a fine-grained token limited to this repository with Contents: Read and write. The token is kept only in memory while this page is open; it is never saved in your flowers or arrangements. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Create a token on GitHub</a>.</p><div class="modbuttons"><button class="btn" id="githubCancel" type="button">Cancel</button><button class="btn primary" id="githubConfirm" type="button">Connect</button></div><p class="note" id="githubFeedback" aria-live="polite"></p></div></div><input class="hidden" id="importFlowerFile" type="file" accept=".json,application/json"><input class="hidden" id="importArrangementFile" type="file" accept=".json,application/json">
 <script>
 const GENERATORS={};
 GENERATORS["dahlia"] = (recipe) => {
@@ -742,6 +742,87 @@ function normalizeData(obj){
  }
  return {format:'flowergraph-studio',version:2,library:lib,arrangement};
 }
+// Optional GitHub publishing. Credentials are never written to localStorage or a file.
+const github={repo:'',token:'',connected:false,busy:false,queue:Promise.resolve()};
+function inferRepository(){
+ const host=location.hostname.toLowerCase();
+ if(!host.endsWith('.github.io'))return '';
+ const owner=host.split('.')[0],seg=decodeURIComponent(location.pathname.split('/').filter(Boolean)[0]||'');
+ return `${owner}/${seg||owner+'.github.io'}`;
+}
+function githubUi(){
+ const bar=$('githubBar'),status=$('githubStatus'),btn=$('githubConnect');
+ if(!bar)return;
+ bar.classList.toggle('connected',github.connected);
+ btn.textContent=github.connected?'GitHub Connected':'Connect GitHub';
+ status.textContent=github.busy?'Saving to GitHub…':github.connected?`${github.repo} · Save updates GitHub`:'Saved here until GitHub is connected.';
+}
+function openGithub(){
+ $('githubRepo').value=github.repo||inferRepository();
+ $('githubToken').value='';
+ $('githubFeedback').textContent=github.connected?'Connected already; enter a new token to reconnect.':'';
+ $('githubModal').classList.add('open');
+}
+$('githubConnect').addEventListener('click',openGithub);
+$('githubCancel').addEventListener('click',()=>$('githubModal').classList.remove('open'));
+async function githubRequest(url,options={}){
+ const res=await fetch(url,{...options,headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',Authorization:`Bearer ${github.token}`,...options.headers},cache:'no-store'});
+ const data=await res.json().catch(()=>({}));
+ if(!res.ok){const error=new Error(data.message||`GitHub request failed (${res.status})`);error.status=res.status;throw error;}
+ return data;
+}
+$('githubConfirm').addEventListener('click',async()=>{
+ const repo=$('githubRepo').value.trim(),token=$('githubToken').value.trim(),feedback=$('githubFeedback'),btn=$('githubConfirm');
+ if(!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo)){feedback.textContent='Enter the owner and repository, separated by /.';return;}
+ if(!token){feedback.textContent='Paste a GitHub access token to connect.';return;}
+ github.repo=repo;github.token=token;github.connected=false;btn.disabled=true;feedback.textContent='Checking access…';
+ try{
+  await githubRequest(`https://api.github.com/repos/${repo}`);
+  github.connected=true;githubUi();$('githubModal').classList.remove('open');$('githubToken').value='';
+  notify('GitHub connected. Save now publishes your changes.');
+ }catch(e){github.connected=false;github.token='';feedback.textContent='Could not connect: '+e.message+'. Check the repository and token permissions.';githubUi();}
+ finally{btn.disabled=false;}
+});
+function encodeUtf8Base64(value){
+ const bytes=new TextEncoder().encode(value);let binary='';
+ for(let start=0;start<bytes.length;start+=16384){binary+=String.fromCharCode(...bytes.subarray(start,start+16384));}
+ return btoa(binary);
+}
+async function githubWrite(filename,doc){
+ const repo=github.repo,encoded=filename.split('/').map(encodeURIComponent).join('/'),url=`https://api.github.com/repos/${repo}/contents/${encoded}`;
+ // Read the current SHA immediately before the commit, to avoid overwriting blindly.
+ for(let attempt=0;attempt<2;attempt++){
+  let sha;
+  try{const metadata=await githubRequest(url);sha=metadata.sha;}catch(e){if(e.status!==404)throw e;}
+  const content=encodeUtf8Base64(JSON.stringify(doc,null,2)+'\n');
+  const body={message:`Flowergraph: save ${filename==='Flowergraph_Flowers.json'?'flowers':'arrangements'}`,content};
+  if(sha)body.sha=sha;
+  try{
+   await githubRequest(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+   return;
+  }catch(e){if(attempt===0&&(e.status===409||e.status===422))continue;throw e;}
+ }
+}
+function publish(which){
+ const filename=which==='flowers'?FLOWER_FILE:ARRANGEMENT_FILE;
+ const doc=which==='flowers'?flowersDocument():arrangementsDocument();
+ if(!github.connected){notify('Saved on this device. Connect GitHub to publish.');return;}
+ github.queue=github.queue.catch(()=>{}).then(async()=>{
+  github.busy=true;githubUi();
+  try{
+   await githubWrite(filename,doc);
+   // Edits made while this request was running stay marked as local changes.
+   const current=which==='flowers'?flowersDocument():arrangementsDocument();
+   if(JSON.stringify(doc)===JSON.stringify(current)){
+    if(which==='flowers')dirtyFlowers=false;else dirtyArrangements=false;
+    cacheLocal();
+   }
+   notify(which==='flowers'?'Flowers saved to GitHub.':'Arrangement saved to GitHub.');
+  }catch(e){console.error('GitHub save failed',e);notify('Could not save to GitHub: '+e.message);}
+  finally{github.busy=false;githubUi();}
+ });
+ return github.queue;
+}
 let stored=emptyData(), savedArrangements=[], activeArrangementId=null;
 let dirtyFlowers=false, dirtyArrangements=false, arrangementModified=false, loadingRemote=true, changeCount=0;
 let breeze={strength:'gentle',playing:false,clock:0,last:0};
@@ -785,7 +866,7 @@ function renderControls(){
    html+=`<div class="section"><h3>Flower Style</h3><div class="styles">${['simple','rich','wandering'].map(s=>button(s[0].toUpperCase()+s.slice(1),'style:'+s,app.draft.style===s?'active':'' )).join('')}</div>${button('New Flower','new','wide primary')}</div>`;
    html+=`<div class="section"><h3>Stem</h3><div class="control-label"><span>Stem Width</span><span id="stemValue">${app.draft.stemWidth}%</span></div><input aria-label="Stem width" id="stemWidth" class="range" type="range" min="10" max="100" step="5" value="${app.draft.stemWidth}"><div class="hint">Narrow ← → Wide</div></div>`;
    html+=`<div class="section"><h3>Colors</h3><div class="colors-row">${[['flower','Flower'],['stem','Stem'],['detail','Detail']].map(([key,label])=>`<button class="btn mini" data-color="${key}"><span class="dot" style="background:${app.draft.colors[key]}"></span>${label}</button>`).join('')}</div><div class="palette hidden" id="palette"></div></div>`;
-   html+=`<div class="section">${app.editingId?`<p class="hint">Editing ${escapeHtml(stored.library.find(f=>f.id===app.editingId)?.name||'saved flower')}</p>`:''}${button('Save','saveFlower','wide primary')}${app.editingId?button('Save New Version','saveNew','wide'):''}<p class="hint">Saving keeps this flower in your collection and gives you a copy to share.</p></div>`;
+   html+=`<div class="section">${app.editingId?`<p class="hint">Editing ${escapeHtml(stored.library.find(f=>f.id===app.editingId)?.name||'saved flower')}</p>`:''}${button('Save','saveFlower','wide primary')}${app.editingId?button('Save New Version','saveNew','wide'):''}<p class="hint">Save keeps this design in your flower collection.</p></div>`;
   }
  }else if(app.tab==='library'){
   if(!stored.library.length){html=`<div class="empty">Your flower library is empty.<br>Create a flower and select Save.</div>${button('Create a Flower','create','wide primary')}`;}
@@ -797,7 +878,9 @@ function renderControls(){
   html+=`<div class="section"><div class="row">${button('Save','saveFlowersFile','primary')}${button('Import Flower','importFlower')}</div></div>`;
  }else{
   const item=stored.arrangement.find(a=>a.id===app.selected),n=stored.arrangement.length;
-  html=`<div class="section"><h3>Arrange Flowers</h3><p class="hint">${app.placing?'Tap empty space to add another copy. Drag any flower to move it.':'Touch and drag a flower to move it. Release anywhere.'}</p>${app.placing?button('Done Placing','donePlace','wide primary'):button('Choose Flower to Place','choosePlace','wide primary')}</div>`;
+  html=`<div class="section"><h3>Arrange Flowers</h3><p class="hint">${app.placing?'Tap anywhere to add a flower. Drag an existing flower to move it.':'Touch and drag a flower to move it. Release anywhere.'}</p>${app.placing?button('Done Placing','donePlace','wide primary'):button('Choose Flower to Place','choosePlace','wide primary')}</div>`;
+  if(stored.library.length){html+=`<div class="section"><h3>Add from Library</h3><div class="quickadd">${stored.library.map(f=>`<button class="btn ${app.placing&&app.placeId===f.id?'active':''}" data-place="${escapeHtml(f.id)}">${escapeHtml(f.name)}</button>`).join('')}</div></div>`;}
+  else html+=`<div class="section"><p class="hint">Create and save a flower first, then return here to arrange it.</p>${button('Create a Flower','create','wide primary')}</div>`;
   html+=`<div class="section"><h3>Breeze — Test Settings</h3><div class="styles">${['still','gentle','windy'].map(k=>button(k[0].toUpperCase()+k.slice(1),'breeze:'+k,breeze.strength===k?'active':'' )).join('')}</div>${button(breeze.playing?'Pause Breeze':'Start Breeze','breezeToggle','wide primary')}<p class="hint">Temporary controls for testing the movement. Saved arrangements keep their original positions.</p></div>`;
   if(app.placing&&source)html+=`<div class="section"><h3>Adding: ${escapeHtml(source.name)}</h3>${button('Choose Another Flower','choosePlace','wide')}</div>`;
   if(item)html+=`<div class="section"><h3>Selected: ${escapeHtml(item.flowerName||LABEL[item.recipe.type])}</h3><div class="row">${button('− Smaller','smaller')}${button('+ Larger','larger')}</div><div class="layer-controls" style="margin-top:8px">${button('Send Back','back','mini')}${button('Bring Forward','front','mini')}</div>${button('Remove Flower','remove','wide mini')}<p class="hint">Tap and drag to move this flower.</p></div>`;
@@ -807,15 +890,16 @@ function renderControls(){
  controls.innerHTML=html;
  controls.querySelectorAll('[data-flower]').forEach(b=>b.onclick=()=>{app.draft=G(b.dataset.flower,'rich');app.editingId=null;app.zoom=1;app.drawProgress=1;renderControls();queue();});
  controls.querySelectorAll('[data-saved]').forEach(b=>b.onclick=()=>{app.libSelected=b.dataset.saved;renderControls();queue();});
+ controls.querySelectorAll('[data-place]').forEach(b=>b.onclick=()=>placeMode(b.dataset.place));
  controls.querySelectorAll('[data-arrangement]').forEach(b=>b.onclick=()=>openSavedArrangement(b.dataset.arrangement));
  controls.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>{const pal=$('palette');pal.classList.remove('hidden');pal.innerHTML=COLORS.map(col=>`<button class="swatch ${col===app.draft.colors[b.dataset.color]?'active':''}" title="${col}" data-swatch="${col}" style="background:${col}"></button>`).join('');pal.querySelectorAll('[data-swatch]').forEach(s=>s.onclick=()=>{app.draft.colors[b.dataset.color]=s.dataset.swatch;renderControls();queue();});});
  controls.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>act(b.dataset.action));
  const slider=$('stemWidth');if(slider)slider.oninput=()=>{app.draft.stemWidth=Number(slider.value);$('stemValue').textContent=`${app.draft.stemWidth}%`;queue();};
 }
-function tab(t){app.tab=t;if(t==='arrange')app.placing=false;renderControls();queue();}
+function tab(t){app.tab=t;if(t==='arrange'&&!app.placing&&app.libSelected&&stored.library.some(f=>f.id===app.libSelected)){app.placeId=app.libSelected;app.placing=true;}renderControls();queue();}
 function confirmDialog(title,message,yesLabel,onYes){$('modalTitle').textContent=title;$('modalBody').textContent=message;$('modalConfirm').textContent=yesLabel;$('modal').classList.add('open');$('modalCancel').onclick=()=>$('modal').classList.remove('open');$('modalConfirm').onclick=()=>{$('modal').classList.remove('open');onYes();};}
 function selectedFlower(){return stored.library.find(f=>f.id===app.libSelected);}
-function placeMode(id){if(!stored.library.some(f=>f.id===id)){notify('Select a saved flower first.');return;}app.placeId=id;app.placing=true;app.selected=null;app.tab='arrange';renderControls();queue();}
+function placeMode(id){if(!stored.library.some(f=>f.id===id)){notify('Select a saved flower first.');return;}app.placeId=id;app.libSelected=id;app.placing=true;app.selected=null;app.tab='arrange';renderControls();queue();notify('Tap the canvas to place this flower.');}
 function nextName(type){let n=1;const existing=new Set(stored.library.map(f=>f.name));while(existing.has(LABEL[type]+' '+n))n++;return LABEL[type]+' '+n;}
 function resetDataSelection(){app.selected=null;app.libSelected=null;app.placeId=null;app.placing=false;app.editingId=null;}
 function downloadFile(filename,content){
@@ -825,8 +909,8 @@ function downloadFile(filename,content){
 }
 function flowersDocument(){return {format:'flowergraph-flowers',version:3,library:structuredClone(stored.library)};}
 function arrangementsDocument(){return {format:'flowergraph-arrangements',version:3,saved:structuredClone(savedArrangements),active:structuredClone(stored.arrangement),activeId:activeArrangementId};}
-function exportFlowers(){downloadFile(FLOWER_FILE,flowersDocument());notify('Flowers saved.');}
-function exportArrangements(){downloadFile(ARRANGEMENT_FILE,arrangementsDocument());notify('Arrangements saved.');}
+function exportFlowers(){cacheLocal();publish('flowers');}
+function exportArrangements(){cacheLocal();publish('arrangements');}
 function nextArrangementName(){let n=1;const names=new Set(savedArrangements.map(a=>a.name));while(names.has('Arrangement '+n))n++;return 'Arrangement '+n;}
 function saveCurrentArrangement(){
  if(!stored.arrangement.length){notify('Place a flower before saving.');return;}
@@ -903,7 +987,7 @@ function act(a){
  else if(a==='create')tab('create');
  else if(a==='place'){const f=selectedFlower();if(f){placeMode(f.id);return;}}
  else if(a==='edit'){const f=selectedFlower();if(f){app.draft=structuredClone(f.recipe);app.editingId=f.id;app.drawProgress=1;tab('create');return;}}
- else if(a==='delLib'){const f=selectedFlower();if(f){confirmDialog('Remove saved flower?',`Remove ${f.name}? Flowers already placed in Arrange will remain.`, 'Remove',()=>{stored.library=stored.library.filter(v=>v.id!==f.id);if(app.editingId===f.id)app.editingId=null;app.libSelected=null;thumbCache.clear();save('flower');renderControls();queue();});return;}}
+ else if(a==='delLib'){const f=selectedFlower();if(f){confirmDialog('Remove saved flower?',`Remove ${f.name}? Flowers already placed in Arrange will remain.`, 'Remove',()=>{stored.library=stored.library.filter(v=>v.id!==f.id);if(app.editingId===f.id)app.editingId=null;app.libSelected=null;thumbCache.clear();save('flower');exportFlowers();renderControls();queue();});return;}}
  else if(a==='donePlace'){app.placing=false;}
  else if(a==='choosePlace'){app.placing=false;tab('library');return;}
  else if(a==='smaller'||a==='larger'){const i=stored.arrangement.find(e=>e.id===app.selected);if(i){i.size=clamp(i.size+(a==='smaller'?-.045:.045),.12,1.15);save();}}
@@ -913,7 +997,7 @@ function act(a){
  else if(a==='saveFlowersFile'){exportFlowers();}
  else if(a==='saveArrangement'){saveCurrentArrangement();}
  else if(a==='newArrangement'){newArrangement();return;}
- else if(a==='deleteArrangement'){const selected=savedArrangements.find(v=>v.id===activeArrangementId);if(selected){confirmDialog('Remove saved arrangement?',`Remove ${selected.name} from your saved arrangements? Flowers on the canvas will remain.`, 'Remove',()=>{savedArrangements=savedArrangements.filter(v=>v.id!==selected.id);activeArrangementId=null;dirtyArrangements=true;cacheLocal();renderControls();queue();});return;}}
+ else if(a==='deleteArrangement'){const selected=savedArrangements.find(v=>v.id===activeArrangementId);if(selected){confirmDialog('Remove saved arrangement?',`Remove ${selected.name} from your saved arrangements? Flowers on the canvas will remain.`, 'Remove',()=>{savedArrangements=savedArrangements.filter(v=>v.id!==selected.id);activeArrangementId=null;dirtyArrangements=true;cacheLocal();exportArrangements();renderControls();queue();});return;}}
  else if(a==='importFlower'){$('importFlowerFile').click();return;}
  else if(a==='importArrangement'){$('importArrangementFile').click();return;}
  renderControls();queue();
@@ -932,17 +1016,46 @@ $('importArrangementFile').addEventListener('change',async e=>{
 });
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 const P=e=>{const r=canvas.getBoundingClientRect();return {x:clamp((e.clientX-r.left)/r.width,0,1),y:clamp((e.clientY-r.top)/r.height,0,1)};};let drag=null;
-function hit(p){let list=[...stored.arrangement].sort((a,b)=>b.order-a.order);for(const a of list){let side=a.size,dx=(p.x-a.x)/(side*.55),dy=(p.y-a.y)/(side*.55);if(dx*dx+dy*dy<1.15)return a;}return null;}
+function hit(p){let list=[...stored.arrangement].sort((a,b)=>b.order-a.order);for(const a of list){let side=a.size,dx=(p.x-a.x)/(side*.39),dy=(p.y-a.y)/(side*.39);if(dx*dx+dy*dy<1.15)return a;}return null;}
+function addPlacedFlower(p){
+ const f=stored.library.find(f=>f.id===app.placeId);
+ if(!f){notify('Choose a saved flower first.');return;}
+ const recipe=structuredClone(f.recipe),n=stored.arrangement.filter(i=>i.flowerId===f.id).length;
+ const ry=(n*2.399963229728653+Math.random()*.35)%(Math.PI*2);
+ const newItem={id:uid(),flowerId:f.id,flowerName:f.name,recipe,x:p.x,y:p.y,size:.35,rx:-.28+.2*Math.sin(n*1.9),ry,order:stored.arrangement.length?Math.max(...stored.arrangement.map(x=>x.order))+1:0};
+ stored.arrangement.push(newItem);app.selected=newItem.id;save();renderControls();queue();
+}
 canvas.addEventListener('pointerdown',e=>{
- if(app.tab!=='arrange'){if(app.tab==='create'&&app.draft&&app.mode==='3d'){drag={camera:true,x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);}return;}
- let p=P(e),item=hit(p);
- if(item){app.selected=item.id;drag={id:item.id,dx:p.x-item.x,dy:p.y-item.y};canvas.setPointerCapture(e.pointerId);stage.classList.add('dragging');renderControls();queue();}
- else if(app.placing){const f=stored.library.find(f=>f.id===app.placeId);if(!f){notify('Choose a saved flower first.');return;}let recipe=structuredClone(f.recipe),n=stored.arrangement.filter(i=>i.flowerId===f.id).length;let angle=(n*2.399963229728653+Math.random()*.35)%(Math.PI*2);let newItem={id:uid(),flowerId:f.id,flowerName:f.name,recipe,x:p.x,y:p.y,size:.35,rx:-.28+.2*Math.sin(n*1.9),ry:angle,order:stored.arrangement.length?Math.max(...stored.arrangement.map(x=>x.order))+1:0};stored.arrangement.push(newItem);app.selected=newItem.id;save();renderControls();queue();}
- else{app.selected=null;renderControls();queue();}e.preventDefault();
+ if(app.tab!=='arrange'){
+  if(app.tab==='create'&&app.draft&&app.mode==='3d'){drag={camera:true,x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);}
+  return;
+ }
+ const p=P(e),item=hit(p);
+ if(item){
+  app.selected=item.id;
+  drag={id:item.id,dx:p.x-item.x,dy:p.y-item.y,maybePlace:!!app.placing,startX:e.clientX,startY:e.clientY,moved:false};
+  canvas.setPointerCapture(e.pointerId);stage.classList.add('dragging');renderControls();queue();
+ }else if(app.placing){addPlacedFlower(p);}
+ else{app.selected=null;renderControls();queue();}
+ e.preventDefault();
 });
-canvas.addEventListener('pointermove',e=>{if(!drag)return;if(drag.camera){let dx=e.clientX-drag.x,dy=e.clientY-drag.y;app.rotY+=dx*.009;app.rotX=clamp(app.rotX+dy*.009,-1.4,1.4);drag.x=e.clientX;drag.y=e.clientY;}else{let p=P(e),item=stored.arrangement.find(x=>x.id===drag.id);if(item){item.x=clamp(p.x-drag.dx,0,1);item.y=clamp(p.y-drag.dy,0,1);}}queue();e.preventDefault();});
-function endDrag(){if(drag&&!drag.camera)save();drag=null;stage.classList.remove('dragging');}
-canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);canvas.addEventListener('lostpointercapture',endDrag);
+canvas.addEventListener('pointermove',e=>{
+ if(!drag)return;
+ if(drag.camera){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;app.rotY+=dx*.009;app.rotX=clamp(app.rotX+dy*.009,-1.4,1.4);drag.x=e.clientX;drag.y=e.clientY;}
+ else{
+  if(!drag.moved&&Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)>7)drag.moved=true;
+  if(drag.moved){const p=P(e),item=stored.arrangement.find(x=>x.id===drag.id);if(item){item.x=clamp(p.x-drag.dx,0,1);item.y=clamp(p.y-drag.dy,0,1);}}
+ }
+ queue();e.preventDefault();
+});
+function endDrag(e){
+ if(drag&&!drag.camera){
+  if(drag.maybePlace&&!drag.moved&&e?.type==='pointerup')addPlacedFlower(P(e));
+  else if(drag.moved)save();
+ }
+ drag=null;stage.classList.remove('dragging');
+}
+canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',()=>endDrag({type:'pointercancel'}));canvas.addEventListener('lostpointercapture',()=>{if(drag)endDrag({type:'lostpointercapture'});});
 $('rotate').onclick=()=>{if(!app.draft)return;app.autoRotate=!app.autoRotate;if(app.autoRotate)app.mode='3d';$('rotate').classList.toggle('active',app.autoRotate);queue();};
 $('dimension').onclick=()=>{if(!app.draft)return;app.mode=app.mode==='2d'?'3d':'2d';queue();};let hold=null,longTriggered=false;
 $('dimension').addEventListener('pointerdown',()=>{longTriggered=false;clearTimeout(hold);hold=setTimeout(()=>{longTriggered=true;setFullscreen(true);},650);});$('dimension').addEventListener('pointerup',()=>clearTimeout(hold));$('dimension').addEventListener('pointercancel',()=>clearTimeout(hold));$('dimension').addEventListener('click',e=>{if(longTriggered){longTriggered=false;e.stopImmediatePropagation();}},true);
@@ -979,6 +1092,6 @@ async function loadRemote(){
  if(!local?.dirtyArrangements&&arrangements)dirtyArrangements=false;
  resetDataSelection();cacheLocal();thumbCache.clear();renderControls();queue();
 }
-renderControls();queue();loadRemote();
+renderControls();queue();githubUi();loadRemote();
 
 </script></body></html>
